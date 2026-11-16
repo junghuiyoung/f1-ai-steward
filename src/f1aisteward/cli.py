@@ -6,6 +6,7 @@ import typer
 
 from . import config, manifest
 from . import fetch as fetching
+from .parse import build as building
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
 
@@ -32,6 +33,7 @@ def fetch(
         raise typer.Exit(code=1)
 
     problems: list[str] = []
+    rate_limited = False
     with fetching.make_client() as client:
         for slug in wanted:
             result = fetching.fetch_event(by_slug[slug], client)
@@ -44,8 +46,44 @@ def fetch(
             )
             problems += [f"changed  {item}" for item in result.changed]
             problems += [f"failed   {item}" for item in result.failed]
+            if result.rate_limited:
+                rate_limited = True
+                break  # do not ask for the other events either
 
     typer.echo(f"Files are in {config.PDF_DIR.relative_to(config.ROOT)}/")
     if problems:
         typer.echo("\n".join(["", "Needs a look:"] + problems), err=True)
+    if rate_limited:
+        waiting = sum(
+            not fetching.pdf_path(slug, doc["number"]).exists() for slug in wanted for doc in by_slug[slug]["docs"]
+        )
+        typer.echo(
+            f"\nfia.com answered 429 (too many requests), so fetch stopped. {waiting} decisions are still "
+            "to download.\nWait a while and run the same command again: it continues where it stopped.",
+            err=True,
+        )
+    if problems or rate_limited:
+        raise typer.Exit(code=1)
+
+
+@app.command()
+def build(
+    decisions: Annotated[
+        bool,
+        typer.Option("--decisions", help="Parse the downloaded decision PDFs into fields and labels."),
+    ] = False,
+) -> None:
+    """Turn downloaded documents into records the search can use."""
+    if not decisions:
+        typer.echo("Nothing to build. Use --decisions.", err=True)
+        raise typer.Exit(code=1)
+
+    report = building.build_decisions(manifest.load())
+    building.write(report)
+    typer.echo(building.summary(report))
+    typer.echo(
+        f"\nWrote {config.PARSED_DECISIONS.relative_to(config.ROOT)} (FIA text, stays on this machine)"
+        f"\nWrote {config.DECISION_LABELS.relative_to(config.ROOT)} (no FIA text)"
+    )
+    if report.failed:
         raise typer.Exit(code=1)

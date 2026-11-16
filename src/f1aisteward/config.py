@@ -7,10 +7,12 @@ ROOT = Path(__file__).resolve().parents[2]
 
 # In the repository: links and labels only, no FIA text.
 EVENTS_MANIFEST = ROOT / "data" / "manifest" / "events.yaml"
+DECISION_LABELS = ROOT / "data" / "labels" / "decisions.jsonl"
 
-# On this machine only (listed in .gitignore): the downloaded documents.
+# On this machine only (listed in .gitignore): the downloaded documents and their text.
 CACHE_DIR = ROOT / ".cache"
 PDF_DIR = CACHE_DIR / "pdf"
+PARSED_DECISIONS = CACHE_DIR / "text" / "decisions.jsonl"
 
 FIA_BASE_URL = "https://www.fia.com"
 

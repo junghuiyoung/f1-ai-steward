@@ -21,6 +21,7 @@ class FetchResult:
     skipped: int = 0  # already on disk and matching the manifest
     changed: list[str] = field(default_factory=list)  # hash differs from the manifest
     failed: list[str] = field(default_factory=list)  # could not be downloaded
+    rate_limited: bool = False  # the site said "too many requests"; nothing after that was asked for
 
 
 def sha256_of(data: bytes) -> str:
@@ -49,6 +50,7 @@ def fetch_event(
 
     Fills in `sha256` in the event's docs the first time a file is seen.
     Never overwrites a file, and never saves one whose hash contradicts the manifest.
+    Stops at the first HTTP 429 and leaves the rest of the event for a later run.
     """
     result = FetchResult()
     for doc in event["docs"]:
@@ -72,6 +74,13 @@ def fetch_event(
             continue
         finally:
             time.sleep(delay)
+
+        if response.status_code == 429:
+            # 429 means "Too Many Requests": the site counts our requests and has had enough
+            # for now. Every further request would be refused too and may keep the count
+            # high, so stop here. Files already on disk are skipped on the next run.
+            result.rate_limited = True
+            break
 
         data = response.content
         if response.status_code != 200 or not data.startswith(b"%PDF"):

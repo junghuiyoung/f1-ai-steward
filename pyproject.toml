@@ -5,6 +5,7 @@ description = "Describe a Formula 1 incident, get the rule, the usual penalty an
 requires-python = ">=3.12"
 dependencies = [
     "httpx>=0.28.1",
+    "pypdf>=7.1.0",
     "pyyaml>=6.0.3",
     "typer>=0.29.1",
 ]

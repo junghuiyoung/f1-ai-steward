@@ -6,8 +6,8 @@
 |---|---|---|
 | Prep | Apply the Codex review to the README draft and the design | Done 2026-11-15 |
 | 0 | Project skeleton and `fetch` | Done 2026-11-15 |
-| 1 | Parse decisions and build labels | Next |
-| 2 | Search over past decisions | |
+| 1 | Parse decisions and build labels | Done 2026-11-15 |
+| 2 | Search over past decisions | Next |
 | 3 | Parse the rules and search them | |
 | 4 | Generate answers and check citations | |
 | 5 | Evaluate answers | |
@@ -29,6 +29,28 @@ Things earlier steps learned from the real data. Read these before writing a par
 - **Decisions can be published days after the race.** A Canadian Grand Prix decision came out four days later. An event's date is therefore the day its final race classification was published, not the day of its latest document (`manifest._race_day`).
 - **fia.com shows Central European time.** Races in the Americas land on the next calendar day. The date is only used to put events in order, so this is harmless for now. It would matter if a rule issue changed on exactly that day.
 - **Counts.** 20 events, 1,469 documents, 488 decision-like titles, 129 lap-time deletion lists, 359 decisions kept. Per event: 6 (Japanese) to 34 (Canadian).
+
+**Step 1**
+
+- **Only 124 of the 359 PDFs are on disk.** The step 0 download stopped inside the Canadian Grand Prix (16 of 34). On 2026-11-15 fia.com answered every request for a missing file with HTTP 429 and a "Just a moment..." page, which is a bot check. Nothing was done to get around it. Everything below is from the 124 files of seven events (Australian, Chinese, Japanese, Miami, part of Canadian, Mexico City, São Paulo).
+- **There are three layouts, not one.** 101 are the form with one car (`single_car`). 10 are a cover page plus an attached decision about several cars listed in a table, mostly Safety Car line time limits (`car_table`); these have no Driver or Competitor field and spell the last field "Reasons". 13 have no fields at all: 11 answer a team's request (start despite no qualifying time, change a driver) and 2 are Technical Delegate's reports. The 13 are left out and counted, not failed. The manifest's title filter cannot tell them apart, because their titles also start with "Decision" or "Infringement".
+- **A field name is followed by an ordinary space; the words inside a value are joined by non-breaking spaces (U+00A0).** The parser uses this to tell a field name from a wrapped line that starts with the same word. The `car_table` attachment is made by other software and uses ordinary spaces everywhere.
+- **pypdf's default text mode is the one to use.** Its `layout` mode returned an empty string for the one `single_car` document tried (São Paulo 79). The default mode breaks some words in `car_table` attachments ("Regu lations" in 5 of 10), so the article normaliser never relies on the name of the rule book.
+- **The word "Reason" can be missing** (Canadian 47): the reason follows the decision with no label. The parser then cuts the Decision field after its first sentence and records a note.
+- **A cover page and its attachment can carry different document numbers** (Miami 50: the attachment says 49). The manifest's number is the id; the number on the page is only kept as a field.
+- **Articles.** 42 distinct article ids in 111 decisions. The most common are `ISC:12.2.1.i` (19), `F1-B:1.8.5` (16) and `ISC-L:IV.2.d` (13). All 111 Infringement fields gave at least one id. A Race Director's note is often cited beside an article ("item 5.7, document 34"); those numbers are not articles and are skipped.
+- **Penalties.** `pit_lane_start` was added as a type (9 of 111); it is not in the list in `01-system-design.md` section 3.2, which has not been edited. "No penalty is applied" is counted as `no_further_action`. A fine with a suspended part is recorded as the whole amount. Penalty points are not recorded. One decision is `other` (Miami 28: lap times deleted).
+- **Kinds** are assigned from a table of article prefixes in `parse/labels.py`, read off the Facts: judgment incident 55, procedural or technical 40, component allowance 10, pit lane speeding 6. The table will need new rows as other events arrive.
+- **Fact as the question.** Median 12 words. Three things to handle in step 2: (1) in 10 places two or three decisions of the same event share an identical Fact, one decision per car in the same incident, so one question text can have several gold answers; (2) the Fact of a `car_table` decision says "the cars below" and means nothing without the table; (3) one Fact quotes article numbers (Mexico City 57). Pit lane speeding Facts are six words and all alike.
+- **Second download, same day: 103 more files, then 429 again.** 227 of 359 are now on disk (twelve events complete, Belgian 13 of 14, eight events untouched). The two runs got 124 and 103 files before the block, so it looks like a limit on requests in some period, not a ban; how long the period is has not been measured. `fetch` used to keep asking for every remaining file after the first 429; it now stops at the first one, says how many files are left and exits with an error, and the next run continues from there (3 tests).
+- **What the 103 new files changed.** (1) Session is not always there: Belgian 13 is about a press conference and has none, so Session is no longer required. (2) Barcelona-Catalunya 66 is a list of deleted lap times published under an ordinary title; it is recognised by its Decision field and left out as `lap_deletion_list`. (3) Canadian 64 cites points of a tyre procedure document, not an article, so it has no article id. (4) British 83 is a "penalty lap", counted as `other`. Counts over the 227: parsed 213 (198 `single_car`, 15 `car_table`), left out 14, failed 0. The counts in the bullets above are from the first 124 and were not redone.
+- **All 359 are on disk since 2026-11-15 19:49.** The last 132 were downloaded by hand in a browser. Every file was then checked: it is a PDF, its first lines name its event, the document number printed in it equals the manifest's number, and its sha256 is in the manifest. The limit that stopped `fetch` let through about 100 files and then refused for a while; how long was not established.
+- **Final counts over the season.** Parsed 342 (320 `single_car`, 22 `car_table`). Left out 17: 13 permissions, 2 Technical Delegate's reports, 1 list of deleted lap times, 1 ruling on the running of the event (Spanish 31, a stopped practice session). Failed 0. Kinds: judgment incident 164, procedural or technical 109, component allowance 36, pit lane speeding 33. 67 distinct article ids; the most common are `ISC:12.2.1.i` (63), `F1-B:8.2.3` (36), `F1-B:1.8.5` (33), `ISC-L:IV.2.d` (32). One decision has no article id (Canadian 64) and two have penalty `other` (Miami 28, British 83). Four have no Session. Per event: 6 to 32 parsed decisions.
+- **Fact as the question, over the season.** Median 12 words. 23 groups of decisions (52 decisions) share an identical Fact inside one event. Two Facts quote an article number (British 83, Mexico City 57). 22 are `car_table` Facts that point at a table.
+- **Five decisions were compared with their page images** (São Paulo 79, Miami 50, Canadian 47, Belgian 13, British 83; Claude did it at the user's request, reading the rendered pages, not the extracted text). Every field, article id and penalty matched, with one bug and one known blemish. The bug: the label "The Stewards" under the signatures comes out of pypdf as the first line of page 2, so in 34 decisions whose Reason crosses the page break it sat inside the Reason (21 in the middle, 13 at the end). The parser now drops a line that is only those two words; after the fix exactly those 34 Reasons changed and no label did. The blemish: the broken word in `car_table` attachments ("Regula tions") is still in the stored Infringement text; the article ids are right.
+- **Still not done:** the 30-decision sample check of the labels in `01-system-design.md` section 4.1. Five is too few to say how many labels are wrong. "0 failed" means every required field was found, not that every label is right.
+- **Decided 2026-11-15: the question is Session + Fact** (for São Paulo 79: "Race. Car 16 made contact with Car 30 in turn 12."). The four decisions with no Session use the Fact alone. The three problems above (identical Facts in one event, `car_table` Facts, two Facts that quote an article number) are for step 2.
+- **A second question set, written 2026-11-15: `data/questions/paraphrased.jsonl`.** Questions taken straight from the Fact use the stewards' own wording, so keyword search finds them easily (a rough word-overlap check put the top match under the same article for 65% of questions). To measure search on wording a user would write, each of the 320 `single_car` decisions also has a reworded English question with the same information: no car, corner, speed or part added or dropped, no article, no penalty. The 22 `car_table` decisions have none. Claude wrote all 320 in one sitting, so they share one voice; nobody has reviewed them. Product input is English only (user decision).
 
 ## Context
 
@@ -68,15 +90,16 @@ Commit only when the user asks.
 pyproject.toml  .gitignore  .env.example
 data/manifest/events.yaml          events, dates, decision links and sha256      (exists)
 data/manifest/regulations.yaml     rule documents, issue, effective date, link, sha256
-data/labels/decisions.jsonl        decision id, article ids, penalty, kind, split (no FIA text)
+data/labels/decisions.jsonl        decision id, article ids, penalty, kind, split (no FIA text)  (exists, 342 rows)
 scripts/make_events_manifest.py    builds events.yaml from a saved fia.com listing (exists)
 src/f1aisteward/
   cli.py            fetch (exists) / build / search / ask / serve / eval
   config.py         paths, settings (exists); later model names and price table
   manifest.py       title filter, read and write the manifest (exists)
   fetch.py          download PDFs, check hashes (exists)
-  parse/decisions.py  decision PDF -> its eight fields
-  parse/labels.py     normalise articles, structure penalties, classify kind
+  parse/decisions.py  decision PDF -> its eight fields (exists)
+  parse/labels.py     normalise articles, structure penalties, classify kind (exists)
+  parse/build.py      run both over the manifest, write records and labels (exists)
   parse/rules.py      rules PDF -> list of articles
   index.py          two Chroma collections and BM25
   search.py         hybrid search (RRF), date and issue filters
@@ -88,7 +111,7 @@ src/f1aisteward/
   eval/report.py    results/summary.json and the README tables
   app/server.py     FastAPI
   app/static/index.html
-tests/              test_manifest.py, test_fetch.py (exist)
+tests/              test_manifest.py, test_fetch.py, test_parse_decisions.py, test_labels.py, test_build.py (exist)
 docs/demo.gif       recorded in step 6
 .cache/  runs/      local only, not in git
 ```
@@ -101,7 +124,7 @@ docs/demo.gif       recorded in step 6
 - **Works**: `uv run f1aisteward fetch --event sao-paulo` downloads that event's decisions into `.cache/pdf/sao-paulo/`. A second run downloads nothing. A file whose hash contradicts the manifest is not saved.
 - **Not done here**: fetching the rule documents. That is part of step 3.
 
-### Step 1: parse decisions and build labels
+### Step 1: parse decisions and build labels (done)
 
 - **Build**: `parse/decisions.py`, `parse/labels.py`, tests, CLI `build --decisions`.
 - **How**: extract text with `pypdf`, then cut it at the field names (No / Driver, Competitor, Time, Session, Fact, Infringement, Decision, Reason). Infringement becomes article ids such as `ISC-L:IV.2.d` and `F1-B:8.2.2`. Decision becomes `{type, value, unit}`. Tests use decision text we write ourselves, never FIA text.
@@ -109,6 +132,8 @@ docs/demo.gif       recorded in step 6
 - **Check**: `uv run f1aisteward build --decisions` prints parsed and failed counts and counts by kind. Compare three decisions with their PDFs by eye.
 - **Done when**: every 2026 decision has been parsed and the failure count is known. `pytest` passes.
 - **Decide here**: whether the Fact field alone works as the question. In the two documents read so far (São Paulo 79 and 43) Fact was one sentence saying which car did what where, or a list of parts.
+- **Built (2026-11-15)**: `parse/decisions.py`, `parse/labels.py`, `parse/build.py`, CLI `build --decisions`, 112 new tests for the parser, labels and build (128 in all, with 3 added for `fetch`), `pypdf` added. Full records go to `.cache/text/decisions.jsonl` (local), labels to `data/labels/decisions.jsonl`.
+- **Left**: nothing. The check by eye and the question decision are recorded under "Found along the way".
 
 ### Step 2: search over past decisions (the retrieval half of RAG)
 
@@ -194,7 +219,7 @@ Creating the GitHub repository and pushing. Do it when the user asks.
 
 | Decision | When | Suggestion |
 |---|---|---|
-| Is the Fact field enough as the question | End of step 1 | Decide after reading the real text |
+| Is the Fact field enough as the question | Decided 2026-11-15 | Session + Fact |
 | Which events are dev and which are test | Step 2 | Test on later events, all after 2026-06-01 |
 | Which rule documents to include | Before step 3 | Sporting Regulations, ISC, Appendix L and H. Sporting Regulations only if parsing stalls |
 | Also run the final evaluation on `gpt-6-luna` | Step 5 | Yes, it costs about $1 |

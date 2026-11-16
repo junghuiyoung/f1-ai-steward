@@ -90,3 +90,64 @@ def test_a_response_that_is_not_a_pdf_counts_as_failed(tmp_path):
     assert len(result.failed) == 2  # one is HTML, the other is a 404
     assert list(tmp_path.rglob("*.pdf")) == []
     assert event["docs"][0]["sha256"] is None
+
+
+def test_fetch_stops_at_the_first_429(tmp_path):
+    # The site answers the second request with 429 "Too Many Requests".
+    event, calls = make_event(), []
+    event["docs"].append({"number": 3, "url": "https://example.test/c.pdf", "sha256": None})
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(str(request.url))
+        if len(calls) >= 2:
+            return httpx.Response(429, content=b"<html>Just a moment...</html>")
+        return httpx.Response(200, content=PDF_A)
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    result = fetch.fetch_event(event, client, pdf_dir=tmp_path, delay=0)
+
+    assert result.rate_limited
+    assert result.downloaded == 1
+    assert result.failed == []  # a refused request is not a broken document
+    assert calls == ["https://example.test/a.pdf", "https://example.test/b.pdf"]  # the third was never asked for
+    assert event["docs"][1]["sha256"] is None
+
+
+def test_a_run_after_a_429_continues_where_it_stopped(tmp_path):
+    event, calls = make_event(), []
+    refuse_everything = httpx.Client(transport=httpx.MockTransport(lambda request: httpx.Response(429)))
+    assert fetch.fetch_event(event, refuse_everything, pdf_dir=tmp_path, delay=0).rate_limited
+
+    result = fetch.fetch_event(event, client_serving(PAGES, calls), pdf_dir=tmp_path, delay=0)
+
+    assert (result.downloaded, result.rate_limited) == (2, False)
+
+
+def test_the_command_stops_at_a_429_and_says_how_many_are_left(monkeypatch):
+    from typer.testing import CliRunner
+
+    from f1aisteward import cli, manifest
+
+    def docs(*numbers):
+        return [{"number": n, "url": f"https://example.test/{n}.pdf", "sha256": None} for n in numbers]
+
+    data = {
+        "season": 2031,
+        "events": [{"slug": "made-up-event-a", "docs": docs(1, 2)}, {"slug": "made-up-event-b", "docs": docs(3)}],
+    }
+    calls = []
+
+    def refuse(request: httpx.Request) -> httpx.Response:
+        calls.append(str(request.url))
+        return httpx.Response(429)
+
+    monkeypatch.setattr(manifest, "load", lambda: data)
+    monkeypatch.setattr(manifest, "save", lambda manifest_data: None)
+    monkeypatch.setattr(fetch.time, "sleep", lambda seconds: None)
+    monkeypatch.setattr(fetch, "make_client", lambda: httpx.Client(transport=httpx.MockTransport(refuse)))
+
+    result = CliRunner().invoke(cli.app, ["fetch"])
+
+    assert result.exit_code == 1
+    assert calls == ["https://example.test/1.pdf"]  # one refusal, then nothing: not the second event either
+    assert "3 decisions are still to download" in result.output
