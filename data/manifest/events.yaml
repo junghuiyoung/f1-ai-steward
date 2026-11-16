@@ -1,0 +1,2256 @@
+season: 2026
+events:
+- slug: australian
+  name: Australian Grand Prix
+  round: 1
+  date: '2026-03-08'
+  docs:
+  - number: 25
+    kind: Infringement
+    subject: Car 63 - Failure to follow Race Director Instruction - Practice Start
+    url: https://www.fia.com/system/files/decision-document/2026_australian_grand_prix_-_infringement_-_car_63_-_failure_to_follow_race_director_instruction_-_practice_start.pdf
+    published: 2026-03-06 10:44
+    sha256: 0cc71ac7b93ba7404b2c261db811ddbfcc9babccb3fb083976d2dc5f8866f965
+  - number: 26
+    kind: Infringement
+    subject: Car 63 - Pit Lane Incident
+    url: https://www.fia.com/system/files/decision-document/2026_australian_grand_prix_-_infringement_-_car_63_-_pit_lane_incident.pdf
+    published: 2026-03-06 10:44
+    sha256: 852b5ce28ec0df310673ad44dd9d3cf756bb303f22fd35a76b08964cf82a7415
+  - number: 27
+    kind: Decision
+    subject: Car 43 - Allegedly Driving Unnecessarily Slow
+    url: https://www.fia.com/system/files/decision-document/2026_australian_grand_prix_-_decision_-_car_43_-_allegedly_driving_unnecessarily_slow.pdf
+    published: 2026-03-06 10:44
+    sha256: c7281bd151f590fe3fd2aa0af53c45d2537f41196018e044e4c8a61677d8ad11
+  - number: 35
+    kind: Decision
+    subject: Car 12 - Alleged pitlane incident
+    url: https://www.fia.com/system/files/decision-document/2026_australian_grand_prix_-_decision_-_car_12_-_alleged_pitlane_incident.pdf
+    published: 2026-03-07 07:57
+    sha256: c6b142257c768d70ac24773213007d4f0ea0e6ab0886cb0d5722650445ca56c0
+  - number: 39
+    kind: Decision
+    subject: Car 3 - Failing to set a lap time within 107%
+    url: https://www.fia.com/system/files/decision-document/2026_australian_grand_prix_-_decision_-_car_3_-_failing_to_set_a_lap_time_within_107.pdf
+    published: 2026-03-07 09:36
+    sha256: 64aaf3b0f076b89f2a16db2d3d289d335c928687a91c0f3f56d8526471500e00
+  - number: 40
+    kind: Decision
+    subject: Car 55 - Failing to set a lap time within 107%
+    url: https://www.fia.com/system/files/decision-document/2026_australian_grand_prix_-_decision_-_car_55_-_failing_to_set_a_lap_time_within_107.pdf
+    published: 2026-03-07 09:36
+    sha256: afde28fae89121fc4b38feb68f8d93c12566a5876ea05448d116f15e27437e35
+  - number: 41
+    kind: Infringement
+    subject: Car 10 - Released in an unsafe condition
+    url: https://www.fia.com/system/files/decision-document/2026_australian_grand_prix_-_infringement_-_car_10_-_released_in_an_unsafe_condition.pdf
+    published: 2026-03-07 09:37
+    sha256: 8c96122000997dd221a5ef792ee4cda283385984b7543c44c3d9fa40f700e224
+  - number: 42
+    kind: Infringement
+    subject: Car 12 - Released in an unsafe condition
+    url: https://www.fia.com/system/files/decision-document/2026_australian_grand_prix_-_infringement_-_car_12_-_released_in_an_unsafe_condition.pdf
+    published: 2026-03-07 09:37
+    sha256: 83d35882bea7bc0e7863a8b4172fe36974a535866c947013a80ff540b438b793
+  - number: 43
+    kind: Decision
+    subject: Car 18 - Failing to set a lap time within 107%
+    url: https://www.fia.com/system/files/decision-document/2026_australian_grand_prix_-_decision_-_car_18_-_failing_to_set_a_lap_time_within_107.pdf
+    published: 2026-03-07 09:37
+    sha256: a6dc61a7a350dfb163c5eadaa2616df1f9d9ad4b5345af8ba810c9282404ae71
+  - number: 46
+    kind: Decision
+    subject: Qualifying SC2-SC1 Times
+    url: https://www.fia.com/system/files/decision-document/2026_australian_grand_prix_-_decision_-_qualifying_sc2-sc1_times.pdf
+    published: 2026-03-07 09:47
+    sha256: dbb571254b09b76ba5fea3dcd6ea00450dad6b5e9f923f2ef31dafee7df12e82
+  - number: 59
+    kind: Decision
+    subject: Car 27 - Start Procedure Infringement
+    url: https://www.fia.com/system/files/decision-document/2026_australian_grand_prix_-_decision_-_car_27_-_start_procedure_infringement.pdf
+    published: 2026-03-08 06:42
+    sha256: 5891c4e7f9310cc49554486671a65ba82edbe73deda38dab4cbecd7761758e32
+  - number: 60
+    kind: Infringement
+    subject: Car 43 - Grid Procedure Infringement
+    url: https://www.fia.com/system/files/decision-document/2026_australian_grand_prix_-_infringement_-_car_43_-_grid_procedure_infringement.pdf
+    published: 2026-03-08 07:12
+    sha256: 4fdc8b4dee3ef1b835c42adaf225a522fe34987605a9c60cda2c24d911b2e9b3
+  - number: 62
+    kind: Decision
+    subject: Car 31 - Alleged causing a collision with Car 10
+    url: https://www.fia.com/system/files/decision-document/2026_australian_grand_prix_-_decision_-_car_31_-_alleged_causing_a_collision_with_car_10.pdf
+    published: 2026-03-08 07:34
+    sha256: 580e5fb7d828d666dd350aeca667e64bb388a5db53818ca3aa9644464e875eb5
+  - number: 63
+    kind: Decision
+    subject: Car 10 - Alleged causing a collision with Car 31
+    url: https://www.fia.com/system/files/decision-document/2026_australian_grand_prix_-_decision_-_car_10_-_alleged_causing_a_collision_with_car_31.pdf
+    published: 2026-03-08 07:34
+    sha256: 05686a68130837782d689725c0f27463eb447811162320620c2e953249b13533
+  - number: 64
+    kind: Decision
+    subject: Car 31 - Allegedly driving unnecessarily slowly
+    url: https://www.fia.com/system/files/decision-document/2026_australian_grand_prix_-_decision_-_car_31_-_allegedly_driving_unnecessarily_slowly.pdf
+    published: 2026-03-08 07:58
+    sha256: 35a0da377355be6b3d675315025ca9c82fcb33b653f430327cbbe070de6b0227
+  - number: 66
+    kind: Decision
+    subject: Car 11 - Alleged forcing another driver off the track
+    url: https://www.fia.com/system/files/decision-document/2026_australian_grand_prix_-_decision_-_car_11_-_alleged_forcing_another_driver_off_the_track.pdf
+    published: 2026-03-08 08:04
+    sha256: 49e42249f59ae44a87d01bcf5ce6018bd270f68fc5677e9aede07f35d2de6c9f
+- slug: chinese
+  name: Chinese Grand Prix
+  round: 2
+  date: '2026-03-15'
+  docs:
+  - number: 20
+    kind: Infringement
+    subject: Car 23 - Breach of Practice Start Procedure
+    url: https://www.fia.com/system/files/decision-document/2026_chinese_grand_prix_-_infringement_-_car_23_-_breach_of_practice_start_procedure.pdf
+    published: 2026-03-13 07:20
+    sha256: 641fdad75eb397f9f1e8e71a28470514b9bc4b700d592ffa61073271dd4354cc
+  - number: 28
+    kind: Decision
+    subject: Car 12 - Alleged impeding of Car 1
+    url: https://www.fia.com/system/files/decision-document/2026_chinese_grand_prix_-_decision_-_car_12_-_alleged_impeding_of_car_1.pdf
+    published: 2026-03-13 10:40
+    sha256: ee66bce37754136a1c63ca4da58df6f8dfc5e0d99896ae9973c58e5789d1639a
+  - number: 30
+    kind: Decision
+    subject: Car 10 - Alleged impeding of Car 3
+    url: https://www.fia.com/system/files/decision-document/2026_chinese_grand_prix_-_decision_-_car_10_-_alleged_impeding_of_car_3.pdf
+    published: 2026-03-13 11:55
+    sha256: b4a1011554b0d616f02d238eeb399e4112811a8baacb65479168a633ee80741a
+  - number: 33
+    kind: Decision
+    subject: Sprint Qualifying SC2-SC1 Times
+    url: https://www.fia.com/system/files/decision-document/2026_chinese_grand_prix_-_decision_-_sprint_qualifying_sc2-sc1_times.pdf
+    published: 2026-03-13 11:54
+    sha256: b8ca210f5805b39720a7a6f2be1beb4571639334745e20b0c50067357090a19c
+  - number: 35
+    kind: Decision
+    subject: Car 11 - Failing to set a lap time within 107%
+    url: https://www.fia.com/system/files/decision-document/2026_chinese_grand_prix_-_decision_-_car_11_-_failing_to_set_a_lap_time_within_107.pdf
+    published: 2026-03-13 12:16
+    sha256: dcc767a99ca68fd242d9d47ee523a03eb2cb6574ffd62017bbefa049ece8f3ff
+  - number: 42
+    kind: Infringement
+    subject: Car 23 - Changes made during Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_chinese_grand_prix_-_infringement_-_car_23_-_changes_made_during_parc_ferme.pdf
+    published: 2026-03-14 02:53
+    sha256: 618947db8f609a2059d84cc31396aeed855c706ea06af77550c276f7e9fabf7b
+  - number: 48
+    kind: Infringement
+    subject: Car 12 - Causing a Collision with Car 6
+    url: https://www.fia.com/system/files/decision-document/2026_chinese_grand_prix_-_infringement_-_car_12_-_causing_a_collision_with_car_6.pdf
+    published: 2026-03-14 05:38
+    sha256: d7323b00a2a793327e6ab6869b87f5c1931dac7a99dc35116ff32738285939f8
+  - number: 49
+    kind: Infringement
+    subject: Car 11 - Safety Car ECU minimum time
+    url: https://www.fia.com/system/files/decision-document/2026_chinese_grand_prix_-_infringement_-_car_11_-_safety_car_ecu_minimum_time.pdf
+    published: 2026-03-14 05:41
+    sha256: 61d4a30d152db4ea95a1b16e5a52078cf52e3cc5ed30e3f7bcfb1c6843068995
+  - number: 51
+    kind: Infringement
+    subject: Car 6 - Failing to follow Race Director's instruction
+    url: https://www.fia.com/system/files/decision-document/2026_chinese_grand_prix_-_infringement_-_car_6_-_failing_to_follow_race_directors_instruction.pdf
+    published: 2026-03-14 05:57
+    sha256: 19c65d44ad3ec1599e025042a91cf530af8dcbb48ee4b921006dc577e1803423
+  - number: 52
+    kind: Infringement
+    subject: Car 10 - Released in an unsafe condition
+    url: https://www.fia.com/system/files/decision-document/2026_chinese_grand_prix_-_infringement_-_car_10_-_released_in_an_unsafe_condition.pdf
+    published: 2026-03-14 06:30
+    sha256: d735006a91d19499721a0986ac385eafa8cd36e39a24b355d6e781007c0c0465
+  - number: 60
+    kind: Decision
+    subject: Qualifying SC2-SC1 Times
+    url: https://www.fia.com/system/files/decision-document/2026_chinese_grand_prix_-_decision_-_qualifying_sc2-sc1_times.pdf
+    published: 2026-03-14 09:35
+    sha256: 38842abd24161f5131ffc3021c91f9760c26c642cc6977ba773fdd1a5b5bdf71
+  - number: 68
+    kind: Infringement
+    subject: Car 23 - Changes made during Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_chinese_grand_prix_-_infringement_-_car_23_-_changes_made_during_parc_ferme_0.pdf
+    published: 2026-03-15 05:41
+    sha256: e9ad60db34c3d8fa8d4090f1dcc856d627c93cd5263b6a4165bb9ad608f3ff9d
+  - number: 72
+    kind: Infringement
+    subject: Car 31 - Causing a collision with Car 43
+    url: https://www.fia.com/system/files/decision-document/2026_chinese_grand_prix_-_infringement_-_car_31_-_causing_a_collision_with_car_43.pdf
+    published: 2026-03-15 09:32
+    sha256: f5539601351a4a50a4cfb84b3d5cfc34e1791648b43230643d687a2ebf6f315f
+- slug: japanese
+  name: Japanese Grand Prix
+  round: 3
+  date: '2026-03-29'
+  docs:
+  - number: 23
+    kind: Decision
+    subject: Car 30 - Alleged incident with car 55
+    url: https://www.fia.com/system/files/decision-document/2026_japanese_grand_prix_-_decision_-_car_30_-_alleged_incident_with_car_55.pdf
+    published: 2026-03-27 07:18
+    sha256: 1d5c267eb6f62b3e4a9dac5776767e61d43d9ab0055e896d8a177302b4801c56
+  - number: 25
+    kind: Decision
+    subject: Car 23 - Alleged incident with car 11
+    url: https://www.fia.com/system/files/decision-document/2026_japanese_grand_prix_-_decision_-_car_23_-_alleged_incident_with_car_11.pdf
+    published: 2026-03-27 07:29
+    sha256: 3f7011a394d9e6feb7787225ee21df19d50031a9fb5e116f07c2b70aaa71bc0e
+  - number: 26
+    kind: Decision
+    subject: Car 44 - Alleged incident with car 3
+    url: https://www.fia.com/system/files/decision-document/2026_japanese_grand_prix_-_decision_-_car_44_-_alleged_incident_with_car_3.pdf
+    published: 2026-03-27 07:49
+    sha256: 075d7bfa0e51faab75e8cf4f2815665f17fdf13851c9920c3f49708f2ab939bf
+  - number: 33
+    kind: Infringement
+    subject: Car 43 - Impeding of Car 3
+    url: https://www.fia.com/system/files/decision-document/2026_japanese_grand_prix_-_infringement_-_car_43_-_impeding_of_car_3.pdf
+    published: 2026-03-27 09:23
+    sha256: 26f60bc1f20be0c045831610b95199a2885063be6f539b372c46f01407a19120
+  - number: 44
+    kind: Infringement
+    subject: Car 81 - Impeding of Car 27
+    url: https://www.fia.com/system/files/decision-document/2026_japanese_grand_prix_-_infringement_-_car_81_-_impeding_of_car_27.pdf
+    published: 2026-03-28 05:34
+    sha256: a44c261a4ebfe666d15c97b0df2948a813afba38778a72639c3a50901e166bac
+  - number: 47
+    kind: Decision
+    subject: Qualifying SC2-SC1 Times
+    url: https://www.fia.com/system/files/decision-document/2026_japanese_grand_prix_-_decision_-_qualifying_sc2-sc1_times.pdf
+    published: 2026-03-28 10:17
+    sha256: 39b2a2ef9be13b689aa182ff22737e34f25517f0b3098098625453f9ace427cd
+- slug: miami
+  name: Miami Grand Prix
+  round: 4
+  date: '2026-05-04'
+  docs:
+  - number: 21
+    kind: Infringement
+    subject: Car 16 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_infringement_-_car_16_-_pit_lane_speeding.pdf
+    published: 2026-05-01 21:01
+    sha256: 2413eb48a6b98895b2127a58ae4a9ff430342c62c144f96cb43e39af961a1083
+  - number: 28
+    kind: Infringement
+    subject: Car 23 - Track Limits
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_infringement_-_car_23_-_track_limits.pdf
+    published: 2026-05-02 01:32
+    sha256: dd5f1cf78b25df480580033836a2b3ef9f74d2c1b1e22f5beff88dcb45ba6469
+  - number: 30
+    kind: Decision
+    subject: Sprint Qualifying SC2-SC1 Times
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_decision_-_sprint_qualifying_sc2-sc1_times.pdf
+    published: 2026-05-02 01:45
+    sha256: e715494545b9a4d821248c3e8561a617caaa85a36fa2d2a9b02ef5ee93b5756b
+  - number: 31
+    kind: Decision
+    subject: Car 1 - Alleged failure to follow Race Director's Instructions (SC2-1 Time)
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_decision_-_car_1_-_alleged_failure_to_follow_race_directors_instructions_sc2-1_time.pdf
+    published: 2026-05-02 01:52
+    sha256: dc4d9e751eff6a5a9d6536ac1b5d3dbc30aecb73035fd178f352e24deaa4a47a
+  - number: 32
+    kind: Decision
+    subject: Car 18 - Permission to start
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_decision_-_car_18_-_permission_to_start.pdf
+    published: 2026-05-02 02:00
+    sha256: 19cc41a08839d455043892eda757a06dcb41718b32afb6f7e9209d86d3b1d164
+  - number: 33
+    kind: Decision
+    subject: Car 14 - Permission to start
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_decision_-_car_14_-_permission_to_start.pdf
+    published: 2026-05-02 02:08
+    sha256: 7da24b27c5c01eb6b46e201811ca9815ec7af4dde17133452da8975050a0a4c4
+  - number: 40
+    kind: Infringement
+    subject: Car 41 - Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_infringement_-_car_41_-_parc_ferme.pdf
+    published: 2026-05-02 16:54
+    sha256: cc2fe17af290ed15973dccb17749c8fede7159672ee510ceadd66daf6b001d43
+  - number: 49
+    kind: Infringement
+    subject: Car 12 - Leaving the track without a justifiable reason multiple times
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_infringement_-_car_12_-_leaving_the_track_without_a_justifiable_reason_multiple_times.pdf
+    published: 2026-05-02 19:34
+    sha256: e3407f1b0c09b8a74fe9a4aae8cdb18380962071b543d87365e848b655d6b171
+  - number: 50
+    kind: Decision
+    subject: Sprint SC2-SC1 Times
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_decision_-_sprint_sc2-sc1_times.pdf
+    published: 2026-05-02 19:35
+    sha256: 85cc4f4703cf9008783c152900d63f958b214d6bd9a6a912d0b1be11bc96cc72
+  - number: 51
+    kind: Infringement
+    subject: Car 05 - Engine Intake Air Pressure
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_infringement_-_car_05_-_engine_intake_air_pressure.pdf
+    published: 2026-05-02 19:49
+    sha256: 09f3290f76ccba29c5069511806dd49e6b43b8ed0c3804524ed5daf246a55940
+  - number: 54
+    kind: Infringement
+    subject: Car 5 - Technical non-conformity (Engine intake air pressure)
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_infringement_-_car_5_-_technical_non-conformity_engine_intake_air_pressure.pdf
+    published: 2026-05-02 21:07
+    sha256: ffe15f2abab402c9a2ca50a48880a506dc2ea7cd26c9eb6c290a7a5dda7a7e65
+  - number: 61
+    kind: Decision
+    subject: Qualifying SC2-SC1 Times
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_decision_-_qualifying_sc2-sc1_times.pdf
+    published: 2026-05-02 23:45
+    sha256: 40d9d9c2b8aae8c68b8a64926f21ee37be2698e0c82ad918afcf9e893f2e1117
+  - number: 67
+    kind: Infringement
+    subject: Car 06 - Floor Board
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_infringement_-_car_06_-_floor_board.pdf
+    published: 2026-05-03 02:25
+    sha256: d319628aeb0cad682f2bf0a484a76cf45e54370d2ade1b392d6a675589f85477
+  - number: 70
+    kind: Infringement
+    subject: Car 6 - Technical nonconformity (Floor Board)
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_infringement_-_car_6_-_technical_nonconformity_floor_board.pdf
+    published: 2026-05-03 13:30
+    sha256: b76786676238b6dc6e5d857a2f60f1723244738edc17468f8da55542d3f28ee8
+  - number: 71
+    kind: Decision
+    subject: Car 6 - Permission to start
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_decision_-_car_6_-_permission_to_start.pdf
+    published: 2026-05-03 13:45
+    sha256: 28e63d920bfc17834c522540f3a1b428fa97020084ba076e91f3acb5cb2d9ca2
+  - number: 75
+    kind: Infringement
+    subject: Car 6 - PU Elements changed under Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_infringement_-_car_6_-_pu_elements_changed_under_parc_ferme.pdf
+    published: 2026-05-03 16:43
+    sha256: 17b61a13fbe48a6ab711ed1237c56a0ab07f0046ecd8e8db63a7d9c79dd5ac5c
+  - number: 80
+    kind: Infringement
+    subject: Car 77 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_infringement_-_car_77_-_pit_lane_speeding.pdf
+    published: 2026-05-03 20:47
+    sha256: 60f794ef1b17060ad6881da6b4cefac8ed59eed71ce30cb99524db9b4c5cbb8d
+  - number: 91
+    kind: Decision
+    subject: Car 31 - Alleged yellow flag infringement
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_decision_-_car_31_-_alleged_yellow_flag_infringement.pdf
+    published: 2026-05-03 23:10
+    sha256: e26236e30c7b92dccc4865bbce19288177a25ac1741c3334ac8874ddca40efec
+  - number: 92
+    kind: Decision
+    subject: Car 23 - Alleged yellow flag infringement
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_decision_-_car_23_-_alleged_yellow_flag_infringement.pdf
+    published: 2026-05-03 23:11
+    sha256: 2311cefa26deb142ed95e04aa3235740f05f7e06f94d4f3fc1bb34136686c552
+  - number: 93
+    kind: Decision
+    subject: Car 14 - Alleged yellow flag infringement
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_decision_-_car_14_-_alleged_yellow_flag_infringement.pdf
+    published: 2026-05-03 23:13
+    sha256: 20e264a5d31d2fdb50ce0eb858f433c227019faa840ddba3b799d803c8b8ad79
+  - number: 94
+    kind: Decision
+    subject: Car 3 - Alleged incident with Car 63
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_decision_-_car_3_-_alleged_incident_with_car_63.pdf
+    published: 2026-05-03 23:22
+    sha256: cf6833ec32bd92bbbdf87c03d6eeeba04c7d5d0e12bd55de304c0f450f052466
+  - number: 95
+    kind: Decision
+    subject: Car 63 - Alleged incident with Car 3
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_decision_-_car_63_-_alleged_incident_with_car_3.pdf
+    published: 2026-05-03 23:21
+    sha256: e9cf65f403069baabf373c5f32cf8ffcbff9eb4ee5f632596c5df0a55c05e298
+  - number: 97
+    kind: Infringement
+    subject: Car 16 - Leaving the track multiple times and driving in an unsafe condition
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_infringement_-_car_16_-_leaving_the_track_multiple_times_and_driving_in_an_unsafe_condition_.pdf
+    published: 2026-05-03 23:24
+    sha256: 09aed7dd6ce9417e347f1bc2d33e70770551e387e5bc9374544d1c607b5f0cb0
+  - number: 99
+    kind: Infringement
+    subject: Car 3 - Pit Exit Incident
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_infringement_-_car_3_-_pit_exit_incident.pdf
+    published: 2026-05-03 23:48
+    sha256: 3d466125f1654c90e695ea011485efced0cd577d2d667a622c8b8f91725d64e0
+  - number: 100
+    kind: Decision
+    subject: Car 30 - Alleged incident with Car 10
+    url: https://www.fia.com/system/files/decision-document/2026_miami_grand_prix_-_decision_-_car_30_-_alleged_incident_with_car_10.pdf
+    published: 2026-05-03 23:55
+    sha256: 4c99319efac9face6ab1d14d1a298876853de6994d2c4889afead89c34485fcf
+- slug: canadian
+  name: Canadian Grand Prix
+  round: 5
+  date: '2026-05-25'
+  docs:
+  - number: 18
+    kind: Infringement
+    subject: Car 16 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_16_-_pit_lane_speeding.pdf
+    published: 2026-05-22 19:34
+    sha256: 32268ba5dfa69cf6b3a05bf4a1bdb3e816a58769a7b060f52d53f143bafdfcb0
+  - number: 22
+    kind: Infringement
+    subject: Car 31 - Leaving the pitlane after the end of the session
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_31_-_leaving_the_pitlane_after_the_end_of_the_session.pdf
+    published: 2026-05-22 20:31
+    sha256: 646df3909f8e3a6dc5a6fc22c525e8bb6397b6ae8d29d2745c899e59171b7c97
+  - number: 26
+    kind: Infringement
+    subject: Car 30 - Breach of Article C9.3
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_30_-_breach_of_article_c9.3.pdf
+    published: 2026-05-22 23:24
+    sha256: 70bf1e838fb4d60bd9757a3d49f5eea62e76a1c540002efeb176ac81573fd7af
+  - number: 27
+    kind: Decision
+    subject: Car 30 - Failing to set a lap time within 107%
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_decision_-_car_30_-_failing_to_set_a_lap_time_within_107.pdf
+    published: 2026-05-22 23:50
+    sha256: cde0508a185085ad3e6f028b70c50890eb8c86ca8fe543dbbb6c3d7674487495
+  - number: 30
+    kind: Decision
+    subject: Car 23 - Failing to set a lap time within 107%
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_decision_-_car_23_-_failing_to_set_a_lap_time_within_107.pdf
+    published: 2026-05-23 00:47
+    sha256: 481ec61906c845668fbe0f87c9bc6ea160ad20cbcb8bd49d560c7aa6c9faed56
+  - number: 33
+    kind: Decision
+    subject: Sprint Qualifying SC2-SC1 Times
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_decision_-_sprint_qualifying_sc2-sc1_times.pdf
+    published: 2026-05-23 01:10
+    sha256: 1b13c85d5bf788b765e07082cd8eea3204fb5b3fbef0c7ba47e548d01423d13f
+  - number: 37
+    kind: Infringement
+    subject: Failure to follow Race Director's instructions (SC2-SC1 Time)
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_failure_to_follow_race_directors_instructions_sc2-sc1_time.pdf
+    published: 2026-05-23 03:03
+    sha256: 3d0b9bf52d30f65bf9b63d63b6718d91fa2bc2419d6ea82c758b273b1be9f164
+  - number: 38
+    kind: Infringement
+    subject: Car 12 - Failure to follow Race Director's instructions (SC2-SC1 Time)
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_12_-_failure_to_follow_race_directors_instructions_sc2-sc1_time.pdf
+    published: 2026-05-23 15:09
+    sha256: c4052f2e056b789066fca92ae6bc1f1bc7c8cd509f8e21700c436a7a13db5d23
+  - number: 46
+    kind: Infringement
+    subject: Car 77 - Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_77_-_parc_ferme.pdf
+    published: 2026-05-23 17:14
+    sha256: 6ca66de3d597de68423c2ac22df01ac87d1fc445d974134e15cba24e2701e1ba
+  - number: 47
+    kind: Infringement
+    subject: Car 87 - Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_87_-_parc_ferme.pdf
+    published: 2026-05-23 17:14
+    sha256: bad98104536035db1aa8e9524f58dd5ddb1ed0e7ee64f90e112e39910d339fee
+  - number: 48
+    kind: Infringement
+    subject: Car 10 - Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_10_-_parc_ferme.pdf
+    published: 2026-05-23 17:17
+    sha256: 4129cbc0e3e216509631c8e9ae583424e5a5eab4583491b2668048dc1a683d37
+  - number: 49
+    kind: Infringement
+    subject: Car 23 - Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_23_-_parc_ferme.pdf
+    published: 2026-05-23 17:18
+    sha256: 8bfdb9abd563e4ffa0fe20c10d12d2e2bfb6cfb5298b5a5c5577b7f0c753dfc2
+  - number: 54
+    kind: Infringement
+    subject: Car 18 - Starting procedure infringement
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_18_-_starting_procedure_infringement.pdf
+    published: 2026-05-23 19:49
+    sha256: 7a22cec9e5acffb512c43e24e93e3f5b180001dba905fd4bcc0d626214e6dc91
+  - number: 55
+    kind: Infringement
+    subject: Car 27 - Leaving the track and gaining an advantage
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_27_-_leaving_the_track_and_gaining_an_advantage.pdf
+    published: 2026-05-23 19:49
+    sha256: 240d9f49feeb8298bf524163fd7faabaee8f20461fb1f075445c4d8499dd15a3
+  - number: 56
+    kind: Infringement
+    subject: Car 11 - Forcing Car 30 off track
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_11_-_forcing_car_30_off_track.pdf
+    published: 2026-05-23 19:50
+    sha256: c8989a3feef0891ae808c959ccd6c9c3885f2936d453b8084ee9f3867de1d76c
+  - number: 57
+    kind: Decision
+    subject: Car 44 - Alleged leaving the track and gaining an advantage
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_decision_-_car_44_-_alleged_leaving_the_track_and_gaining_an_advantage.pdf
+    published: 2026-05-23 19:50
+    sha256: 06f6d8660ef6d4d62b343c295013153b7ddbacfed56995f205482f3ec3f06a32
+  - number: 64
+    kind: Decision
+    subject: Car 31 - Alleged Procedural Infringement
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_decision_-_car_31_-_alleged_procedural_infringement.pdf
+    published: 2026-05-23 21:53
+    sha256: null
+  - number: 76
+    kind: Infringement
+    subject: Car 14 - Unsafe release from garage
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_14_-_unsafe_release_from_garage.pdf
+    published: 2026-05-24 01:05
+    sha256: null
+  - number: 77
+    kind: Infringement
+    subject: Car 18 - Released in an unsafe condition
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_18_-_released_in_an_unsafe_condition.pdf
+    published: 2026-05-24 01:10
+    sha256: null
+  - number: 80
+    kind: Infringement
+    subject: Car 11 - Failing to follow Race Directors Event Notes
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_11_-_failing_to_follow_race_directors_event_notes.pdf
+    published: 2026-05-24 01:22
+    sha256: null
+  - number: 81
+    kind: Decision
+    subject: Car 44 - Alleged impeding of Car 10
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_decision_-_car_44_-_alleged_impeding_of_car_10.pdf
+    published: 2026-05-24 01:23
+    sha256: null
+  - number: 82
+    kind: Decision
+    subject: Car 18 - Allegedly impeded Car 27
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_decision_-_car_18_-_allegedly_impeded_car_27.pdf
+    published: 2026-05-24 01:23
+    sha256: null
+  - number: 89
+    kind: Infringement
+    subject: Car 18 - PU Elements changed under Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_18_-_pu_elements_changed_under_parc_ferme.pdf
+    published: 2026-05-24 19:08
+    sha256: null
+  - number: 96
+    kind: Infringement
+    subject: Car 27 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_27_-_pit_lane_speeding.pdf
+    published: 2026-05-25 00:52
+    sha256: null
+  - number: 97
+    kind: Infringement
+    subject: Car 77 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_77_-_pit_lane_speeding.pdf
+    published: 2026-05-25 01:57
+    sha256: null
+  - number: 98
+    kind: Infringement
+    subject: Car 5 - Driving unnecessarily slowly during VSC.
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_5_-_driving_unnecessarily_slowly_during_vsc.pdf
+    published: 2026-05-25 01:59
+    sha256: null
+  - number: 99
+    kind: Infringement
+    subject: Car 27 - Starting procedure infringement
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_27_-_starting_procedure_infringement.pdf
+    published: 2026-05-25 02:08
+    sha256: null
+  - number: 100
+    kind: Infringement
+    subject: Car 81 - Collision with Car 23
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_81_-_collision_with_car_23.pdf
+    published: 2026-05-25 02:09
+    sha256: null
+  - number: 101
+    kind: Infringement
+    subject: Car 6 - More than one change of direction
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_6_-_more_than_one_change_of_direction.pdf
+    published: 2026-05-29 16:49
+    sha256: null
+  - number: 102
+    kind: Decision
+    subject: Car 11 - Ignoring blue flags
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_decision_-_car_11_-_ignoring_blue_flags.pdf
+    published: 2026-05-25 02:11
+    sha256: null
+  - number: 103
+    kind: Infringement
+    subject: Car 30 - Starting procedure infringement
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_30_-_starting_procedure_infringement.pdf
+    published: 2026-05-25 02:12
+    sha256: null
+  - number: 104
+    kind: Infringement
+    subject: Car 63 - Unsafe act
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_63_-_unsafe_act.pdf
+    published: 2026-05-25 02:22
+    sha256: null
+  - number: 106
+    kind: Infringement
+    subject: Car 6 - Failing to slow for yellow flags
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_infringement_-_car_6_-_failing_to_slow_for_yellow_flags.pdf
+    published: 2026-05-25 02:25
+    sha256: null
+  - number: 109
+    kind: Decision
+    subject: Race reconnaissance laps SC2 - SC1
+    url: https://www.fia.com/system/files/decision-document/2026_canadian_grand_prix_-_decision_-_race_reconnaissance_laps_sc2_-_sc1_.pdf
+    published: 2026-05-25 02:46
+    sha256: null
+- slug: monaco
+  name: Monaco Grand Prix
+  round: 6
+  date: '2026-06-07'
+  docs:
+  - number: 17
+    kind: Infringement
+    subject: Car 1 - Media Commitment
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_1_-_media_commitment.pdf
+    published: 2026-06-05 12:32
+    sha256: null
+  - number: 18
+    kind: Infringement
+    subject: Car 16 - Media Commitment
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_16_-_media_commitment.pdf
+    published: 2026-06-05 12:32
+    sha256: null
+  - number: 27
+    kind: Infringement
+    subject: Car 63 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_63_-_pit_lane_speeding.pdf
+    published: 2026-06-05 15:12
+    sha256: null
+  - number: 29
+    kind: Infringement
+    subject: Car 16 - Impeding of Car 30
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_16_-_impeding_of_car_30.pdf
+    published: 2026-06-05 16:19
+    sha256: null
+  - number: 30
+    kind: Infringement
+    subject: Car 41 - Impeding of Car 81
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_41_-_impeding_of_car_81.pdf
+    published: 2026-06-05 16:35
+    sha256: null
+  - number: 32
+    kind: Decision
+    subject: Car 30 - Alleged leaving the pitlane after the end of the session
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_decision_-_car_30_-_alleged_leaving_the_pitlane_after_the_end_of_the_session.pdf
+    published: 2026-06-05 16:42
+    sha256: null
+  - number: 34
+    kind: Infringement
+    subject: Car 14 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_14_-_pit_lane_speeding.pdf
+    published: 2026-06-05 18:25
+    sha256: null
+  - number: 36
+    kind: Infringement
+    subject: Car 12 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_12_-_pit_lane_speeding.pdf
+    published: 2026-06-05 18:25
+    sha256: null
+  - number: 42
+    kind: Infringement
+    subject: Car 1 - Technical non-conformity (CDS)
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_1_-_technical_non-conformity_cds.pdf
+    published: 2026-06-05 20:17
+    sha256: null
+  - number: 49
+    kind: Infringement
+    subject: Car 43 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_43_-_pit_lane_speeding.pdf
+    published: 2026-06-06 14:13
+    sha256: null
+  - number: 50
+    kind: Infringement
+    subject: Car 23 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_23_-_pit_lane_speeding.pdf
+    published: 2026-06-06 14:16
+    sha256: null
+  - number: 60
+    kind: Infringement
+    subject: Car 23 - Pit Lane incident with Car 41
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_23_-_pit_lane_incident_with_car_41.pdf
+    published: 2026-06-06 18:58
+    sha256: null
+  - number: 61
+    kind: Infringement
+    subject: Car 27 - Failure to follow Race Director's Instructions - Tunnel
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_27_-_failure_to_follow_race_directors_instructions_-_tunnel.pdf
+    published: 2026-06-06 19:17
+    sha256: null
+  - number: 69
+    kind: Infringement
+    subject: Car 11 - False start - Out of position
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_11_-_false_start_-_out_of_position.pdf
+    published: 2026-06-07 15:31
+    sha256: null
+  - number: 70
+    kind: Infringement
+    subject: Car 44 - Pit lane speeding
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_44_-_pit_lane_speeding.pdf
+    published: 2026-06-07 16:17
+    sha256: null
+  - number: 71
+    kind: Infringement
+    subject: Car 63 - Pit lane speeding
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_63_-_pit_lane_speeding_0.pdf
+    published: 2026-06-07 18:26
+    sha256: null
+  - number: 72
+    kind: Infringement
+    subject: Car 43 - Pit lane speeding
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_43_-_pit_lane_speeding_0.pdf
+    published: 2026-06-07 18:26
+    sha256: null
+  - number: 73
+    kind: Infringement
+    subject: Car 10 - Pit lane speeding
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_10_-_pit_lane_speeding.pdf
+    published: 2026-06-07 18:26
+    sha256: null
+  - number: 74
+    kind: Infringement
+    subject: Car 81 - Pit lane speeding
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_81_-_pit_lane_speeding.pdf
+    published: 2026-06-07 18:27
+    sha256: null
+  - number: 75
+    kind: Infringement
+    subject: Car 10 - Pit lane speeding
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_10_-_pit_lane_speeding_0.pdf
+    published: 2026-06-07 18:27
+    sha256: null
+  - number: 77
+    kind: Infringement
+    subject: Car 18 - Exceeded track limits
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_18_-_exceeded_track_limits.pdf
+    published: 2026-06-07 18:28
+    sha256: null
+  - number: 82
+    kind: Infringement
+    subject: Car 11 - False start - Out of position at restart
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_11_-_false_start_-_out_of_position_at_restart.pdf
+    published: 2026-06-07 19:35
+    sha256: null
+  - number: 83
+    kind: Decision
+    subject: Alleged Red Flag Infringement
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_decision_-_alleged_red_flag_infringement.pdf
+    published: 2026-06-07 19:35
+    sha256: null
+  - number: 84
+    kind: Decision
+    subject: Car 6 - Alleged Safety Car infringement
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_decision_-_car_6_-_alleged_safety_car_infringement.pdf
+    published: 2026-06-07 19:42
+    sha256: null
+  - number: 85
+    kind: Decision
+    subject: Car 44 - Alleged Safety Car infringement
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_decision_-_car_44_-_alleged_safety_car_infringement.pdf
+    published: 2026-06-07 19:42
+    sha256: null
+  - number: 86
+    kind: Infringement
+    subject: Car 11 - Failing to follow Race Directors Event Notes - Practice starts
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_11_-_failing_to_follow_race_directors_event_notes_-_practice_starts.pdf
+    published: 2026-06-07 19:42
+    sha256: null
+  - number: 89
+    kind: Infringement
+    subject: Car 27 - Causing a collision with Car 55
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_infringement_-_car_27_-_causing_a_collision_with_car_55.pdf
+    published: 2026-06-07 20:28
+    sha256: null
+  - number: 90
+    kind: Decision
+    subject: Car 43 - Allegedly causing a collision with Car 55
+    url: https://www.fia.com/system/files/decision-document/2026_monaco_grand_prix_-_decision_-_car_43_-_allegedly_causing_a_collision_with_car_55.pdf
+    published: 2026-06-07 20:28
+    sha256: null
+- slug: barcelona-catalunya
+  name: Barcelona-Catalunya Grand Prix
+  round: 7
+  date: '2026-06-14'
+  docs:
+  - number: 19
+    kind: Infringement
+    subject: Car 14 - Pit exit incident
+    url: https://www.fia.com/system/files/decision-document/2026_barcelona-catalunya_grand_prix_-_infringement_-_car_14_-_pit_exit_incident.pdf
+    published: 2026-06-12 18:02
+    sha256: null
+  - number: 20
+    kind: Infringement
+    subject: Car 77 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_barcelona-catalunya_grand_prix_-_infringement_-_car_77_-_pit_lane_speeding.pdf
+    published: 2026-06-12 18:11
+    sha256: null
+  - number: 21
+    kind: Infringement
+    subject: Car 11 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_barcelona-catalunya_grand_prix_-_infringement_-_car_11_-_pit_lane_speeding.pdf
+    published: 2026-06-12 18:26
+    sha256: null
+  - number: 33
+    kind: Infringement
+    subject: Car 18 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_barcelona-catalunya_grand_prix_-_infringement_-_car_18_-_pit_lane_speeding.pdf
+    published: 2026-06-13 13:41
+    sha256: null
+  - number: 39
+    kind: Infringement
+    subject: Car 12 - Driving erratically
+    url: https://www.fia.com/system/files/decision-document/2026_barcelona-catalunya_grand_prix_-_infringement_-_car_12_-_driving_erratically.pdf
+    published: 2026-06-13 14:36
+    sha256: null
+  - number: 40
+    kind: Infringement
+    subject: Car 16 - Impeding of Car 27
+    url: https://www.fia.com/system/files/decision-document/2026_barcelona-catalunya_grand_prix_-_infringement_-_car_16_-_impeding_of_car_27.pdf
+    published: 2026-06-13 15:38
+    sha256: null
+  - number: 43
+    kind: Decision
+    subject: Qualifying SC2-SC1 Times
+    url: https://www.fia.com/system/files/decision-document/2026_barcelona-catalunya_grand_prix_-_decision_-_qualifying_sc2-sc1_times.pdf
+    published: 2026-06-13 17:35
+    sha256: null
+  - number: 52
+    kind: Infringement
+    subject: Car 14 - PU elements and changes used during Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_barcelona-catalunya_grand_prix_-_infringement_-_car_14_-_pu_elements_and_changes_used_during_parc_ferme.pdf
+    published: 2026-06-14 12:56
+    sha256: null
+  - number: 57
+    kind: Decision
+    subject: Car 27 - Alleged leaving the track and gaining an advantage
+    url: https://www.fia.com/system/files/decision-document/2026_barcelona-catalunya_grand_prix_-_decision_-_car_27_-_alleged_leaving_the_track_and_gaining_an_advantage.pdf
+    published: 2026-06-14 17:13
+    sha256: null
+  - number: 58
+    kind: Decision
+    subject: Car 41 - Alleged leaving the track and gaining an advantage
+    url: https://www.fia.com/system/files/decision-document/2026_barcelona-catalunya_grand_prix_-_decision_-_car_41_-_alleged_leaving_the_track_and_gaining_an_advantage.pdf
+    published: 2026-06-14 17:14
+    sha256: null
+  - number: 62
+    kind: Infringement
+    subject: Car 43 - Failing to slow for yellow flags
+    url: https://www.fia.com/system/files/decision-document/2026_barcelona-catalunya_grand_prix_-_infringement_-_car_43_-_failing_to_slow_for_yellow_flags.pdf
+    published: 2026-06-14 19:06
+    sha256: null
+  - number: 63
+    kind: Infringement
+    subject: Car 23 - Start Procedure Infringement
+    url: https://www.fia.com/system/files/decision-document/2026_barcelona-catalunya_grand_prix_-_infringement_-_car_23_-_start_procedure_infringement.pdf
+    published: 2026-06-14 19:07
+    sha256: null
+  - number: 64
+    kind: Infringement
+    subject: Car 55 - Start Procedure Infringement
+    url: https://www.fia.com/system/files/decision-document/2026_barcelona-catalunya_grand_prix_-_infringement_-_car_55_-_start_procedure_infringement.pdf
+    published: 2026-06-14 19:08
+    sha256: null
+  - number: 66
+    kind: Infringement
+    subject: Car 12 - Leaving the track without a justifiable reason
+    url: https://www.fia.com/system/files/decision-document/2026_barcelona-catalunya_grand_prix_-_infringement_-_car_12_-_leaving_the_track_without_a_justifiable_reason.pdf
+    published: 2026-06-14 19:15
+    sha256: null
+  - number: 67
+    kind: Infringement
+    subject: Car 12 - Leaving the track without a justifiable reason multiple times
+    url: https://www.fia.com/system/files/decision-document/2026_barcelona-catalunya_grand_prix_-_infringement_-_car_12_-_leaving_the_track_without_a_justifiable_reason_multiple_times.pdf
+    published: 2026-06-14 19:22
+    sha256: null
+- slug: austrian
+  name: Austrian Grand Prix
+  round: 8
+  date: '2026-06-28'
+  docs:
+  - number: 32
+    kind: Infringement
+    subject: Car 6 - Failing to follow Race Directors Instructions (SC2-SC1)
+    url: https://www.fia.com/system/files/decision-document/2026_austrian_grand_prix_-_infringement_-_car_6_-_failing_to_follow_race_directors_instructions_sc2-sc1.pdf
+    published: 2026-06-27 18:13
+    sha256: null
+  - number: 34
+    kind: Decision
+    subject: Qualifying SC2-SC1 Times
+    url: https://www.fia.com/system/files/decision-document/2026_austrian_grand_prix_-_decision_-_qualifying_sc2-sc1_times.pdf
+    published: 2026-06-27 18:20
+    sha256: null
+  - number: 42
+    kind: Infringement
+    subject: Car 14 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_austrian_grand_prix_-_infringement_-_car_14_-_pit_lane_speeding.pdf
+    published: 2026-06-28 16:31
+    sha256: null
+  - number: 45
+    kind: Decision
+    subject: Car 23 - Alleged yellow flag infringement
+    url: https://www.fia.com/system/files/decision-document/2026_austrian_grand_prix_-_decision_-_car_23_-_alleged_yellow_flag_infringement.pdf
+    published: 2026-06-28 17:00
+    sha256: null
+  - number: 47
+    kind: Decision
+    subject: Car 30 - Failure to follow Race Director's Instructions - Practice Starts
+    url: https://www.fia.com/system/files/decision-document/2026_austrian_grand_prix_-_decision_-_car_30_-_failure_to_follow_race_directors_instructions_-_practice_starts.pdf
+    published: 2026-06-28 17:38
+    sha256: null
+  - number: 49
+    kind: Decision
+    subject: Car 81 - Alleged failing to follow Race Directors Instructions (SC2-SC1)
+    url: https://www.fia.com/system/files/decision-document/2026_austrian_grand_prix_-_decision_-_car_81_-_alleged_failing_to_follow_race_directors_instructions_sc2-sc1.pdf
+    published: 2026-06-28 17:41
+    sha256: null
+  - number: 50
+    kind: Decision
+    subject: Car 14 - Alleged ignoring blue flags
+    url: https://www.fia.com/system/files/decision-document/2026_austrian_grand_prix_-_decision_-_car_14_-_alleged_ignoring_blue_flags.pdf
+    published: 2026-06-28 17:42
+    sha256: null
+  - number: 51
+    kind: Decision
+    subject: Car 18 - Alleged ignoring blue flags
+    url: https://www.fia.com/system/files/decision-document/2026_austrian_grand_prix_-_decision_-_car_18_-_alleged_ignoring_blue_flags.pdf
+    published: 2026-06-28 17:46
+    sha256: null
+  - number: 55
+    kind: Decision
+    subject: Car 11 - Alleged false start - Moving before signal
+    url: https://www.fia.com/system/files/decision-document/2026_austrian_grand_prix_-_decision_-_car_11_-_alleged_false_start_-_moving_before_signal.pdf
+    published: 2026-06-28 19:24
+    sha256: null
+- slug: british
+  name: British Grand Prix
+  round: 9
+  date: '2026-07-05'
+  docs:
+  - number: 24
+    kind: Decision
+    subject: Sprint Qualifying SC2-SC1 Times
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_decision_-_sprint_qualifying_sc2-sc1_times.pdf
+    published: 2026-07-03 19:10
+    sha256: null
+  - number: 28
+    kind: Infringement
+    subject: Car 41 - Failing to follow Race Directors Instructions (SC2-SC1)
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_infringement_-_car_41_-_failing_to_follow_race_directors_instructions_sc2-sc1.pdf
+    published: 2026-07-03 20:47
+    sha256: null
+  - number: 29
+    kind: Infringement
+    subject: Car 23 - Failing to follow Race Directors Instructions (SC2-SC1)
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_infringement_-_car_23_-_failing_to_follow_race_directors_instructions_sc2-sc1.pdf
+    published: 2026-07-03 20:47
+    sha256: null
+  - number: 35
+    kind: Infringement
+    subject: Car 23 - Changes made during Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_infringement_-_car_23_-_changes_made_during_parc_ferme.pdf
+    published: 2026-07-04 11:55
+    sha256: null
+  - number: 42
+    kind: Infringement
+    subject: Car 11 - Causing a collision with Car 14
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_infringement_-_car_11_-_causing_a_collision_with_car_14.pdf
+    published: 2026-07-04 14:45
+    sha256: null
+  - number: 45
+    kind: Infringement
+    subject: Car 30 - Abnormal change of direction
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_infringement_-_car_30_-_abnormal_change_of_direction.pdf
+    published: 2026-07-04 15:47
+    sha256: null
+  - number: 46
+    kind: Infringement
+    subject: Car 27 - Leaving the track and gaining an advantage
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_infringement_-_car_27_-_leaving_the_track_and_gaining_an_advantage.pdf
+    published: 2026-07-04 15:53
+    sha256: null
+  - number: 58
+    kind: Decision
+    subject: Car 31 - Alleged yellow flag infringement
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_decision_-_car_31_-_alleged_yellow_flag_infringement.pdf
+    published: 2026-07-04 19:42
+    sha256: null
+  - number: 59
+    kind: Decision
+    subject: Qualifying SC2 - SC1 Times
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_decision_-_qualifying_sc2_-_sc1_times.pdf
+    published: 2026-07-04 19:42
+    sha256: null
+  - number: 60
+    kind: Infringement
+    subject: Car 10 - Impeding of Car 18
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_infringement_-_car_10_-_impeding_of_car_18.pdf
+    published: 2026-07-04 20:01
+    sha256: null
+  - number: 62
+    kind: Infringement
+    subject: Car 41 - Unsafe release
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_infringement_-_car_41_-_unsafe_release.pdf
+    published: 2026-07-04 20:13
+    sha256: null
+  - number: 68
+    kind: Infringement
+    subject: Car 18 - PU Elements changed
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_infringement_-_car_18_-_pu_elements_changed.pdf
+    published: 2026-07-05 13:48
+    sha256: null
+  - number: 71
+    kind: Infringement
+    subject: Car 23 - Causing a collision with Car 87
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_infringement_-_car_23_-_causing_a_collision_with_car_87.pdf
+    published: 2026-07-05 17:20
+    sha256: null
+  - number: 72
+    kind: Infringement
+    subject: Car 44 - False start - Moving before start signal
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_infringement_-_car_44_-_false_start_-_moving_before_start_signal.pdf
+    published: 2026-07-05 17:20
+    sha256: null
+  - number: 75
+    kind: Infringement
+    subject: Car 44 - Yellow flags - Failing to slow
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_infringement_-_car_44_-_yellow_flags_-_failing_to_slow.pdf
+    published: 2026-07-05 19:37
+    sha256: null
+  - number: 77
+    kind: Infringement
+    subject: Car 12 - Leaving the track multiple times
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_infringement_-_car_12_-_leaving_the_track_multiple_times.pdf
+    published: 2026-07-05 19:49
+    sha256: null
+  - number: 78
+    kind: Infringement
+    subject: Car 18 - Leaving the track multiple times
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_infringement_-_car_18_-_leaving_the_track_multiple_times.pdf
+    published: 2026-07-05 19:58
+    sha256: null
+  - number: 79
+    kind: Infringement
+    subject: Car 18 - Leaving the track multiple times
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_infringement_-_car_18_-_leaving_the_track_multiple_times_0.pdf
+    published: 2026-07-05 19:58
+    sha256: null
+  - number: 81
+    kind: Infringement
+    subject: Car 18 - Leaving the track multiple times
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_infringement_-_car_18_-_leaving_the_track_multiple_times_1.pdf
+    published: 2026-07-05 19:59
+    sha256: null
+  - number: 83
+    kind: Infringement
+    subject: Car 55 - Overtaking the Safety Car
+    url: https://www.fia.com/system/files/decision-document/2026_british_grand_prix_-_infringement_-_car_55_-_overtaking_the_safety_car.pdf
+    published: 2026-07-05 20:57
+    sha256: null
+- slug: belgian
+  name: Belgian Grand Prix
+  round: 10
+  date: '2026-07-19'
+  docs:
+  - number: 13
+    kind: Infringement
+    subject: Car 31 - Media Commitment
+    url: https://www.fia.com/system/files/decision-document/2026_belgian_grand_prix_-_infringement_-_car_31_-_media_commitment.pdf
+    published: 2026-07-17 12:27
+    sha256: null
+  - number: 18
+    kind: Infringement
+    subject: Car 34 - Pit lane speeding
+    url: https://www.fia.com/system/files/decision-document/2026_belgian_grand_prix_-_infringement_-_car_34_-_pit_lane_speeding.pdf
+    published: 2026-07-17 16:47
+    sha256: null
+  - number: 19
+    kind: Infringement
+    subject: Car 55 - Crossing the white line at pit entry
+    url: https://www.fia.com/system/files/decision-document/2026_belgian_grand_prix_-_infringement_-_car_55_-_crossing_the_white_line_at_pit_entry.pdf
+    published: 2026-07-17 16:33
+    sha256: null
+  - number: 22
+    kind: Infringement
+    subject: Car 18 - Change to PU element
+    url: https://www.fia.com/system/files/decision-document/2026_belgian_grand_prix_-_infringement_-_car_18_-_change_to_pu_element.pdf
+    published: 2026-07-17 16:53
+    sha256: null
+  - number: 23
+    kind: Infringement
+    subject: Car 1 - Change to PU element
+    url: https://www.fia.com/system/files/decision-document/2026_belgian_grand_prix_-_infringement_-_car_1_-_change_to_pu_element.pdf
+    published: 2026-07-17 16:53
+    sha256: null
+  - number: 30
+    kind: Infringement
+    subject: Car 27 - Failure to slow under double yellow flags
+    url: https://www.fia.com/system/files/decision-document/2026_belgian_grand_prix_-_infringement_-_car_27_-_failure_to_slow_under_double_yellow_flags.pdf
+    published: 2026-07-17 18:58
+    sha256: null
+  - number: 33
+    kind: Infringement
+    subject: Ferrari - Car 16 Return of tyres
+    url: https://www.fia.com/system/files/decision-document/2026_belgian_grand_prix_-_infringement_-_ferrari_-_car_16_return_of_tyres.pdf
+    published: 2026-07-17 19:38
+    sha256: null
+  - number: 34
+    kind: Infringement
+    subject: Ferrari - Car 44 Return of tyres
+    url: https://www.fia.com/system/files/decision-document/2026_belgian_grand_prix_-_infringement_-_ferrari_-_car_44_return_of_tyres.pdf
+    published: 2026-07-17 19:38
+    sha256: null
+  - number: 43
+    kind: Decision
+    subject: Car 55 - Alleged failure to slow for double yellow flags
+    url: https://www.fia.com/system/files/decision-document/2026_belgian_grand_prix_-_decision_-_car_55_-_alleged_failure_to_slow_for_double_yellow_flags_.pdf
+    published: 2026-07-18 15:09
+    sha256: null
+  - number: 54
+    kind: Infringement
+    subject: Car 55 - Change to PU elements
+    url: https://www.fia.com/system/files/decision-document/2026_belgian_grand_prix_-_infringement_-_car_55_-_change_to_pu_elements.pdf
+    published: 2026-07-19 12:22
+    sha256: null
+  - number: 57
+    kind: Infringement
+    subject: Car 44 - Causing a collision with Car 63 in turn 5
+    url: https://www.fia.com/system/files/decision-document/2026_belgian_grand_prix_-_infringement_-_car_44_-_causing_a_collision_with_car_63_in_turn_5.pdf
+    published: 2026-07-19 16:20
+    sha256: null
+  - number: 59
+    kind: Decision
+    subject: Car 16 - Collision with Car 81 in turn 5
+    url: https://www.fia.com/system/files/decision-document/2026_belgian_grand_prix_-_decision_-_car_16_-_collision_with_car_81_in_turn_5.pdf
+    published: 2026-07-19 16:21
+    sha256: null
+  - number: 63
+    kind: Infringement
+    subject: Ferrari - Unsafe Release of Car 44
+    url: https://www.fia.com/system/files/decision-document/2026_belgian_grand_prix_-_infringement_-_ferrari_-_unsafe_release_of_car_44.pdf
+    published: 2026-07-19 18:50
+    sha256: null
+  - number: 64
+    kind: Infringement
+    subject: Car 23 - Car Safety Lights
+    url: https://www.fia.com/system/files/decision-document/2026_belgian_grand_prix_-_infringement_-_car_23_-_car_safety_lights_.pdf
+    published: 2026-07-19 19:09
+    sha256: null
+- slug: hungarian
+  name: Hungarian Grand Prix
+  round: 11
+  date: '2026-07-26'
+  docs:
+  - number: 13
+    kind: Infringement
+    subject: Car 6 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_hungarian_grand_prix_-_infringement_-_car_6_-_pit_lane_speeding_.pdf
+    published: 2026-07-24 14:11
+    sha256: null
+  - number: 19
+    kind: Infringement
+    subject: Car 55 - Erratic driving in Turn 12
+    url: https://www.fia.com/system/files/decision-document/2026_hungarian_grand_prix_-_infringement_-_car_55_-_erratic_driving_in_turn_12_0.pdf
+    published: 2026-07-24 16:06
+    sha256: null
+  - number: 20
+    kind: Decision
+    subject: Car 3 - Alleged erratic driving in Turn 12
+    url: https://www.fia.com/system/files/decision-document/2026_hungarian_grand_prix_-_decision_-_car_3_-_alleged_erratic_driving_in_turn_12.pdf
+    published: 2026-07-24 16:06
+    sha256: null
+  - number: 21
+    kind: Decision
+    subject: Car 55 - Alleged erratic driving in Turn 9
+    url: https://www.fia.com/system/files/decision-document/2026_hungarian_grand_prix_-_decision_-_car_55_-_alleged_erratic_driving_in_turn_9.pdf
+    published: 2026-07-24 16:31
+    sha256: null
+  - number: 36
+    kind: Infringement
+    subject: Car 44 - Unnecessarily impeding of Car 81
+    url: https://www.fia.com/system/files/decision-document/2026_hungarian_grand_prix_-_infringement_-_car_44_-_unnecessarily_impeding_of_car_81.pdf
+    published: 2026-07-25 18:40
+    sha256: null
+  - number: 41
+    kind: Infringement
+    subject: Car 12 - Yellow flag infringement
+    url: https://www.fia.com/system/files/decision-document/2026_hungarian_grand_prix_-_infringement_-_car_12_-_yellow_flag_infringement.pdf
+    published: 2026-07-25 19:31
+    sha256: null
+  - number: 43
+    kind: Infringement
+    subject: Car 12 - Alleged failure to follow Race Director's instructions (SC2-SC1 Time)
+    url: https://www.fia.com/system/files/decision-document/2026_hungarian_grand_prix_-_infringement_-_car_12_-_alleged_failure_to_follow_race_directors_instructions_sc2-sc1_time.pdf
+    published: 2026-07-25 19:39
+    sha256: null
+  - number: 44
+    kind: Decision
+    subject: Qualifying SC2-SC1 Times
+    url: https://www.fia.com/system/files/decision-document/2026_hungarian_grand_prix_-_decision_-_qualifying_sc2-sc1_times.pdf
+    published: 2026-07-25 19:49
+    sha256: null
+  - number: 50
+    kind: Infringement
+    subject: Car 11 - Changes made under Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_hungarian_grand_prix_-_infringement_-_car_11_-_changes_made_under_parc_ferme.pdf
+    published: 2026-07-26 12:38
+    sha256: null
+  - number: 54
+    kind: Infringement
+    subject: Car 55 - Collision with car 81
+    url: https://www.fia.com/system/files/decision-document/2026_hungarian_grand_prix_-_infringement_-_car_55_-_collision_with_car_81.pdf
+    published: 2026-07-26 16:55
+    sha256: null
+  - number: 56
+    kind: Decision
+    subject: Car 16 - Alleged failure to slow for yellow flags
+    url: https://www.fia.com/system/files/decision-document/2026_hungarian_grand_prix_-_decision_-_car_16_-_alleged_failure_to_slow_for_yellow_flags.pdf
+    published: 2026-07-26 17:03
+    sha256: null
+  - number: 57
+    kind: Infringement
+    subject: Car 44 - Pit lane speeding
+    url: https://www.fia.com/system/files/decision-document/2026_hungarian_grand_prix_-_infringement_-_car_44_-_pit_lane_speeding.pdf
+    published: 2026-07-26 17:16
+    sha256: null
+  - number: 59
+    kind: Infringement
+    subject: Car 87 - Ignoring blue flags
+    url: https://www.fia.com/system/files/decision-document/2026_hungarian_grand_prix_-_infringement_-_car_87_-_ignoring_blue_flags.pdf
+    published: 2026-07-26 18:05
+    sha256: null
+  - number: 60
+    kind: Infringement
+    subject: Car 11 - Starting procedure infringement
+    url: https://www.fia.com/system/files/decision-document/2026_hungarian_grand_prix_-_infringement_-_car_11_-_starting_procedure_infringement.pdf
+    published: 2026-07-26 18:12
+    sha256: null
+- slug: dutch
+  name: Dutch Grand Prix
+  round: 12
+  date: '2026-08-23'
+  docs:
+  - number: 20
+    kind: Decision
+    subject: Sprint Qualifying SC2-SC1 Times
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_decision_-_sprint_qualifying_sc2-sc1_times.pdf
+    published: 2026-08-21 17:51
+    sha256: null
+  - number: 22
+    kind: Infringement
+    subject: Car 55 - driving unnecessarily slowly during sprint qualifying
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_infringement-_car_55_-_driving_unnecessarily_slowly_during_sprint_qualifying.pdf
+    published: 2026-08-21 19:13
+    sha256: null
+  - number: 29
+    kind: Infringement
+    subject: Car 55 - Changes made during Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_infringement_-_car_55_-_changes_made_during_parc_ferme.pdf
+    published: 2026-08-22 10:44
+    sha256: null
+  - number: 30
+    kind: Infringement
+    subject: Car 14 - Changes made during Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_infringement_-_car_14_-_changes_made_during_parc_ferme.pdf
+    published: 2026-08-22 10:45
+    sha256: null
+  - number: 33
+    kind: Infringement
+    subject: Car 55 - Starting procedure infringement
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_infringement_-_car_55_-_starting_procedure_infringement.pdf
+    published: 2026-08-22 12:39
+    sha256: null
+  - number: 37
+    kind: Infringement
+    subject: Car 77 - Failure to follow Race Director's Instructions (Reaching the Grid)
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_infringement_-_car_77_-_failure_to_follow_race_directors_instructions_reaching_the_grid.pdf
+    published: 2026-08-22 13:28
+    sha256: null
+  - number: 38
+    kind: Infringement
+    subject: Car 44 - Failure to follow Race Director's Instructions (Reaching the Grid)
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_infringement_-_car_44_-_failure_to_follow_race_directors_instructions_reaching_the_grid.pdf
+    published: 2026-08-22 13:29
+    sha256: null
+  - number: 39
+    kind: Infringement
+    subject: Car 3 - Failure to follow Race Director's Instructions (Reaching the Grid)
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_infringement_-_car_3_-_failure_to_follow_race_directors_instructions_reaching_the_grid.pdf
+    published: 2026-08-22 13:29
+    sha256: null
+  - number: 40
+    kind: Infringement
+    subject: Car 22 - Failure to follow Race Director's Instructions (Reaching the Grid)
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_infringement_-_car_22_-_failure_to_follow_race_directors_instructions_reaching_the_grid.pdf
+    published: 2026-08-22 13:32
+    sha256: null
+  - number: 41
+    kind: Infringement
+    subject: Car 18 - Failure to follow Race Director's Instructions (Reaching the Grid)
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_infringement_-_car_18_-_failure_to_follow_race_directors_instructions_reaching_the_grid.pdf
+    published: 2026-08-22 13:35
+    sha256: null
+  - number: 42
+    kind: Infringement
+    subject: Car 5 - Unsafe release
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_infringement_-_car_5_-_unsafe_release.pdf
+    published: 2026-08-22 14:17
+    sha256: null
+  - number: 52
+    kind: Decision
+    subject: Car 10 - alleged unsafe release
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_decision_-_car_10_-_alleged_unsafe_release.pdf
+    published: 2026-08-22 18:15
+    sha256: null
+  - number: 59
+    kind: Infringement
+    subject: Car 11 - Changes made in Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_infringement_-_car_11_-_changes_made_in_parc_ferme.pdf
+    published: 2026-08-23 12:34
+    sha256: null
+  - number: 62
+    kind: Infringement
+    subject: Car 41 - Overtaking under yellow flags
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_infringement_-_car_41_-_overtaking_under_yellow_flags.pdf
+    published: 2026-08-23 17:14
+    sha256: null
+  - number: 63
+    kind: Infringement
+    subject: Car 43 - Overtaking under yellow flags
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_infringement_-_car_43_-_overtaking_under_yellow_flags.pdf
+    published: 2026-08-23 16:48
+    sha256: null
+  - number: 65
+    kind: Infringement
+    subject: Car 43 - Failure to slow for yellow flags
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_infringement_-_car_43_-_failure_to_slow_for_yellow_flags.pdf
+    published: 2026-08-23 17:36
+    sha256: null
+  - number: 66
+    kind: Infringement
+    subject: Car 30 - Failure to follow for yellow flags
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_infringement_-_car_30_-_failure_to_follow_for_yellow_flags.pdf
+    published: 2026-08-23 17:37
+    sha256: null
+  - number: 68
+    kind: Infringement
+    subject: Car 55 - Collision with Car 23
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_infringement_-_car_55_-_collision_with_car_23.pdf
+    published: 2026-08-23 18:09
+    sha256: null
+  - number: 69
+    kind: Infringement
+    subject: Car 87 - Red Light at Pit Exit
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_infringement_-_car_87_-_red_light_at_pit_exit.pdf
+    published: 2026-08-23 18:55
+    sha256: null
+  - number: 70
+    kind: Infringement
+    subject: Car 5 - Red Light at Pit Exit
+    url: https://www.fia.com/system/files/decision-document/2026_dutch_grand_prix_-_infringement_-_car_5_-_red_light_at_pit_exit.pdf
+    published: 2026-08-23 18:57
+    sha256: null
+- slug: italian
+  name: Italian Grand Prix
+  round: 13
+  date: '2026-09-06'
+  docs:
+  - number: 19
+    kind: Infringement
+    subject: Car 12 - Changes to PU elements
+    url: https://www.fia.com/system/files/decision-document/2026_italian_grand_prix_-_infringement_-_car_12_-_changes_to_pu_elements.pdf
+    published: 2026-09-04 17:10
+    sha256: null
+  - number: 20
+    kind: Infringement
+    subject: Car 23 - Changes to PU elements
+    url: https://www.fia.com/system/files/decision-document/2026_italian_grand_prix_-_infringement_-_car_23_-_changes_to_pu_elements.pdf
+    published: 2026-09-04 17:11
+    sha256: null
+  - number: 27
+    kind: Infringement
+    subject: Car 12 - Pit lane speeding
+    url: https://www.fia.com/system/files/decision-document/2026_italian_grand_prix_-_infringement_-_car_12_-_pit_lane_speeding.pdf
+    published: 2026-09-04 18:22
+    sha256: null
+  - number: 28
+    kind: Infringement
+    subject: Car 18 - Impeding of Car 1
+    url: https://www.fia.com/system/files/decision-document/2026_italian_grand_prix_-_infringement_-_car_18_-_impeding_of_car_1.pdf
+    published: 2026-09-04 19:29
+    sha256: null
+  - number: 32
+    kind: Infringement
+    subject: Car 25 - Technical Non-Conformity (CDS)
+    url: https://www.fia.com/system/files/decision-document/2026_italian_grand_prix_-_infringement_-_car_25_-_technical_non-conformity_cds.pdf
+    published: 2026-09-05 17:52
+    sha256: null
+  - number: 39
+    kind: Infringement
+    subject: Car 23 - Failure to slow for double yellow flags
+    url: https://www.fia.com/system/files/decision-document/2026_italian_grand_prix_-_infringement_-_car_23_-_failure_to_slow_for_double_yellow_flags.pdf
+    published: 2026-09-05 16:20
+    sha256: null
+  - number: 40
+    kind: Infringement
+    subject: Car 55 - Failure to slow for double yellow flags
+    url: https://www.fia.com/system/files/decision-document/2026_italian_grand_prix_-_infringement_-_car_55_-_failure_to_slow_for_double_yellow_flags.pdf
+    published: 2026-09-05 16:20
+    sha256: null
+  - number: 41
+    kind: Infringement
+    subject: Car 30 - Change to PU elements
+    url: https://www.fia.com/system/files/decision-document/2026_italian_grand_prix_-_infringement_-_car_30_-_change_to_pu_elements.pdf
+    published: 2026-09-05 17:02
+    sha256: null
+  - number: 47
+    kind: Infringement
+    subject: Car 81 - Impeding of Car 30
+    url: https://www.fia.com/system/files/decision-document/2026_italian_grand_prix_-_infringement_-_car_81_-_impeding_of_car_30.pdf
+    published: 2026-09-05 18:27
+    sha256: null
+  - number: 55
+    kind: Infringement
+    subject: Car 23 - Failure to follow Race Directors instructions
+    url: https://www.fia.com/system/files/decision-document/2026_italian_grand_prix_-_infringement_-_car_23_-_failure_to_follow_race_directors_instructions_.pdf
+    published: 2026-09-06 12:06
+    sha256: null
+  - number: 56
+    kind: Infringement
+    subject: Car 14 - PU elements changed during Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_italian_grand_prix_-_infringement_-_car_14_-_pu_elements_changed_during_parc_ferme.pdf
+    published: 2026-09-06 12:54
+    sha256: null
+  - number: 57
+    kind: Infringement
+    subject: Car 30 - Changes made under parc ferme
+    url: https://www.fia.com/system/files/decision-document/2026_italian_grand_prix_-_infringement_-_car_30_-_changes_made_under_parc_ferme.pdf
+    published: 2026-09-06 13:01
+    sha256: null
+  - number: 60
+    kind: Infringement
+    subject: Car 11 - Failure to follow Race Directors Instruction - Pit Exit
+    url: https://www.fia.com/system/files/decision-document/2026_italian_grand_prix_-_infringement_-_car_11_-_failure_to_follow_race_directors_instruction_-_pit_exit.pdf
+    published: 2026-09-06 16:04
+    sha256: null
+  - number: 61
+    kind: Infringement
+    subject: Car 43 - Failure to follow Race Directors Instruction - Practice Start
+    url: https://www.fia.com/system/files/decision-document/2026_italian_grand_prix_-_infringement_-_car_43_-_failure_to_follow_race_directors_instruction_-_practice_start.pdf
+    published: 2026-09-06 16:04
+    sha256: null
+  - number: 63
+    kind: Decision
+    subject: Car 30 - Turn 4 Incident with Car 27
+    url: https://www.fia.com/system/files/decision-document/2026_italian_grand_prix_-_decision_-_car_30_-_turn_4_incident_with_car_27.pdf
+    published: 2026-09-06 16:43
+    sha256: null
+  - number: 64
+    kind: Infringement
+    subject: Car 11 - Failure to follow Race Directors Instruction - Turns 1 and 2
+    url: https://www.fia.com/system/files/decision-document/2026_italian_grand_prix_-_infringement_-_car_11_-_failure_to_follow_race_directors_instruction_-_turns_1_and_2.pdf
+    published: 2026-09-06 16:56
+    sha256: null
+  - number: 65
+    kind: Decision
+    subject: Car 63 - Alleged failure to slow for yellow flags
+    url: https://www.fia.com/system/files/decision-document/2026_italian_grand_prix_-_decision_-_car_63_-_alleged_failure_to_slow_for_yellow_flags.pdf
+    published: 2026-09-06 17:02
+    sha256: null
+  - number: 69
+    kind: Decision
+    subject: Car 22 - Alleged Start Procedure Infringement
+    url: https://www.fia.com/system/files/decision-document/2026_italian_grand_prix_-_decision_-_car_22_-_alleged_start_procedure_infringement.pdf
+    published: 2026-09-06 19:45
+    sha256: null
+- slug: spanish
+  name: Spanish Grand Prix
+  round: 14
+  date: '2026-09-13'
+  docs:
+  - number: 12
+    kind: Infringement
+    subject: Car 11 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_spanish_grand_prix_-_infringement_-_car_11_-_pit_lane_speeding.pdf
+    published: 2026-09-11 14:00
+    sha256: null
+  - number: 13
+    kind: Infringement
+    subject: Car 11 - Second Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_spanish_grand_prix_-_infringement_-_car_11_-_second_pit_lane_speeding.pdf
+    published: 2026-09-11 14:01
+    sha256: null
+  - number: 19
+    kind: Infringement
+    subject: Car 23 - Leaving the track and re-joining unsafely
+    url: https://www.fia.com/system/files/decision-document/2026_spanish_grand_prix_-_infringement_-_car_23_-_leaving_the_track_and_re-joining_unsafely_.pdf
+    published: 2026-09-11 16:41
+    sha256: null
+  - number: 31
+    kind: Decision
+    subject: Temporary Stop of Free Practice 3
+    url: https://www.fia.com/system/files/decision-document/2026_spanish_grand_prix_-_decision_-_temporary_stop_of_free_practice_3.pdf
+    published: 2026-09-12 13:57
+    sha256: null
+  - number: 33
+    kind: Infringement
+    subject: Car 77 - Failure to follow Race Director's Instructions (Escape Roads)
+    url: https://www.fia.com/system/files/decision-document/2026_spanish_grand_prix_-_infringement_-_car_77_-_failure_to_follow_race_directors_instructions_escape_roads.pdf
+    published: 2026-09-12 14:25
+    sha256: null
+  - number: 36
+    kind: Infringement
+    subject: Car 1 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_spanish_grand_prix_-_infringement_-_car_1_-_pit_lane_speeding.pdf
+    published: 2026-09-12 16:44
+    sha256: null
+  - number: 41
+    kind: Infringement
+    subject: Car 18 - PU Elements changed
+    url: https://www.fia.com/system/files/decision-document/2026_spanish_grand_prix_-_infringement_-_car_18_-_pu_elements_changed.pdf
+    published: 2026-09-12 16:56
+    sha256: null
+  - number: 46
+    kind: Infringement
+    subject: Car 55 - Impeding of Car 77
+    url: https://www.fia.com/system/files/decision-document/2026_spanish_grand_prix_-_infringement_-_car_55_-_impeding_of_car_77.pdf
+    published: 2026-09-12 18:29
+    sha256: null
+  - number: 49
+    kind: Infringement
+    subject: Car 5 - Failure to Follow RD Instructions (SCL2 - SCL1)
+    url: https://www.fia.com/system/files/decision-document/2026_spanish_grand_prix_-_infringement_-_car_5_-_failure_to_follow_rd_instructions_scl2_-_scl1.pdf
+    published: 2026-09-12 19:15
+    sha256: null
+  - number: 50
+    kind: Decision
+    subject: Qualifying SC2-SC1 Times
+    url: https://www.fia.com/system/files/decision-document/2026_spanish_grand_prix_-_decision_-_qualifying_sc2-sc1_times.pdf
+    published: 2026-09-12 19:12
+    sha256: null
+  - number: 51
+    kind: Infringement
+    subject: Car 12 - Failure to follow RD instructions (SCL2 - SCL1)
+    url: https://www.fia.com/system/files/decision-document/2026_spanish_grand_prix_-_infringement_-_car_12_-_failure_to_follow_rd_instructions_scl2_-_scl1.pdf
+    published: 2026-09-12 19:23
+    sha256: null
+  - number: 52
+    kind: Infringement
+    subject: Car 63 - Failure to follow Race Director Instructions - (SCL2 - SCL1)
+    url: https://www.fia.com/system/files/decision-document/2026_spanish_grand_prix_-_infringement_-_car_63_-_failure_to_follow_race_director_instructions_-_scl2_-_scl1.pdf
+    published: 2026-09-12 19:26
+    sha256: null
+  - number: 53
+    kind: Infringement
+    subject: Car 16 - Failure to follow RD instructions (SCL2 - SCL1)
+    url: https://www.fia.com/system/files/decision-document/2026_spanish_grand_prix_-_infringement_-_car_16_-_failure_to_follow_rd_instructions_scl2_-_scl1.pdf
+    published: 2026-09-12 19:35
+    sha256: null
+  - number: 55
+    kind: Decision
+    subject: Permission to Start
+    url: https://www.fia.com/system/files/decision-document/2026_spanish_grand_prix_-_decision_-_permission_to_start.pdf
+    published: 2026-09-12 20:43
+    sha256: null
+  - number: 63
+    kind: Infringement
+    subject: Car 87 - PU elements changed during Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_spanish_grand_prix_-_infringement_-_car_87_-_pu_elements_changed_during_parc_ferme.pdf
+    published: 2026-09-13 13:20
+    sha256: null
+  - number: 66
+    kind: Infringement
+    subject: Car 22 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_spanish_grand_prix_-_infringement_-_car_22_-_pit_lane_speeding.pdf
+    published: 2026-09-13 15:56
+    sha256: null
+  - number: 67
+    kind: Infringement
+    subject: Car 55 - Causing a Collision with Car 14
+    url: https://www.fia.com/system/files/decision-document/2026_spanish_grand_prix_-_infringement_-_car_55_-_causing_a_collision_with_car_14.pdf
+    published: 2026-09-13 16:13
+    sha256: null
+  - number: 68
+    kind: Infringement
+    subject: Car 10 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_spanish_grand_prix_-_infringement_-_car_10_-_pit_lane_speeding.pdf
+    published: 2026-09-13 16:50
+    sha256: null
+  - number: 69
+    kind: Infringement
+    subject: Car 5 - Moving Under Braking
+    url: https://www.fia.com/system/files/decision-document/2026_spanish_grand_prix_-_infringement_-_car_5_-_moving_under_braking.pdf
+    published: 2026-09-13 17:04
+    sha256: null
+- slug: azerbaijan
+  name: Azerbaijan Grand Prix
+  round: 15
+  date: '2026-09-26'
+  docs:
+  - number: 19
+    kind: Infringement
+    subject: Car 77 - Overtaking under yellow flags
+    url: https://www.fia.com/system/files/decision-document/2026_azerbaijan_grand_prix_-_infringement_-_car_77_-_overtaking_under_yellow_flags.pdf
+    published: 2026-09-24 13:31
+    sha256: null
+  - number: 20
+    kind: Infringement
+    subject: Car 14 - PU elements
+    url: https://www.fia.com/system/files/decision-document/2026_azerbaijan_grand_prix_-_infringement_-_car_14_-_pu_elements.pdf
+    published: 2026-09-24 14:10
+    sha256: null
+  - number: 21
+    kind: Infringement
+    subject: Car 18 - PU elements
+    url: https://www.fia.com/system/files/decision-document/2026_azerbaijan_grand_prix_-_infringement_-_car_18_-_pu_elements.pdf
+    published: 2026-09-24 14:10
+    sha256: null
+  - number: 29
+    kind: Infringement
+    subject: Car 44 - Impeding car 30
+    url: https://www.fia.com/system/files/decision-document/2026_azerbaijan_grand_prix_-_infringement_-_car_44_-_impeding_car_30.pdf
+    published: 2026-09-24 18:05
+    sha256: null
+  - number: 34
+    kind: Infringement
+    subject: Car 14 - PU element
+    url: https://www.fia.com/system/files/decision-document/2026_azerbaijan_grand_prix_-_infringement_-_car_14_-_pu_element.pdf
+    published: 2026-09-25 11:21
+    sha256: null
+  - number: 39
+    kind: Infringement
+    subject: Car 55 - Failure to slow for yellow flags
+    url: https://www.fia.com/system/files/decision-document/2026_azerbaijan_grand_prix_-_infringement_-_car_55_-_failure_to_slow_for_yellow_flags.pdf
+    published: 2026-09-25 13:35
+    sha256: null
+  - number: 40
+    kind: Infringement
+    subject: Car 41 - Leaving the track in turn 15
+    url: https://www.fia.com/system/files/decision-document/2026_azerbaijan_grand_prix_-_infringement_-_car_41_-_leaving_the_track_in_turn_15.pdf
+    published: 2026-09-25 13:38
+    sha256: null
+  - number: 48
+    kind: Infringement
+    subject: Car 11 - Impeding Car 81
+    url: https://www.fia.com/system/files/decision-document/2026_azerbaijan_grand_prix_-_infringement_-_car_11_-_impeding_car_81.pdf
+    published: 2026-09-25 17:09
+    sha256: null
+  - number: 49
+    kind: Infringement
+    subject: Car 55 - Failure to slow for yellow flags
+    url: https://www.fia.com/system/files/decision-document/2026_azerbaijan_grand_prix_-_infringement_-_car_55_-_failure_to_slow_for_yellow_flags_0.pdf
+    published: 2026-09-25 17:17
+    sha256: null
+  - number: 65
+    kind: Decision
+    subject: Car 41 - Collision with Car 30 in turn 1
+    url: https://www.fia.com/system/files/decision-document/2026_azerbaijan_grand_prix_-_decision_-_car_41_-_collision_with_car_30_in_turn_1.pdf
+    published: 2026-09-26 17:29
+    sha256: null
+  - number: 66
+    kind: Infringement
+    subject: Car 43 - Collision with Car 10 in Turn 1
+    url: https://www.fia.com/system/files/decision-document/2026_azerbaijan_grand_prix_-_infringement_-_car_43_-_collision_with_car_10_in_turn_1.pdf
+    published: 2026-09-26 17:30
+    sha256: null
+  - number: 67
+    kind: Decision
+    subject: Car 77 - Turn 15 Incident
+    url: https://www.fia.com/system/files/decision-document/2026_azerbaijan_grand_prix_-_decision_-_car_77_-_turn_15_incident.pdf
+    published: 2026-09-26 17:40
+    sha256: null
+  - number: 68
+    kind: Infringement
+    subject: Car 5 - Overtaking under yellow flags
+    url: https://www.fia.com/system/files/decision-document/2026_azerbaijan_grand_prix_-_infringement_-_car_5_-_overtaking_under_yellow_flags.pdf
+    published: 2026-09-26 17:52
+    sha256: null
+  - number: 69
+    kind: Infringement
+    subject: Car 6 - Failing to follow Race Directors Instructions - Practice Start
+    url: https://www.fia.com/system/files/decision-document/2026_azerbaijan_grand_prix_-_infringement_-_car_6_-_failing_to_follow_race_directors_instructions_-_practice_start.pdf
+    published: 2026-09-26 17:54
+    sha256: null
+  - number: 70
+    kind: Infringement
+    subject: Car 55 - Failing to follow Race Directors Instructions - Practice Start
+    url: https://www.fia.com/system/files/decision-document/2026_azerbaijan_grand_prix_-_infringement_-_car_55_-_failing_to_follow_race_directors_instructions_-_practice_start.pdf
+    published: 2026-09-26 17:54
+    sha256: null
+- slug: bahrain
+  name: Bahrain Grand Prix
+  round: 16
+  date: '2026-10-04'
+  docs:
+  - number: 17
+    kind: Infringement
+    subject: Car 6 - Changes to PU elements
+    url: https://www.fia.com/system/files/decision-document/2026_bahrain_grand_prix_in_malaysia_-_infringement_-_car_6_-_changes_to_pu_elements.pdf
+    published: 2026-10-02 08:09
+    sha256: null
+  - number: 18
+    kind: Infringement
+    subject: Car 43 - Changes to PU elements
+    url: https://www.fia.com/system/files/decision-document/2026_bahrain_grand_prix_in_malaysia_-_infringement_-_car_43_-_changes_to_pu_elements.pdf
+    published: 2026-10-02 08:15
+    sha256: null
+  - number: 19
+    kind: Infringement
+    subject: Car 41 - Changes to PU elements
+    url: https://www.fia.com/system/files/decision-document/2026_bahrain_grand_prix_in_malaysia_-_infringement_-_car_41_-_changes_to_pu_elements.pdf
+    published: 2026-10-02 08:18
+    sha256: null
+  - number: 26
+    kind: Infringement
+    subject: Car 44 - Impeding of Car 5
+    url: https://www.fia.com/system/files/decision-document/2026_bahrain_grand_prix_in_malaysia_-_infringement_-_car_44_-_impeding_of_car_5.pdf
+    published: 2026-10-02 14:22
+    sha256: null
+  - number: 39
+    kind: Decision
+    subject: Qualifying SC2-SC1 Times (Corrected)
+    url: https://www.fia.com/system/files/decision-document/2026_bahrain_grand_prix_in_malaysia_-_decision_-_qualifying_sc2-sc1_times_corrected.pdf
+    published: 2026-10-03 13:44
+    sha256: null
+  - number: 40
+    kind: Infringement
+    subject: Car 18 - Failure to follow Race Director's instructions (SC2-SC1 Time) (1st Offence)
+    url: https://www.fia.com/system/files/decision-document/2026_bahrain_grand_prix_in_malaysia_-_infringement_-_car_18_-_failure_to_follow_race_directors_instructions_sc2-sc1_time_1st_offence.pdf
+    published: 2026-10-03 13:50
+    sha256: null
+  - number: 41
+    kind: Infringement
+    subject: Car 18 - Failure to follow Race Director's instructions (SC2-SC1 Time) (2nd Offence)
+    url: https://www.fia.com/system/files/decision-document/2026_bahrain_grand_prix_in_malaysia_-_infringement_-_car_18_-_failure_to_follow_race_directors_instructions_sc2-sc1_time_2nd_offence.pdf
+    published: 2026-10-03 13:52
+    sha256: null
+  - number: 48
+    kind: Infringement
+    subject: Car 55 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_bahrain_grand_prix_in_malaysia_-_infringement_-_car_55_-_pit_lane_speeding.pdf
+    published: 2026-10-04 09:05
+    sha256: null
+  - number: 52
+    kind: Infringement
+    subject: Car 5 - Causing a collision with Car 55
+    url: https://www.fia.com/system/files/decision-document/2026_bahrain_grand_prix_in_malaysia_-_infringement_-_car_5_-_causing_a_collision_with_car_55.pdf
+    published: 2026-10-04 12:22
+    sha256: null
+  - number: 57
+    kind: Decision
+    subject: Car 23 - Alleged driving erratically
+    url: https://www.fia.com/system/files/decision-document/2026_bahrain_grand_prix_in_malaysia_-_decision_-_car_23_-_alleged_driving_erratically.pdf
+    published: 2026-10-04 14:54
+    sha256: null
+  - number: 58
+    kind: Infringement
+    subject: Car 27 - Unsafe release
+    url: https://www.fia.com/system/files/decision-document/2026_bahrain_grand_prix_in_malaysia_-_infringement_-_car_27_-_unsafe_release.pdf
+    published: 2026-10-04 15:20
+    sha256: null
+  - number: 59
+    kind: Infringement
+    subject: Car 1 - Alleged driving erratically
+    url: https://www.fia.com/system/files/decision-document/2026_bahrain_grand_prix_in_malaysia_-_infringement_-_car_1_-_alleged_driving_erratically.pdf
+    published: 2026-10-04 15:49
+    sha256: null
+- slug: singapore
+  name: Singapore Grand Prix
+  round: 17
+  date: '2026-10-11'
+  docs:
+  - number: 20
+    kind: Infringement
+    subject: Car 63 - Changes to PU elements
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_infringement_-_car_63_-_changes_to_pu_elements.pdf
+    published: 2026-10-09 14:03
+    sha256: null
+  - number: 29
+    kind: Infringement
+    subject: Car 3 - Yellow flag infringement
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_infringement_-_car_3_-_yellow_flag_infringement.pdf
+    published: 2026-10-09 17:39
+    sha256: null
+  - number: 31
+    kind: Decision
+    subject: Sprint Qualifying SC2-SC1 Times
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_decision_-_sprint_qualifying_sc2-sc1_times.pdf
+    published: 2026-10-09 17:56
+    sha256: null
+  - number: 37
+    kind: Infringement
+    subject: Car 55 - Changes made during Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_infringement_-_car_55_-_changes_made_during_parc_ferme.pdf
+    published: 2026-10-10 09:49
+    sha256: null
+  - number: 53
+    kind: Decision
+    subject: Car 18 - Alleged causing a collision with Car 11
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_decision_-_car_18_-_alleged_causing_a_collision_with_car_11.pdf
+    published: 2026-10-10 14:57
+    sha256: null
+  - number: 54
+    kind: Decision
+    subject: Car 11 - Causing a collision with Car 18
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_decision_-_car_11_-_causing_a_collision_with_car_18.pdf
+    published: 2026-10-10 15:09
+    sha256: null
+  - number: 55
+    kind: Decision
+    subject: Car 87 - Failure to follow Race Director's instructions (SC2-SC1 Time)
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_decision_-_car_87_-_failure_to_follow_race_directors_instructions_sc2-sc1_time.pdf
+    published: 2026-10-10 15:10
+    sha256: null
+  - number: 56
+    kind: Decision
+    subject: Car 41 - Alleged driving opposite direction
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_decision_-_car_41_-_alleged_driving_opposite_direction.pdf
+    published: 2026-10-10 15:10
+    sha256: null
+  - number: 58
+    kind: Decision
+    subject: Car 1 - Alleged causing a collision with car 81
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_decision_-_car_1_-_alleged_causing_a_collision_with_car_81.pdf
+    published: 2026-10-10 15:40
+    sha256: null
+  - number: 59
+    kind: Decision
+    subject: Car 81 - Alleged causing a collision with car 1
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_decision_-_car_81_-_alleged_causing_a_collision_with_car_1.pdf
+    published: 2026-10-10 15:40
+    sha256: null
+  - number: 61
+    kind: Infringement
+    subject: Car 23 - Causing a Collision with Car 5
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_infringement_-_car_23_-_causing_a_collision_with_car_5.pdf
+    published: 2026-10-10 16:20
+    sha256: null
+  - number: 62
+    kind: Infringement
+    subject: Car 77 - Causing a Collision with Car 23
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_infringement_-_car_77_-_causing_a_collision_with_car_23.pdf
+    published: 2026-10-10 16:20
+    sha256: null
+  - number: 71
+    kind: Decision
+    subject: Permission to Start
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_decision_-_permission_to_start.pdf
+    published: 2026-10-10 19:55
+    sha256: null
+  - number: 72
+    kind: Decision
+    subject: Qualifying SC2-SC1 Times
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_decision_-_qualifying_sc2-sc1_times.pdf
+    published: 2026-10-10 20:02
+    sha256: null
+  - number: 73
+    kind: Infringement
+    subject: Car 27 - Impeding of Car 55
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_infringement_-_car_27_-_impeding_of_car_55.pdf
+    published: 2026-10-10 20:47
+    sha256: null
+  - number: 79
+    kind: Infringement
+    subject: Car 63 - Additional changes to PU elements
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_infringement_-_car_63_-_additional_changes_to_pu_elements.pdf
+    published: 2026-10-11 11:47
+    sha256: null
+  - number: 80
+    kind: Infringement
+    subject: Car 14 - PU element and changes made during Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_infringement_-_car_14_-_pu_element_and_changes_made_during_parc_ferme.pdf
+    published: 2026-10-11 12:25
+    sha256: null
+  - number: 81
+    kind: Infringement
+    subject: Car 18 - Changes made during Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_infringement_-_car_18_-_changes_made_during_parc_ferme.pdf
+    published: 2026-10-11 12:27
+    sha256: null
+  - number: 83
+    kind: Infringement
+    subject: Car 6 - PU elements and changes made during Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_infringement_-_car_6_-_pu_elements_and_changes_made_during_parc_ferme.pdf
+    published: 2026-10-11 13:23
+    sha256: null
+  - number: 85
+    kind: Infringement
+    subject: Car 18 - Failure to follow Race Director's Instructions - Practice Start
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_infringement_-_car_18_-_failure_to_follow_race_directors_instructions_-_practice_start.pdf
+    published: 2026-10-11 16:06
+    sha256: null
+  - number: 86
+    kind: Decision
+    subject: Car 44 - Alleged leaving the track and gaining an advantage
+    url: https://www.fia.com/system/files/decision-document/2026_singapore_grand_prix_-_decision_-_car_44_-_alleged_leaving_the_track_and_gaining_an_advantage.pdf
+    published: 2026-10-11 16:02
+    sha256: null
+- slug: united-states
+  name: United States Grand Prix
+  round: 18
+  date: '2026-10-26'
+  docs:
+  - number: 14
+    kind: Infringement
+    subject: Car 43 - PU Element
+    url: https://www.fia.com/system/files/decision-document/2026_united_states_grand_prix_-_infringement_-_car_43_-_pu_element.pdf
+    published: 2026-10-23 20:44
+    sha256: null
+  - number: 15
+    kind: Infringement
+    subject: Car 5 - PU Elements
+    url: https://www.fia.com/system/files/decision-document/2026_united_states_grand_prix_-_infringement_-_car_5_-_pu_elements.pdf
+    published: 2026-10-23 20:52
+    sha256: null
+  - number: 21
+    kind: Decision
+    subject: Car 63 - Alleged forcing another driver off the track
+    url: https://www.fia.com/system/files/decision-document/2026_united_states_grand_prix_-_decision_-_car_63_-_alleged_forcing_another_driver_off_the_track.pdf
+    published: 2026-10-24 00:26
+    sha256: null
+  - number: 35
+    kind: Infringement
+    subject: Car 5 - Additional changes to PU elements
+    url: https://www.fia.com/system/files/decision-document/2026_united_states_grand_prix_-_infringement_-_car_5_-_additional_changes_to_pu_elements.pdf
+    published: 2026-10-24 22:34
+    sha256: null
+  - number: 36
+    kind: Infringement
+    subject: Car 27 - Alleged Pit Lane Incident
+    url: https://www.fia.com/system/files/decision-document/2026_united_states_grand_prix_-_infringement_-_car_27_-_alleged_pit_lane_incident.pdf
+    published: 2026-10-24 22:40
+    sha256: null
+  - number: 37
+    kind: Infringement
+    subject: Car 6 - Driving erratically
+    url: https://www.fia.com/system/files/decision-document/2026_united_states_grand_prix_-_infringement_-_car_6_-_driving_erratically.pdf
+    published: 2026-10-24 22:49
+    sha256: null
+  - number: 38
+    kind: Infringement
+    subject: Car 5 - Impeding of Car 44
+    url: https://www.fia.com/system/files/decision-document/2026_united_states_grand_prix_-_infringement_-_car_5_-_impeding_of_car_44.pdf
+    published: 2026-10-24 23:03
+    sha256: null
+  - number: 41
+    kind: Decision
+    subject: Qualifying SC2-SC1 Times
+    url: https://www.fia.com/system/files/decision-document/2026_united_states_grand_prix_-_decision_-_qualifying_sc2-sc1_times.pdf
+    published: 2026-10-25 00:31
+    sha256: null
+  - number: 48
+    kind: Infringement
+    subject: Car 18 - Changes made during Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_united_states_grand_prix_-_infringement_-_car_18_-_changes_made_during_parc_ferme.pdf
+    published: 2026-10-25 18:48
+    sha256: null
+  - number: 51
+    kind: Decision
+    subject: Car 5 - Alleged leaving the track and gaining and advantage
+    url: https://www.fia.com/system/files/decision-document/2026_united_states_grand_prix_-_decision_-_car_5_-_alleged_leaving_the_track_and_gaining_and_advantage.pdf
+    published: 2026-10-25 22:59
+    sha256: null
+  - number: 52
+    kind: Infringement
+    subject: Car 87 - Causing a Collision
+    url: https://www.fia.com/system/files/decision-document/2026_united_states_grand_prix_-_infringement_-_car_87_-_causing_a_collision.pdf
+    published: 2026-10-25 22:29
+    sha256: null
+  - number: 53
+    kind: Infringement
+    subject: Car 63 - Leaving the track and gaining an advantage
+    url: https://www.fia.com/system/files/decision-document/2026_united_states_grand_prix_-_infringement_-_car_63_-_leaving_the_track_and_gaining_an_advantage.pdf
+    published: 2026-10-25 22:59
+    sha256: null
+- slug: mexico-city
+  name: Mexico City Grand Prix
+  round: 19
+  date: '2026-11-02'
+  docs:
+  - number: 17
+    kind: Infringement
+    subject: Car 77 - PU elements
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_77_-_pu_elements.pdf
+    published: 2026-10-30 20:52
+    sha256: 58ebfcbaab955b7986fb5a7373c578e5d22aae08c82148f45d2639dd4e719777
+  - number: 22
+    kind: Infringement
+    subject: Car 98 - Released in an unsafe condition
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_98_-_released_in_an_unsafe_condition.pdf
+    published: 2026-10-30 23:38
+    sha256: 8feddd35e9db24e578f2b1bf1b59e758b77ff9fbb236bb565431c7c2d51785a7
+  - number: 32
+    kind: Infringement
+    subject: Car 5 - Covering components
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_5_-_covering_components.pdf
+    published: 2026-10-31 03:50
+    sha256: 079f9d5364e5628d021986d2ad8beffe4322d2e74d63b3ddd42a7a122f3b889b
+  - number: 33
+    kind: Infringement
+    subject: Car 3 - Turn 14 incident with Car 30
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_3_-_turn_14_incident_with_car_30_.pdf
+    published: 2026-10-31 03:52
+    sha256: ddfac56d0dcaadc98782d7970c941a6d9aef6659ca0b593700b04944c4c73f30
+  - number: 34
+    kind: Infringement
+    subject: Car 30 - Turn 14 incident with Car 3
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_30_-_turn_14_incident_with_car_3_.pdf
+    published: 2026-10-31 03:53
+    sha256: 7edb6af474a672b8ed93e882ccf310af9befb450df4ed7a3ed40af54ccdd387f
+  - number: 36
+    kind: Decision
+    subject: Driver Change TGR Haas F1 Team
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_decision_-_driver_change_tgr_haas_f1_team.pdf
+    published: 2026-10-31 15:36
+    sha256: 94e13b2f3ae34e7a7e93d983a008d15a6210ac765efc0fdb51bee0422b4b0937
+  - number: 41
+    kind: Infringement
+    subject: Car 6 - Misconduct
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_6_-_misconduct.pdf
+    published: 2026-10-31 17:51
+    sha256: c895e6947210d4a93e4f3de7355eba4355aaba8ede4fe703c9b3a6ccb68e2335
+  - number: 45
+    kind: Infringement
+    subject: Car 14 - Failed to replace the steering wheel after leaving the car
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_14_-_failed_to_replace_the_steering_wheel_after_leaving_the_car.pdf
+    published: 2026-10-31 22:47
+    sha256: 94f145528ed9fcda463e7aa9b5bc80b5e2b832f8e5b9b50ca1f56ae52503fe42
+  - number: 50
+    kind: Decision
+    subject: Qualifying SC2-SC1 Times
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_decision_-_qualifying_sc2-sc1_times.pdf
+    published: 2026-10-31 23:52
+    sha256: cb3a8c15837216f1603509d640b2b26bc0823ef46e8a10a70290a8e40b16f1a3
+  - number: 51
+    kind: Infringement
+    subject: Car 55 - Failed to follow Race Directors instructions - Turn 11
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_55_-_failed_to_follow_race_directors_instructions_-_turn_11.pdf
+    published: 2026-10-31 23:52
+    sha256: e3525e2bd1740e144dbb2956b11f10ecb5df56df4a075ba8c09321d640c28617
+  - number: 52
+    kind: Infringement
+    subject: Car 6 - Crossing the white line at pit entry
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_6_-_crossing_the_white_line_at_pit_entry.pdf
+    published: 2026-10-31 23:53
+    sha256: 098775a18cae4cc46ca8c10b6e888ed3d7e2258678532c6d1e71659b2d0324df
+  - number: 57
+    kind: Infringement
+    subject: Car 30 - Technical nonconformity
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_30_-_technical_nonconformity.pdf
+    published: 2026-11-01 02:06
+    sha256: 9c53941e0535ab53c60ab5c1e6a123d913021279ee223776ce9607db72ab44a3
+  - number: 58
+    kind: Decision
+    subject: Car 30 - Permission to start
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_decision_-_car_30_-_permission_to_start.pdf
+    published: 2026-11-01 02:06
+    sha256: 6860b77e7698ed4adaa099e8c5ee0af8b29b5101d3b68f5a944cf5ed985cf412
+  - number: 65
+    kind: Infringement
+    subject: Car 30 - Changes made during Parc Ferme
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_30_-_changes_made_during_parc_ferme.pdf
+    published: 2026-11-01 19:22
+    sha256: 048d493a70c55a43ba9cfb763af4807d670d01973ac835f98903ba6e74a42d12
+  - number: 68
+    kind: Infringement
+    subject: Car 55 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_55_-_pit_lane_speeding.pdf
+    published: 2026-11-01 21:14
+    sha256: 0140311865f71590846ffde3e1a4121a27b12c21fe366c8392766e6d57ab0f2a
+  - number: 69
+    kind: Infringement
+    subject: Car 16 - Left the track and gained a lasting advantage
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_16_-_left_the_track_and_gained_a_lasting_advantage.pdf
+    published: 2026-11-01 21:54
+    sha256: fd80a739060c0be0ed09d1198a4475901f5586528441c121c3814a578fd1d5ff
+  - number: 70
+    kind: Infringement
+    subject: Car 63 - Causing a collision
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_63_-_causing_a_collision.pdf
+    published: 2026-11-01 23:48
+    sha256: 52e02a3a27162214e15bc3c4a9a7442405a7664c93b3860204e3ecdfdb6e710b
+  - number: 71
+    kind: Infringement
+    subject: Car 11 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_11_-_pit_lane_speeding.pdf
+    published: 2026-11-01 22:44
+    sha256: 800317da0213a6ec6abb2202fe3e5078c3b23f6951e679770a5740d33de31974
+  - number: 74
+    kind: Infringement
+    subject: Car 27 - Causing a collision
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_27_-_causing_a_collision.pdf
+    published: 2026-11-01 23:47
+    sha256: a8ec6767664cb0ab51e8cff5891538aeb57563eac0cc2d1a92221e371f4e5312
+  - number: 76
+    kind: Decision
+    subject: Car 10 - Alleged leaving the track and gaining an advantage
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_decision_-_car_10_-_alleged_leaving_the_track_and_gaining_an_advantage.pdf
+    published: 2026-11-02 00:12
+    sha256: 4650ac05c28092df0ac88b3af8c705a3cca73070b8db51de6c1eb44d1b6801fd
+  - number: 79
+    kind: Infringement
+    subject: Car 81 - Causing a collision
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_81_-_causing_a_collision.pdf
+    published: 2026-11-02 00:57
+    sha256: 8563eedf1e9345f90f6218de006a9d99cd51e0c1310324c857048a78273e4a42
+  - number: 83
+    kind: Infringement
+    subject: Car 63 - Failure to attend mandatory post-race commitments
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_63_-_failure_to_attend_mandatory_post-race_commitments.pdf
+    published: 2026-11-02 02:33
+    sha256: 845c47d8ba213bc61f3a644bea55130f2194e7fec46fc8872b830c323a6f0e7e
+  - number: 84
+    kind: Infringement
+    subject: Car 10 - Failing to slow under yellow flags
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_10_-_failing_to_slow_under_yellow_flags.pdf
+    published: 2026-11-02 02:34
+    sha256: dd27b429b08da51f564442c8698ff7e3c5c781b402ad1e7f599326c0e8e54884
+  - number: 85
+    kind: Infringement
+    subject: Car 43 - Failing to slow under yellow flags
+    url: https://www.fia.com/system/files/decision-document/2026_mexico_city_grand_prix_-_infringement_-_car_43_-_failing_to_slow_under_yellow_flags.pdf
+    published: 2026-11-02 02:35
+    sha256: d50fd320d8a0315d64ba90d4286e5f917047a1f7630d058cb0e98f9a421c4825
+- slug: sao-paulo
+  name: São Paulo Grand Prix
+  round: 20
+  date: '2026-11-08'
+  docs:
+  - number: 15
+    kind: Infringement
+    subject: Car 63 - Changes to PU element
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_63_-_changes_to_pu_element.pdf
+    published: 2026-11-06 17:25
+    sha256: 7489f1b1ebe8e81485f09633aa3a49994cc53f34b187bc0e554f59f928fd9600
+  - number: 16
+    kind: Infringement
+    subject: Car 43 - Pit Lane Speeding
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_43_-_pit_lane_speeding.pdf
+    published: 2026-11-06 17:40
+    sha256: cd081e655f5f757efc69263b61de55303d092b2c629b2a75e8133c670e78c1ac
+  - number: 25
+    kind: Infringement
+    subject: Car 51 - Unnecessarily impeding of Car 16
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_51_-_unnecessarily_impeding_of_car_16.pdf
+    published: 2026-11-06 22:11
+    sha256: 7c471fd8eac915b0c513152084dcacbf17606bd4eaac9dae091f09e900a4a28f
+  - number: 33
+    kind: Infringement
+    subject: Car 3 - Changes to PU elements
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_3_-_changes_to_pu_elements.pdf
+    published: 2026-11-07 16:56
+    sha256: bd691401ff5f907ceccd81f1169d4eda09669697f5abe64ee6aeb46ce17342db
+  - number: 35
+    kind: Infringement
+    subject: Car 16 - Changes to PU element
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_16_-_changes_to_pu_element.pdf
+    published: 2026-11-07 17:05
+    sha256: 815208f484d75897819a7f83bd1f4f65afe94a862b8097749e35e6383ebcbcf8
+  - number: 37
+    kind: Infringement
+    subject: Car 44 - Changes to PU element
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_44_-_changes_to_pu_element.pdf
+    published: 2026-11-07 17:11
+    sha256: af80e4af5785d3d10fbadf4e09b049974534c4adfaa1697e2015116bd88e6317
+  - number: 39
+    kind: Infringement
+    subject: Car 11 - Changes to PU elements
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_11_-_changes_to_pu_elements.pdf
+    published: 2026-11-07 17:31
+    sha256: a0aeb23765c2a4a371931feaadd7d02aca38811262b1f09b31ed180c25d575f7
+  - number: 40
+    kind: Infringement
+    subject: Car 11 - Driving in an unsafe condition
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_11_-_driving_in_an_unsafe_condition.pdf
+    published: 2026-11-07 17:38
+    sha256: 2092a003604f54443c592893a003303a68f6b188e696900bab7674e834e713c7
+  - number: 41
+    kind: Infringement
+    subject: Car 87 - Reversing in the Pit Lane
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_87_-_reversing_in_the_pit_lane.pdf
+    published: 2026-11-07 19:35
+    sha256: b48ff7a14fe8e5d6285344138aba71c0e5dfbe642da00b6b35946bbdc0f1ee5a
+  - number: 43
+    kind: Infringement
+    subject: Car 44 - Additional changes to PU elements
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_44_-_additional_changes_to_pu_elements.pdf
+    published: 2026-11-07 21:08
+    sha256: d1256386595d7966c576845f60396381ec549427190157810331a5e92613b35f
+  - number: 56
+    kind: Infringement
+    subject: Car 41 - Changes to PU elements
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_41_-_changes_to_pu_elements.pdf
+    published: 2026-11-08 16:16
+    sha256: 7311366cd413c0d5b3968cee45f76413b79f48c4f014a9f23a1e20ecf428c9dd
+  - number: 57
+    kind: Infringement
+    subject: Car 5 - Changes to PU elements
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_5_-_changes_to_pu_elements.pdf
+    published: 2026-11-08 16:20
+    sha256: 4a35d80e650e097a9fdfdfd3c1d5551b07f2b66bf40622a0acb83093a968d5d6
+  - number: 60
+    kind: Infringement
+    subject: Car 27 - Failure to follow Race Directors Instruction - Practice Start
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_27_-_failure_to_follow_race_directors_instruction_-_practice_start.pdf
+    published: 2026-11-08 19:15
+    sha256: 3a66fe84ee37fa6928dbf68545d55ac5c6ea9433ff260b2e33dd8a6c3cd2015d
+  - number: 61
+    kind: Infringement
+    subject: Car 11 - Failure to follow Race Directors Instruction - Practice Start
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_11_-_failure_to_follow_race_directors_instruction_-_practice_start.pdf
+    published: 2026-11-08 19:16
+    sha256: e59269c8e5fdd7eb721e10a9a617b7d2b0ed12eecdd77652c7c460995ddcc3ca
+  - number: 62
+    kind: Infringement
+    subject: Car 6 - Failure to follow Race Directors Instruction - Practice Start
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_6_-_failure_to_follow_race_directors_instruction_-_practice_start.pdf
+    published: 2026-11-08 19:17
+    sha256: ccfd825e6aa29adefeff6811b05b5a38735df2bed6d70db4ac3cec6e0bd4fe0b
+  - number: 63
+    kind: Infringement
+    subject: Car 77 - Failure to follow Race Directors Instruction - Practice Start
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_77_-_failure_to_follow_race_directors_instruction_-_practice_start.pdf
+    published: 2026-11-08 19:27
+    sha256: 9468a95784b8011384c770f265888bd588a0d3721f8b3c1672d44ca801a08304
+  - number: 64
+    kind: Infringement
+    subject: Car 18 - Failure to follow Race Directors Instruction - Practice Start
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_18_-_failure_to_follow_race_directors_instruction_-_practice_start.pdf
+    published: 2026-11-08 19:36
+    sha256: 4a4b2577cf9ee2a1996fd6ba2487625fb0008360a3f24ca4c2a3febbb034303a
+  - number: 65
+    kind: Decision
+    subject: Car 44 - Alleged leaving the track and gaining an advantage
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_decision_-_car_44_-_alleged_leaving_the_track_and_gaining_an_advantage.pdf
+    published: 2026-11-08 19:39
+    sha256: 32681959bdc960f2bb938c6d36e9e4bea57f4a3abae9ed1a1376352ae580bee8
+  - number: 66
+    kind: Decision
+    subject: Car 11 - Alleged failure to slow under yellow flags
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_decision_-_car_11_-_alleged_failure_to_slow_under_yellow_flags.pdf
+    published: 2026-11-08 19:42
+    sha256: 403de52f9e81430c6fc6d3d3bc99066a516aae396f89cff37f4d51c3235d3841
+  - number: 67
+    kind: Infringement
+    subject: Car 23 - Rejoining the track unsafely
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_23_-_rejoining_the_track_unsafely.pdf
+    published: 2026-11-08 20:03
+    sha256: ef49448b1aabed50383ad012740cc87d77e060357433174beecd6bfd95873a25
+  - number: 71
+    kind: Infringement
+    subject: Car 27 - Leaving the track and gaining an advantage
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_27_-_leaving_the_track_and_gaining_an_advantage.pdf
+    published: 2026-11-08 20:29
+    sha256: fb7020e0e49f620036f47a679b1716f9c569665b583df58ef87277d2071a8aea
+  - number: 78
+    kind: Infringement
+    subject: Car 87 - Unsafe release
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_87_-_unsafe_release.pdf
+    published: 2026-11-08 22:13
+    sha256: 6b7e89e8815a8f2ac22de9b672824ea9bf264409c5653167244712ba64b03fa0
+  - number: 79
+    kind: Infringement
+    subject: Car 16 - Causing a collision
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_16_-_causing_a_collision.pdf
+    published: 2026-11-08 22:20
+    sha256: 41e7c67375aca7139bb3595d3c2e6ae0388297532d3fe11ff1469657e8c5433a
+  - number: 80
+    kind: Infringement
+    subject: Car 12 - Unsafe release
+    url: https://www.fia.com/system/files/decision-document/2026_sao_paulo_grand_prix_-_infringement_-_car_12_-_unsafe_release.pdf
+    published: 2026-11-08 22:33
+    sha256: fb1683ed7c1da9b49e48ea7609b0e263e770cc028d1d1f8600d61f21786db7c2
