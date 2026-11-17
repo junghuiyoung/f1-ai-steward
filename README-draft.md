@@ -33,7 +33,7 @@ When it answers about a race weekend, it can only see decisions from earlier wee
 
 ```mermaid
 flowchart TD
-    ID[("Past decisions index<br/>Chroma + BM25")]
+    ID[("Past decisions index<br/>Chroma")]
     Q["Incident + race weekend"]
     IR[("Rules index<br/>Chroma + BM25")]
     ID --> SD["Search past decisions<br/>earlier weekends only"]
@@ -50,23 +50,36 @@ flowchart TD
 Both indexes are built on your machine from documents downloaded from fia.com, and rebuilt after each race weekend.
 
 - One decision is one chunk. One article is one chunk, with its heading path in front.
-- Search is hybrid: BM25 for exact wording, embeddings for meaning, combined by reciprocal rank fusion.
+- Past decisions are searched by meaning, with embeddings. Keyword search (BM25) and a hybrid of the two (reciprocal rank fusion) were built and measured as well; the hybrid did not beat embeddings alone, so the simpler method is used. The numbers are under "Which search method" below. The method for searching the rules: TBD, chosen the same way.
 - After the model answers, code checks that every rule and decision it cites was actually retrieved. This catches invented citations. It does not check that the reasoning follows from them.
 - The counts shown with an answer ("5 of 8 similar incidents got 10 seconds") are computed in code, not written by the model. They summarize a wider set of retrieved earlier decisions under the predicted rule. They describe those examples and are not outcome probabilities.
 
 ## How well it works
 
-All numbers are from race weekends the system was not tuned on. Scoring is rule-based against the stewards' decisions; no model grades another model. Scores measure agreement with the article and penalty in the stewards' document. They do not assess whether the explanation follows from its sources.
+All numbers are from race weekends the system was not tuned on, except the one table that says otherwise. Scoring is rule-based against the stewards' decisions; no model grades another model. Scores measure agreement with the article and penalty in the stewards' document. They do not assess whether the explanation follows from its sources.
 
 ### Does search recover decisions under the same rule?
 
-| Measure | BM25 only | Embeddings only | Hybrid |
+| Measure | BM25 only | Embeddings only (used) | Hybrid |
 |---|---|---|---|
 | A decision under the same rule is in the top 5 | TBD | TBD | TBD |
 | Share of the top 5 that are under the same rule | TBD | TBD | TBD |
 | The right article is in the top 8 rules | TBD | TBD | TBD |
 
 "Same rule" is a stand-in for "similar incident". Two incidents under the same rule can still be different situations.
+
+### Which search method?
+
+The method was chosen on the six tuning weekends (Monaco to Hungarian), not on the weekends reported above. Each of 94 decisions was asked as a question in other words than the stewards used, and searched for among the decisions of earlier weekends.
+
+| Method | A decision under the same rule is in the top 5 | Share of the top 5 under the same rule |
+|---|---|---|
+| BM25 only | 66 of 94 | 0.357 |
+| Embeddings only | 70 of 94 | 0.479 |
+| Hybrid, equal weights | 69 of 94 | 0.447 |
+| Hybrid, best of 18 settings | 71 of 94 | 0.474 |
+
+Embeddings beat keyword search clearly. The hybrid got better only as it leaned further towards embeddings, and its best setting is level with embeddings alone: one question either way. With the stewards' own wording as the question all three were level (65 to 67 of 87). The reworded questions were written by a model and stay close to the originals, so this is a mild test of wording, not a test on real users' questions.
 
 TBD of TBD questions cite an article outside the regulation documents included. They stay in the scores.
 
@@ -146,7 +159,7 @@ Rule and decision documents belong to the FIA. Apart from the demo above, which 
 
 | Part | Built with | What it does here |
 |---|---|---|
-| Search | LangChain retrievers, Chroma, BM25, `text-embedding-3-large` | Hybrid search over past decisions and rules |
+| Search | LangChain retrievers, Chroma, `text-embedding-3-large`; BM25 and rank fusion for the comparison | Vector search over past decisions; search over the rules |
 | Answer | LangChain `ChatOpenAI`, Pydantic | One shared path for answer-generation calls, structured output |
 | Model | OpenAI `gpt-6.1-terra` | `gpt-6-luna` while building |
 | Evaluation | Own runner, rule-based scoring, pytest | Search and answer scores in `results/summary.json` |

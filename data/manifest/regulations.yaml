@@ -1,0 +1,79 @@
+# The rule documents `search --rules` looks in: every issue that was in force at some
+# point of the 2026 season, for the four books the stewards cite (PLAN.md, step 3).
+#
+#   book            the prefix of the article ids in data/labels/decisions.jsonl
+#   in_force_from   the date the document itself gives; an issue is in force until the
+#                   next issue of the same book. Section B: the later of its issue date and
+#                   its WMSC approval date. ISC: "Application from". Appendices L and H:
+#                   "Published on". fia.com's own "Published on" dates were not used: some
+#                   are later uploads of the same file.
+#
+# Links and hashes only, never document text. `fetch --rules` fills in sha256.
+season: 2026
+issues:
+- id: F1-B-05
+  book: F1-B
+  title: FIA 2026 F1 Regulations - Section B [Sporting] - Iss 05
+  in_force_from: '2026-02-27'
+  url: https://www.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_b_sporting_-_iss_05_-_2026-02-27.pdf
+  sha256: 9892f0cfe37120676b9b29727326e80efd123ea861e05d14485257e507a83dee
+- id: F1-B-06
+  book: F1-B
+  title: FIA 2026 F1 Regulations - Section B [Sporting] - Iss 06
+  in_force_from: '2026-04-28'
+  url: https://www.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_b_sporting_-_iss_06_-_2026-04-28.pdf
+  sha256: 7574f1b27d2f452399f756ac6d55d3d4fbcd297984b708957d409cf5532e3146
+- id: F1-B-07
+  book: F1-B
+  title: FIA 2026 F1 Regulations - Section B [Sporting] - Iss 07
+  in_force_from: '2026-06-25'
+  url: https://www.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_b_sporting_-_iss_07_-_2026-06-25.pdf
+  sha256: 77ecb97eaf08598c40073ebc9c52c8ec943dccef77af0c3a406edde7534b5110
+- id: F1-B-08
+  book: F1-B
+  title: FIA 2026 F1 Regulations - Section B [Sporting] - Iss 08
+  in_force_from: '2026-08-05'
+  url: https://www.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_b_sporting_-_iss_08_-_2026-08-05_7.pdf
+  sha256: cbe329807d7803a4db511f80d829de1212d0c6a1c3b327cddb1b841823baa9fd
+- id: F1-B-09
+  book: F1-B
+  title: FIA 2026 F1 Regulations - Section B [Sporting] - Iss 09
+  in_force_from: '2026-10-01'
+  url: https://www.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_b_sporting_-_iss_09_-_2026-10-01.pdf
+  sha256: 5e156f50f1ca529d43551f52e82f5f2872bdfbe088e96fab39b861f6b0704b85
+- id: ISC-2026-01
+  book: ISC
+  title: 2026 International Sporting Code (FR-EN), clean version of 16.12.2025
+  in_force_from: '2026-01-01'
+  url: https://www.fia.com/system/files/documents/2026_international_sporting_code_fr-en_clean_version_v4_16.12.2025.pdf
+  sha256: c3b3bad3962565c3ee89b5239cf1d99b3ca0003ec2737af320e68d590621a28f
+- id: ISC-2026-06
+  book: ISC
+  title: 2026 International Sporting Code (FR-EN), clean version of 25.06.2026
+  in_force_from: '2026-06-26'
+  url: https://www.fia.com/system/files/documents/2026_international_sporting_code_fr-en_clean_version_25.06.2026.pdf
+  sha256: cd7e9a75c89593ae1c23d670eb14f728be1b776b33483e0d99bea6304fd81a79
+- id: ISC-L-2025-12
+  book: ISC-L
+  title: Appendix L to the ISC - 2025, published 10 December 2025
+  in_force_from: '2025-12-10'
+  url: https://www.fia.com/system/files/documents/appendix_l_2025_publie_le_10_decembre_2025_2.pdf
+  sha256: c385b3775f5d0ae8464e4b8329fe4b16d00a0be7d8665299d3d2a027f786405d
+- id: ISC-L-2026-06
+  book: ISC-L
+  title: Appendix L to the ISC - 2026, published 23 June 2026
+  in_force_from: '2026-06-23'
+  url: https://www.fia.com/system/files/documents/appendix_l_2026_publie_le_24_juin_2026.pdf
+  sha256: 08bc5c4ba3c5e3a9c04f216ab6d0e62e411441cee87b160290750569b045e1e8
+- id: ISC-H-2026-03
+  book: ISC-H
+  title: Appendix H to the ISC - 2025, published 12 March 2026
+  in_force_from: '2026-03-12'
+  url: https://www.fia.com/system/files/documents/appendix_h_2025_published_12032026.pdf
+  sha256: 84e92e8eecfb97236bc44099c680991c1414993f25b78ebd955dadfb955f140e
+- id: ISC-H-2026-10
+  book: ISC-H
+  title: Appendix H to the ISC - 2026, published 19 October 2026
+  in_force_from: '2026-10-19'
+  url: https://www.fia.com/system/files/documents/appendix_h_2026_published_19102026.pdf
+  sha256: e420c4a22541ce95b2206f33546065102375e52f0dc7a8fbebf07d138309e867

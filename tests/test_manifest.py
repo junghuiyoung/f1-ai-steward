@@ -78,3 +78,28 @@ def test_event_date_is_race_day_even_when_a_decision_is_published_later():
         }
     ]
     assert manifest.build_events(listing, season=2026)["events"][0]["date"] == "2026-05-25"
+
+
+REGULATIONS = {
+    "issues": [
+        {"id": "B-01", "book": "F1-B", "in_force_from": "2031-01-01"},
+        {"id": "B-02", "book": "F1-B", "in_force_from": "2031-06-01"},
+        {"id": "L-01", "book": "ISC-L", "in_force_from": "2031-02-01"},
+    ]
+}
+
+
+def test_each_book_is_searched_in_the_issue_in_force_on_the_day():
+    assert manifest.issues_in_force(REGULATIONS, "2030-12-31") == []
+    assert manifest.issues_in_force(REGULATIONS, "2031-01-15") == ["B-01"]  # the appendix is not out yet
+    assert sorted(manifest.issues_in_force(REGULATIONS, "2031-05-31")) == ["B-01", "L-01"]
+    assert sorted(manifest.issues_in_force(REGULATIONS, "2031-06-01")) == ["B-02", "L-01"]  # in force from that day
+
+
+def test_saving_keeps_the_comment_at_the_top_of_the_file(tmp_path):
+    path = tmp_path / "regulations.yaml"
+    path.write_text("# What this file is.\n# Second line.\nissues: []\n", encoding="utf-8")
+
+    manifest.save({"issues": [{"id": "B-01"}]}, path)
+
+    assert path.read_text(encoding="utf-8").startswith("# What this file is.\n# Second line.\nissues:\n- id: B-01")

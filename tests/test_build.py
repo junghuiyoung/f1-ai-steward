@@ -69,7 +69,7 @@ def test_record_and_label_carry_the_same_labels(tmp_path):
     assert record["articles"] == label["articles"] == ["F1-B:1.2.3"]
     assert record["penalty"] == label["penalty"] == {"type": "time_penalty", "value": 5, "unit": "s"}
     assert label["sha256"] == "hash1"
-    assert label["split"] is None
+    assert label["split"] == "test"  # the made-up event is in 2031, after every boundary in config
 
 
 def test_labels_file_holds_no_text_from_the_document(tmp_path):

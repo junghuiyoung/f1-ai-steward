@@ -151,3 +151,12 @@ def test_the_command_stops_at_a_429_and_says_how_many_are_left(monkeypatch):
     assert result.exit_code == 1
     assert calls == ["https://example.test/1.pdf"]  # one refusal, then nothing: not the second event either
     assert "3 decisions are still to download" in result.output
+
+
+def test_rule_documents_are_saved_under_their_issue_id(tmp_path):
+    regulations = {"issues": [{"id": "B-01", "url": "https://example.test/a.pdf", "sha256": None}]}
+    result = fetch.fetch_rules(regulations, client_serving(PAGES, []), pdf_dir=tmp_path, delay=0)
+
+    assert result.downloaded == 1
+    assert (tmp_path / "B-01.pdf").read_bytes() == PDF_A
+    assert regulations["issues"][0]["sha256"] == fetch.sha256_of(PDF_A)

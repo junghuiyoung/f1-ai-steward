@@ -17,6 +17,8 @@ Nothing here needs the PDFs. Every function takes a string and returns plain dat
 
 import re
 
+from .. import config
+
 # ---------------------------------------------------------------- articles
 
 # A sub-clause after an article number: "a", ".a", "(a)", " a)", ".iv". Zero or more of them.
@@ -27,12 +29,14 @@ _SUB = r"(?:\.?(?:[ivx]+|[a-z])(?![a-zA-Z])|\s*\((?:[ivx]+|[a-z])\)|\s+(?:[ivx]+
 # the group that matched (`match.lastgroup`) says which kind of piece it is.
 _PIECE = re.compile(
     rf"""
-      (?P<appendix> \bAppendix\s+(?P<appendix_letter>[A-Z])\b )
+      (?P<of_appendix> \bof\s+Appendix\s+(?P<of_appendix_letter>[A-Z])\b )    # "of Appendix H"
+    | (?P<appendix> \bAppendix\s+(?P<appendix_letter>[A-Z])\b )
     | (?P<chapter>  \bChapter\s+(?P<chapter_number>[IVX]+)\b )
     | (?P<note>     \b(?i:items?|documents?)\s+[\d.]+ )                    # "item 5.7", "document 34"
     | (?P<keyword>  \bArt(?:icles?|\.)?(?![a-z]) )                         # "Article", "Articles", "Art"
+    | (?P<of_f1>    \bof\s+the\s+(?:FIA\s+)?(?:F1|Formula\s+(?:One|1))\b ) # "of the FIA F1 Regulations"
     | (?P<of_the>   \bof\s+the\b )
-    | (?P<f1>       \b(?P<section>[A-Z])(?P<f1_number>\d+(?:\.\d+)+)(?P<f1_sub>{_SUB}) )   # "B8.2.2a"
+    | (?P<f1>       \b(?P<section>[A-F])\s?(?P<f1_number>\d+(?:\.\d+)+)(?P<f1_sub>{_SUB}) )  # "B8.2.2a", "B 1.8.4b"
     | (?P<bare>     (?<![\w.])(?P<bare_number>\d+(?:\.\d+)*)(?P<bare_sub>{_SUB}) )         # "2 d)", "12.2.1.i"
     """,
     re.VERBOSE,
@@ -55,38 +59,56 @@ def normalise_articles(infringement: str) -> list[str]:
       the bare numbers that follow, until "of the ..." closes the citation.
     - `armed`: True after the word "Article". Only then is a bare number an article.
       "item 5.7" and "document 34" (a Race Director's note) are never articles.
+    - `waiting`: bare numbers read outside an appendix. The book is often named after the
+      number ("Article 1.8.5 of the FIA F1 Regulations", "Article 2.5.5 b) of Appendix H"),
+      so they wait for the next "of ...". Anything else, or nothing, means the body of the Code.
+
+    "of the FIA F1 Regulations" without a section letter is taken as Section B, the
+    Sporting Regulations. That is a guess: in the 2026 decisions every article of another
+    section was written with its letter ("C9.3").
     """
-    ids: list[str] = []
+    ids: list[list[str]] = []  # [book prefix, number]; the prefix is "" while it waits
+    waiting: list[list[str]] = []
     appendix = chapter = None
     cited_under_appendix = False
     armed = False
 
+    def settle(prefix: str) -> None:
+        for entry in waiting:
+            entry[0] = prefix
+        waiting.clear()
+
     for match in _PIECE.finditer(infringement):
         piece = match.lastgroup
-        if piece == "appendix":
-            appendix, chapter, cited_under_appendix = match["appendix_letter"], None, False
+        if piece == "of_appendix" and waiting:
+            settle(f"ISC-{match['of_appendix_letter']}:")
+        elif piece in ("appendix", "of_appendix"):  # "Breach of Appendix H, Article 2.5.5" opens one
+            appendix = match["appendix_letter"] or match["of_appendix_letter"]
+            chapter, cited_under_appendix = None, False
         elif piece == "chapter":
             chapter = match["chapter_number"]
         elif piece == "keyword":
             armed = True
         elif piece == "note":
             armed = False
-        elif piece == "of_the":
+        elif piece in ("of_the", "of_f1"):
+            settle("F1-B:" if piece == "of_f1" else "ISC:")
             armed = False
             if cited_under_appendix:
                 appendix = chapter = None
         elif piece == "f1":
-            ids.append(f"F1-{match['section']}:{_with_sub(match['f1_number'], match['f1_sub'])}")
+            ids.append([f"F1-{match['section']}:", _with_sub(match["f1_number"], match["f1_sub"])])
         elif piece == "bare" and armed:
             number = _with_sub(match["bare_number"], match["bare_sub"])
             if appendix:
-                prefix = f"ISC-{appendix}:" + (f"{chapter}." if chapter else "")
+                ids.append([f"ISC-{appendix}:" + (f"{chapter}." if chapter else ""), number])
                 cited_under_appendix = True
             else:
-                prefix = "ISC:"
-            ids.append(prefix + number)
+                ids.append(["", number])
+                waiting.append(ids[-1])
+    settle("ISC:")
 
-    return list(dict.fromkeys(ids))  # drop repeats, keep the order
+    return list(dict.fromkeys(prefix + number for prefix, number in ids))  # drop repeats, keep the order
 
 
 # ---------------------------------------------------------------- penalty
@@ -179,3 +201,13 @@ def classify_kind(fact: str, articles: list[str]) -> str:
     if any(article.startswith(_JUDGMENT_PREFIXES) for article in articles):
         return "judgment_incident"
     return "procedural_or_technical"
+
+
+# ---------------------------------------------------------------- split
+
+
+def split_for(event_date: str, dev_from: str = config.DEV_FROM, test_from: str = config.TEST_FROM) -> str | None:
+    """Whether an event's decisions are asked as dev questions, test questions or not at all."""
+    if event_date < dev_from:
+        return None
+    return "dev" if event_date < test_from else "test"

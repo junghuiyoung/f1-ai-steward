@@ -74,6 +74,29 @@ ARTICLES = [
         "Breach of Appendix L, Chapter IV, Article 2 d) of the Code and Article 12.2.1.i of the Code.",
         ["ISC-L:IV.2.d", "ISC:12.2.1.i"],
     ),
+    # --- the book named after the number, or a space after the section letter
+    ("Alleged breach of Article 1.2.3 of the FIA F1 Regulations.", ["F1-B:1.2.3"]),
+    ("Breach of Article 4.5.6.b of the FIA Formula One Sporting Regulations.", ["F1-B:4.5.6.b"]),
+    ("Breach of Article 4.5.6 of the Formula 1 Regulations.", ["F1-B:4.5.6"]),
+    ("Breach of Article B 1.2.3b of the FIA F1 Regulations.", ["F1-B:1.2.3.b"]),
+    ("Alleged breach of Article 3.4.5 b) of Appendix H to the International Sporting Code.", ["ISC-H:3.4.5.b"]),
+    (
+        "Breaches of Appendix H, Article 3.4.5 b) of the Code and Article 1.2.3.b of the FIA F1 Regulations.",
+        ["ISC-H:3.4.5.b", "F1-B:1.2.3.b"],
+    ),
+    (
+        "Breach of Article B1.2.3 a) of the FIA F1 Regulations and Article 3.4.5 b) of Appendix H to the Code.",
+        ["F1-B:1.2.3.a", "ISC-H:3.4.5.b"],
+    ),
+    (
+        "Breaches of Article 1.2.3 of the FIA F1 Regulations and Appendix L, Chapter IV, Article 2 e) of the Code.",
+        ["F1-B:1.2.3", "ISC-L:IV.2.e"],
+    ),
+    (  # a waiting number keeps its place in the order when an appendix article follows it
+        "Breaches of Article 12.2.1.i and Appendix L, Chapter IV, Article 2 d) of the Code.",
+        ["ISC:12.2.1.i", "ISC-L:IV.2.d"],
+    ),
+    ("Breach of Article 12.2.1.i", ["ISC:12.2.1.i"]),  # no book named at all: the body of the Code
     # --- numbers that are not articles
     ("Car 44 was slow at turn 12 on lap 3.", []),
     ("Track limits in Q1 and SQ2, cars 7 and 21.", []),
@@ -157,3 +180,12 @@ KINDS = [
 @pytest.mark.parametrize("fact, articles, expected", KINDS)
 def test_classify_kind(fact, articles, expected):
     assert labels.classify_kind(fact, articles) == expected
+
+
+def test_an_event_date_decides_the_split():
+    boundaries = {"dev_from": "2031-06-01", "test_from": "2031-08-01"}
+    assert labels.split_for("2031-05-31", **boundaries) is None
+    assert labels.split_for("2031-06-01", **boundaries) == "dev"
+    assert labels.split_for("2031-07-31", **boundaries) == "dev"
+    assert labels.split_for("2031-08-01", **boundaries) == "test"
+

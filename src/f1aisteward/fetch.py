@@ -1,4 +1,5 @@
-"""Download the stewards' decision PDFs listed in the manifest into .cache/pdf/.
+"""Download the PDFs listed in the manifests into .cache/pdf/: stewards' decisions, and
+the issues of the rule documents (.cache/pdf/rules/).
 
 Each file is identified by its SHA-256 hash, a fingerprint of its exact bytes.
 The hash is stored in the manifest, so anyone who downloads the documents later
@@ -40,23 +41,44 @@ def make_client() -> httpx.Client:
     )
 
 
+def rule_pdf_path(issue_id: str, pdf_dir: Path = config.RULES_PDF_DIR) -> Path:
+    return pdf_dir / f"{issue_id}.pdf"
+
+
 def fetch_event(
     event: dict,
     client: httpx.Client,
     pdf_dir: Path = config.PDF_DIR,
     delay: float = config.REQUEST_DELAY_SECONDS,
 ) -> FetchResult:
-    """Download every document of one event that is not on disk yet.
+    """Download every document of one event that is not on disk yet."""
+    files = [
+        (f"{event['slug']} doc {doc['number']}", doc, pdf_path(event["slug"], doc["number"], pdf_dir))
+        for doc in event["docs"]
+    ]
+    return fetch_files(files, client, delay)
 
-    Fills in `sha256` in the event's docs the first time a file is seen.
-    Never overwrites a file, and never saves one whose hash contradicts the manifest.
-    Stops at the first HTTP 429 and leaves the rest of the event for a later run.
+
+def fetch_rules(
+    regulations: dict,
+    client: httpx.Client,
+    pdf_dir: Path = config.RULES_PDF_DIR,
+    delay: float = config.REQUEST_DELAY_SECONDS,
+) -> FetchResult:
+    """Download every rule document issue in the regulations manifest that is not on disk yet."""
+    files = [(issue["id"], issue, rule_pdf_path(issue["id"], pdf_dir)) for issue in regulations["issues"]]
+    return fetch_files(files, client, delay)
+
+
+def fetch_files(files: list[tuple[str, dict, Path]], client: httpx.Client, delay: float) -> FetchResult:
+    """Download each (label, manifest entry, path) whose file is not on disk yet.
+
+    An entry is a dict with `url` and `sha256`; the hash is filled in the first time
+    a file is seen. Never overwrites a file, and never saves one whose hash contradicts
+    the manifest. Stops at the first HTTP 429 and leaves the rest for a later run.
     """
     result = FetchResult()
-    for doc in event["docs"]:
-        label = f"{event['slug']} doc {doc['number']}"
-        path = pdf_path(event["slug"], doc["number"], pdf_dir)
-
+    for label, doc, path in files:
         if path.exists():
             digest = sha256_of(path.read_bytes())
             if doc["sha256"] is None:

@@ -104,7 +104,7 @@ def build_decisions(
                     "articles": articles,
                     "penalty": penalty,
                     "kind": kind,
-                    "split": None,  # dev or test: decided in step 2
+                    "split": labels.split_for(event["date"]),  # "dev", "test" or None
                 }
             )
     return report

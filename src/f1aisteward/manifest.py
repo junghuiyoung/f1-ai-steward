@@ -4,6 +4,7 @@ The manifest (data/manifest/events.yaml) is the list the rest of the project wor
 It holds links and hashes, never document text.
 """
 
+import itertools
 import re
 import unicodedata
 from datetime import datetime
@@ -99,11 +100,31 @@ def build_events(listing: list[dict], season: int) -> dict:
     return {"season": season, "events": events}
 
 
+def issues_in_force(regulations: dict, date: str) -> list[str]:
+    """The id of the issue of each book that was in force on `date` (ISO, e.g. '2026-11-08').
+
+    An issue is in force from its `in_force_from` until the next issue of the same book.
+    A book with no issue in force yet on that date is left out.
+    """
+    latest: dict[str, dict] = {}
+    for issue in regulations["issues"]:
+        if issue["in_force_from"] <= date:
+            book = issue["book"]
+            if book not in latest or issue["in_force_from"] > latest[book]["in_force_from"]:
+                latest[book] = issue
+    return [issue["id"] for issue in latest.values()]
+
+
 def load(path: Path = config.EVENTS_MANIFEST) -> dict:
     return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
 def save(manifest: dict, path: Path = config.EVENTS_MANIFEST) -> None:
+    """Write the manifest. Comment lines at the top of the existing file are kept."""
+    header = ""
+    if path.exists():
+        lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
+        header = "".join(itertools.takewhile(lambda line: line.startswith("#"), lines))
     path.parent.mkdir(parents=True, exist_ok=True)
     text = yaml.safe_dump(manifest, sort_keys=False, allow_unicode=True, width=1000)
-    path.write_text(text, encoding="utf-8")
+    path.write_text(header + text, encoding="utf-8")

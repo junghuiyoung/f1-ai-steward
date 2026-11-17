@@ -7,15 +7,13 @@
 | Prep | Apply the Codex review to the README draft and the design | Done 2026-11-15 |
 | 0 | Project skeleton and `fetch` | Done 2026-11-15 |
 | 1 | Parse decisions and build labels | Done 2026-11-15 |
-| 2 | Search over past decisions | Next |
-| 3 | Parse the rules and search them | |
+| 2 | Search over past decisions | Done 2026-11-16 |
+| 3 | Parse the rules and search them | Done 2026-11-16 (default rule search method still to choose) |
 | 4 | Generate answers and check citations | |
 | 5 | Evaluate answers | |
 | 6 | Product screen and final README | |
 | 7 | Optional: compare with the whole rulebook in the prompt | |
 | 8 | Optional: photo input | |
-
-Nothing is committed yet. The git repository exists with one branch, `main`.
 
 `01-system-design.md`, `02-tech-stack-adr.md` and `03-ui-ux-design.md` were rewritten in English on 2026-11-15. `01` and `02` were translated as they were. `03` was cut down to the current screen (`mockup-v4.html`); the critique of the first mockup and the record of the v2 comparison screen were removed.
 
@@ -51,6 +49,50 @@ Things earlier steps learned from the real data. Read these before writing a par
 - **Still not done:** the 30-decision sample check of the labels in `01-system-design.md` section 4.1. Five is too few to say how many labels are wrong. "0 failed" means every required field was found, not that every label is right.
 - **Decided 2026-11-15: the question is Session + Fact** (for São Paulo 79: "Race. Car 16 made contact with Car 30 in turn 12."). The four decisions with no Session use the Fact alone. The three problems above (identical Facts in one event, `car_table` Facts, two Facts that quote an article number) are for step 2.
 - **A second question set, written 2026-11-15: `data/questions/paraphrased.jsonl`.** Questions taken straight from the Fact use the stewards' own wording, so keyword search finds them easily (a rough word-overlap check put the top match under the same article for 65% of questions). To measure search on wording a user would write, each of the 320 `single_car` decisions also has a reworded English question with the same information: no car, corner, speed or part added or dropped, no article, no penalty. The 22 `car_table` decisions have none. Claude wrote all 320 in one sitting, so they share one voice; nobody has reviewed them. Product input is English only (user decision).
+
+**Step 2**
+
+- **Model cutoffs, checked on OpenAI's model pages on 2026-11-16.** `gpt-6.1-terra` 2026-06-01, `gpt-6-luna` 2026-05-18, as ADR-003 says. Step 2 calls no chat model; the cutoff only decides which events questions come from. Five events (83 parsed decisions) are before 2026-06-01 and fifteen (259) after.
+- **The embedding model has a cutoff too.** OpenAI's embeddings guide says `text-embedding-3-large` knows nothing after September 2021. An embedding model does not need to know an event, only the words. The words in the Facts that could be new in 2026 are few ("energy" in 17 Facts, "MGU" in 11, both older than 2021). The effect has not been measured.
+- **Split, by event date in `config.py`.** Before 2026-06-01: never a question (5 events, 83 decisions). Dev: Monaco to Hungarian (6 events, 99 decisions). Test: Dutch to São Paulo (9 events, 160 decisions). Both boundaries are the user's decision (2026-11-16): questions only after 2026-06-01, and dev/test cut at the summer break (`TEST_FROM = "2026-08-01"`). With about 160 test questions a score near 0.7 has a 95% interval of about ±7 points.
+- **Four LangChain defaults did not fit this data.** Each is changed in the code and covered by a test.
+  1. `BM25Retriever` splits text with `str.split()`, so "Car", "car" and "car." are three words. On the reworded questions (all rounds) hit@5 was 0.590 with the default and 0.694 with lower case and no punctuation; on the Fact questions it made no difference (0.741 and 0.747), because they share the stewards' capitals. `index.tokenize` is passed as `preprocess_func`.
+  2. `EnsembleRetriever` treats documents with equal text as one document. 17 texts are shared by 39 decisions, so hybrid search would have lost 22 decisions that BM25 alone and vector alone return. `id_key="id"` is set.
+  3. `BM25Retriever` has no metadata filter. `DecisionSearch` builds one small BM25 index per cut-off round, holding earlier rounds only (all 19 take 0.1 s). One index over everything, filtered afterwards, gave the same hit@5; the per-round index is used so that word rarity is also counted over earlier decisions only. Chroma filters on `round` in metadata.
+  4. `BM25Retriever.from_documents([])` raises `ValueError`. The first event has no earlier decisions (13 Australian decisions), so `search` returns an empty list there.
+- **`langchain-community` is sunset.** Importing it prints "no longer actively maintained" (GitHub issue 674 of that repository, which names no new home for `BM25Retriever`). 0.4.2 works and is pinned in `uv.lock`. `EnsembleRetriever` is in `langchain_classic.retrievers`. pytest is told to ignore that one warning. If it breaks one day, the replacement is a `BaseRetriever` of about 30 lines over `rank_bm25`.
+- **`rank_bm25` misbehaves on a handful of documents.** A word found in more than half of the documents gets a floor value that depends on the average over all words, and on a three-document corpus that average was negative: an exact match ranked last. Seen in a unit test, not in the real data (average over the season is 4.6). It can only touch the first rounds, which are not questions.
+- **BM25 always returns k decisions**, also ones that share no word with the question. Over the season this happened for 1 of 328 Fact questions. Not handled.
+- **Questions on dev.** 87 in the stewards' words from 99 decisions: 5 `car_table` decisions left out, 1 that names an article (British 83), and decisions of one event with identical text merged into one question whose gold answer is all their articles. 94 reworded questions (their texts are never identical).
+- **hit@5 cannot reach 1.** For 14 of the 87 dev questions (16 of the 94 reworded) no earlier decision has the same article, so the best possible hit@5 is 0.839 (0.830). Over the season, five decisions picked at random give hit@5 0.30. `eval --retrieval` prints the ceiling; it does not print the random baseline.
+- **Search on dev, k=5, `text-embedding-3-large`, run 2026-11-16** (hit@5 / precision@5). Stewards' words, 87 questions: BM25 0.770 / 0.480, vector 0.770 / 0.487, hybrid 0.747 / 0.499. Reworded, 94 questions: BM25 0.702 / 0.357, vector 0.745 / 0.479, hybrid 0.734 / 0.447. All 543 searches returned earlier events only.
+- **Hybrid is not better than vector on dev.** On the reworded questions vector beats BM25 clearly on precision@5 (0.479 against 0.357) and hybrid lands between the two. On the stewards' wording the three are level. One question is 1.1 points of hit@5, so the hit@5 gaps here are one to four questions and say little; the precision gap on reworded questions is the only large one. The first hybrid settings were 20 candidates from each search and equal weights.
+- **Tuning the fusion did not make hybrid better than vector (dev, 2026-11-16).** Tried: vector weight 0.3, 0.5, 0.6, 0.7, 0.8, 0.9 with 10, 20 and 50 candidates, 18 settings. Reworded questions: vector alone has precision@5 0.479 and hit@5 70 of 94; the best hybrid (50 candidates, vector weight 0.9) has 0.474 and 71 of 94; equal weights give 0.440 to 0.453. Precision rises as the vector weight rises, which is hybrid turning into vector. Stewards' wording: hybrid precision@5 is 0.483 to 0.499 against 0.487 for vector, with hit@5 one or two questions lower (65 or 66 of 87 against 67). Every gap between vector and the better hybrid settings is one or two questions. `VECTOR_WEIGHT` and `CANDIDATES` in `config.py` were left at 0.5 and 20: no setting earned a change. The sweep was a throwaway script, not a command. **Decided by the user, 2026-11-16: search defaults to vector** (`SEARCH_METHOD` in `config.py`). BM25 and hybrid stay in the code and in the comparison table. `README-draft.md`, `01-system-design.md` section 3.5 and ADR-004 were rewritten the same day: the method is chosen by comparing the three on dev, and the dev numbers and the decision are recorded there. The rules search of step 3 is measured separately.
+- **What RRF does, seen on one search.** For "car 16 made contact with car 30 at turn 12" before São Paulo, hybrid put first a practice-session decision that BM25 had fourth and vector had outside its top five: being in the middle of both lists beat being at the top of one.
+- **Cost and time.** `build --index` embeds the 342 decisions in one run of 5 seconds; the index is 7 MB. `eval --retrieval` takes under 4 seconds, with one embedding request for all questions. The cost was not read from the OpenAI dashboard; by token count it is far below one cent.
+- **What was seen of the test events.** The checks before step 2 printed BM25 numbers over all rounds, test events included (by kind and by round range). The tokenizer is the only setting chosen with those numbers in view. `eval --retrieval` uses dev unless `--split test` is given.
+- **The searched text is the session and the Fact only.** The findings-of-fact part of Reason is not included and has not been tried. `01-system-design.md` section 3.3 and ADR-004 said it was included; both were corrected on 2026-11-16, together with ADR-009's mention of a masked Reason and of mask positions in the repository.
+- **Chroma's usage reporting is switched off** (`anonymized_telemetry=False`); its default is on.
+
+**Step 3**
+
+- **Four labels were wrong, and are fixed.** `2026-bahrain-057` had `ISC:1.8.5` for "Article 1.8.5 of the FIA F1 Regulations"; `belgian-043` and `canadian-106` had `ISC:1.8.4.b` ("Article 1.8.4.b of the FIA F1 Regulations", "Article B 1.8.4b"); `british-058` had `ISC:2.5.5.b` for "Article 2.5.5 b) of Appendix H". The normaliser read a bare number as the body of the Code before it saw the book named after it. A bare number now waits for the next "of ..."; "of the FIA F1 Regulations" without a section letter is taken as Section B, which is a guess (every other section was cited with its letter). 10 tests added. Exactly those four rows of `data/labels/decisions.jsonl` changed, and no kind.
+- **The fix moved the step 2 numbers a little** (dev, k=5, run 2026-11-16). Stewards' words: BM25 0.782 / 0.490, vector 0.782 / 0.499, hybrid 0.759 / 0.508; 13 questions out of reach (best hit@5 0.851). Reworded: BM25 0.713 / 0.360, vector 0.755 / 0.483, hybrid 0.745 / 0.451; 15 out of reach (0.840). The step 2 bullets above, `README-draft.md`, `01-system-design.md` and ADR-004 still show the old numbers. Vector is still level with or ahead of the other two.
+- **Rule documents, decided by the user 2026-11-16: Section B, the ISC body, Appendix L and Appendix H.** Of the decisions with an article, 98 of 99 dev and 158 of 160 test cite at least one article in these four. Section B alone would have been 72 and 101, and would have lost the collision article (Appendix L IV.2.d) and "failure to follow instructions" (ISC 12.2.1.i). Section C is left out: 7 decisions cite it. The Driving Standards Guidelines that `01-system-design.md` section 3.4 lists are not cited as an article by any decision and are not included.
+- **Eleven issues were in force during the season** (`data/manifest/regulations.yaml`): Section B issues 5 to 9, two of the ISC, two of Appendix L, two of Appendix H. Each issue's start date is the one the document gives itself: Section B the later of its issue date and its WMSC approval date (they differ by up to four days, and no event falls between them), the ISC "Application from", the appendices "Published on". fia.com's own "Published on" dates were not used. Some are later uploads: Section A issue 3, dated 25 June, is listed on 19 October. Using them would have moved Miami (4 May) and Bahrain and Singapore (4 and 11 October) to an older Section B issue.
+- **No Appendix H was in force before 12 March** in the files fia.com has now, so the Australian Grand Prix (8 March) is searched without it. Australian is never a question. Whether an earlier 2026 Appendix L or H existed and was replaced on fia.com is not known.
+- **Appendix H "2025" (published 12 March 2026) ends with "MODIFICATIONS FOR 2026"**: pieces of clauses that replace the main text (2.5.5 g, the green flag; medical services; rally parts), with the unchanged text cut out as "…/…". They are not merged in; the index holds the main text. No decision cites a clause they touch (the cited ones are 2.5.5 b and e). Both Appendix L issues and Appendix H 2026 end with modifications for 2027, which are not indexed. Section B's appendices (definitions, forms, changes for later years) are not indexed either.
+- **pdfplumber reads the rule documents; pypdf still reads the decisions.** The ISC and its appendices print French on the left and English on the right. pypdf reads the two in an order that changes within a page (a French paragraph then its English one, or a whole French article then the English article). pdfplumber can crop a page; the crop line is the empty band between the columns, found on each page from the words' positions. It also gets the ligatures right that pypdf breaks in Section B ("O=icials"). `pdfplumber` 0.11.10 was added. All 11 issues take 78 seconds.
+- **Pages without a column gap.** The cover and contents pages at the start are skipped. Later ones have a table across the page and are cut where the columns usually meet. A first version skipped those as well and lost the heading of Appendix L chapter III, which sits on a page with a table (page 47), so the helmet articles were filed under chapter II.
+- **How each book numbers its text.** Section B: only three-level paragraphs (B1.8.5); two headings (B5.12, B5.13) have text of their own; contents lines end with a page number. ISC: "ARTICLE 12.2" headings, some with no title ("ARTICLE 16.1"); paragraphs to four levels with a letter (12.2.1.i); Articles 13 and 14 use two-level paragraphs with no "ARTICLE" ("14.2 A review ..."). Appendix L: articles "1." to "6." start again in each chapter, so the chapter is part of the id (`ISC-L:IV.2`); points a) to e) stay inside the article. Appendix H: like the ISC, with "2.4. MARSHAL POSTS" written with a full stop.
+- **A number at the start of a line followed by a small letter is a wrapped cross-reference** ("B5.15.2 shall remain unchanged ..."), not a new paragraph. A paragraph starts with a capital.
+- **The FIA numbering is not clean.** Section B issue 5 uses B1.1.1 to B1.1.3, B1.4.1 to B1.4.3 and B5.1.8 twice for different paragraphs; issue 6 B3.5.7; issue 9 B1.5.11. Both paragraphs are kept, under one article id with "#2" in the key. Numbers also go backwards (B1.4.1 after B1.4.3; B5.14.3 in the middle of B5.15), so their order is not checked.
+- **Counts.** 3,630 articles: Section B 306 to 314 per issue, ISC 634, Appendix L 199 and 200, Appendix H 209 and 214. Median length: Section B 64 to 69 words, ISC 28, L 51, H 95. The longest are ISC Article 20, the definitions (3,050 words), Appendix L VI.1.3 (1,800) and Appendix H 2.5.5, every flag signal in one article (1,170). Nothing is split further.
+- **Every cited article is in the issue in force on its decision's date.** Over all 342 decisions: 279 citations match an article id exactly, 170 are a point inside an article (IV.2.d inside IV.2, 2.5.5.b inside 2.5.5, 1.6.3.a.iii inside 1.6.3; checked that only letters are dropped, never a number), 1 is broader than the paragraphs (B5.11), 7 are in Section C. None is missing. `eval --retrieval` prints the count of cited articles not found in their issue; it is 0.
+- **Rule search on dev, k=8, run 2026-11-16** (recall@8: the share of a question's cited articles held by one of the 8 retrieved articles, averaged over questions). Stewards' words, 87 questions citing 104 articles: BM25 0.607, vector 0.699, hybrid 0.734. Reworded, 94 questions citing 113: BM25 0.518, vector 0.644, hybrid 0.635. Best possible 0.989 for both (the one Section C citation). All 543 rule searches returned articles of the issues in force only.
+- **Two articles explain most misses** (vector). Appendix L IV.2 (overtaking, track limits, causing a collision) was found for 1 of 13 questions in the stewards' words and 0 of 13 reworded; ISC 12.2.1 (12.2.1.i, failure to follow the officials' instructions) 0 of 12 and 0 of 14. Most Section B articles are found (B1.6.3 pit lane 14 of 14, B1.8.4 yellow flags 8 of 8, B1.8.6 track limits 8 of 9). Many of the 8 places go to text F1 does not use: Appendix L chapter V (offroad circuits, 34 results) and Appendix H 2.10 (safety car procedures "except for FIA championships ... with specific regulations"; F1 has B5.13). Example: for "car 16 made contact with car 30 at turn 12" before São Paulo, IV.2 is not among the 8.
+- **Hybrid against vector for rules is not settled.** +3.5 points on the stewards' words, -0.9 on the reworded questions: three questions and one. `RULES_SEARCH_METHOD` is "vector" until the user decides.
+- **Cost and size.** `build --index` now also embeds the 3,630 articles (608,000 tokens by tiktoken count, about $0.08; not read from the dashboard) in 23 seconds together with the decisions. The Chroma folder grew from 7 MB to 127 MB. `eval --retrieval` takes 5 seconds.
 
 ## Context
 
@@ -89,29 +131,29 @@ Commit only when the user asks.
 ```
 pyproject.toml  .gitignore  .env.example
 data/manifest/events.yaml          events, dates, decision links and sha256      (exists)
-data/manifest/regulations.yaml     rule documents, issue, effective date, link, sha256
+data/manifest/regulations.yaml     rule document issues, date in force, link, sha256    (exists, 11 issues)
 data/labels/decisions.jsonl        decision id, article ids, penalty, kind, split (no FIA text)  (exists, 342 rows)
 scripts/make_events_manifest.py    builds events.yaml from a saved fia.com listing (exists)
 src/f1aisteward/
-  cli.py            fetch (exists) / build / search / ask / serve / eval
+  cli.py            fetch [--rules], build --decisions/--rules/--index, search [--rules], eval --retrieval (exist) / ask / serve
   config.py         paths, settings (exists); later model names and price table
-  manifest.py       title filter, read and write the manifest (exists)
+  manifest.py       title filter, read and write the manifests, issues in force on a date (exists)
   fetch.py          download PDFs, check hashes (exists)
   parse/decisions.py  decision PDF -> its eight fields (exists)
   parse/labels.py     normalise articles, structure penalties, classify kind (exists)
   parse/build.py      run both over the manifest, write records and labels (exists)
-  parse/rules.py      rules PDF -> list of articles
-  index.py          two Chroma collections and BM25
-  search.py         hybrid search (RRF), date and issue filters
+  parse/rules.py      rules PDF -> articles with heading paths, with pdfplumber (exists)
+  index.py          decisions and articles -> documents, BM25, Chroma collections `decisions` and `rules` (exists)
+  search.py         bm25, vector and hybrid (RRF): decisions of earlier events, articles of the issues in force (exists)
   llm/client.py     the one place ChatOpenAI is called; records tokens and cost
   answer.py         prompt, Answer schema, citation check, outcome counts
-  eval/retrieval.py search evaluation
+  eval/retrieval.py search evaluation (exists)
   eval/answers.py   answer evaluation runner (three configurations)
   eval/score.py     scoring rules
   eval/report.py    results/summary.json and the README tables
   app/server.py     FastAPI
   app/static/index.html
-tests/              test_manifest.py, test_fetch.py, test_parse_decisions.py, test_labels.py, test_build.py (exist)
+tests/              manifest, fetch, parse_decisions, labels, build, questions, index, search, eval_retrieval, rules (exist)
 docs/demo.gif       recorded in step 6
 .cache/  runs/      local only, not in git
 ```
@@ -143,6 +185,8 @@ docs/demo.gif       recorded in step 6
 - **Check**: `uv run f1aisteward search "car 16 made contact with car 30 at turn 12" --event sao-paulo` returns five similar past decisions. `uv run f1aisteward eval --retrieval` compares hit@5 and precision@5 for BM25 only, vector only and hybrid. That comparison goes into the README.
 - **Done when**: search numbers exist, a test proves no decision from the same event is ever retrieved, and the dev and test events are fixed.
 - **Needs**: the user puts `OPENAI_API_KEY` in `.env`. For LangSmith the user also prepares an account and key.
+- **Built (2026-11-16)**: `index.py`, `search.py`, `eval/retrieval.py`, CLI `build --index`, `search`, `eval --retrieval`, the split in `config.py` and in the labels file, 38 new tests (168 in all). The same-event test asks every made-up decision as a question, by all three methods; `eval --retrieval` repeats the check on every real question and stops if it fails.
+- **Left**: nothing that blocks step 3. Not done: the test-split run, which waits until the settings are final.
 
 ### Step 3: parse the rules and search them
 
@@ -153,6 +197,8 @@ docs/demo.gif       recorded in step 6
 - **Done when**: recall@8 exists.
 - **Risk**: extracting articles from the rules PDFs has never been tried. The product works on decision search alone, so if this stalls, cut down to the Sporting Regulations and move on.
 - **Decide first**: which rule documents to include.
+- **Built (2026-11-16)**: `data/manifest/regulations.yaml` (11 issues), `fetch --rules`, `parse/rules.py`, `build --rules` (articles to `.cache/text/rules.jsonl`), the Chroma collection `rules` in `build --index`, `RuleSearch` in `search.py`, `search --rules`, recall@8 in `eval --retrieval`, `manifest.issues_in_force`. The label fix in `parse/labels.py`. `pdfplumber` added. 43 new tests (211 in all).
+- **Left**: the user chooses the default rule search method, and whether to try to raise recall before step 4 (the misses are under "Found along the way"). Not updated yet: `01-system-design.md` sections 3.4, 3.5 and 8, ADR-005 (pdfplumber now reads every rule document), and the step 2 numbers in `README-draft.md`, `01-system-design.md` and ADR-004. Not done: the test-split run.
 
 ### Step 4: generate answers and check citations
 
@@ -220,8 +266,10 @@ Creating the GitHub repository and pushing. Do it when the user asks.
 | Decision | When | Suggestion |
 |---|---|---|
 | Is the Fact field enough as the question | Decided 2026-11-15 | Session + Fact |
-| Which events are dev and which are test | Step 2 | Test on later events, all after 2026-06-01 |
-| Which rule documents to include | Before step 3 | Sporting Regulations, ISC, Appendix L and H. Sporting Regulations only if parsing stalls |
+| Which events are dev and which are test | Decided 2026-11-16 | Before 2026-06-01 never a question; dev Monaco to Hungarian (99 decisions); test Dutch to São Paulo (160) |
+| Which rule documents to include | Decided 2026-11-16 | Section B, ISC body, Appendix L and H (11 issues) |
+| Default rule search method | After step 3 | Vector, as for decisions: hybrid's lead is three questions on one question set and it trails on the other |
+| Try to raise rule recall before step 4 | After step 3 | See "Found along the way", step 3: the misses are two general articles |
 | Also run the final evaluation on `gpt-6-luna` | Step 5 | Yes, it costs about $1 |
 | Code licence | Before pushing to GitHub | The user decides |
 

@@ -4,6 +4,8 @@ Written 2026-11-14 · Decision maker: the user · Status values: **Decided** (se
 
 **Revised 2026-11-14.** Following the user's decision, the models changed to OpenAI (`gpt-6.1-terra` for the final run, `gpt-6-luna` for development) and the embedding to `text-embedding-3-large`. The first draft assumed Anthropic, which had not been chosen by comparing it with other providers. The question count was also corrected to the real count taken from fia.com.
 
+**Revised 2026-11-16.** ADR-004: the search method is no longer fixed in advance as hybrid. The three candidates are compared on the dev questions and the better one is used. For past decisions the comparison was run and vector search was chosen (user decision); the numbers are in ADR-004.
+
 **Revised 2026-11-15.** The screen became the product (AI Steward) and the method comparison moved to the README (ADR-007). The final question set is 100. Decisions are shown as page images instead of in a PDF viewer (ADR-010). Tool-based lookup (an agent) was taken out of scope (ADR-008). Model calls changed from direct OpenAI SDK calls to LangChain throughout (ADR-002).
 
 **Change of direction, 2026-11-15.** The backbone of the project changed from "an experiment comparing three methods" to "a RAG product that searches past decisions" (user decision; ADR-004 and the system design document). Putting the rules in whole was demoted to an optional experiment, and "the final question set is 100" no longer applies. The previous version is in `archive/2026-11-15-three-way-comparison/`. Passages below that speak of "the three methods" (no documents, RAG, full documents) are records from before the change.
@@ -35,7 +37,7 @@ How to read it: what the postings ask for is concepts more than tool names. 21 p
 | 001 | Language and packaging | Python 3.12, uv, a lock file | Proposed |
 | 002 | Model call layer | Every model call through LangChain `ChatOpenAI` | Decided |
 | 003 | Models | Final `gpt-6.1-terra` + `gpt-6-luna`, development `gpt-6-luna` | Decided |
-| 004 | RAG search | Hybrid search (BM25 + embedding, rank fusion) over past decisions and rule articles, Chroma, `text-embedding-3-large` | Targets decided, method proposed |
+| 004 | RAG search | The search method is chosen by comparing BM25, vector and hybrid on dev. Past decisions: vector search (measured 2026-11-16). Rule articles: measured in step 3. Chroma, `text-embedding-3-large` | Targets decided; method for past decisions decided; method for rule articles open |
 | 005 | Running the evaluation and storing results | Two layers: search evaluation and answer evaluation. Our own runner + JSONL, rule-based scoring. LangSmith for tracing during development | Proposed |
 | 006 | Output format | Pydantic schema and structured output | Proposed |
 | 007 | Product screen and reporting results | The product screen is one static page + FastAPI (local); evaluation results go in the README | Decided |
@@ -149,18 +151,19 @@ The full rules are assumed to be 150,000 tokens.
 
 ## ADR-004: RAG search
 
-**Status:** The search targets are decided (user decision, 2026-11-15). The search method is proposed
+**Status:** The search targets are decided (user decision, 2026-11-15). The search method for past decisions is decided (user decision, 2026-11-16, after the comparison below). The method for rule articles is open until it is measured in step 3
 
 **Context.** RAG is the centre of this product (system design, section 1.3). There are two search targets. Past decisions number 359 in the 2026 season and grow with each event. Rule articles are expected to number 1,000 to 3,000 [estimate]. Both are sizes that need no vector DB server. Decisions use fixed expressions such as "left the track" and "pit lane speeding", so keyword search may well be strong. The user wants to use LangChain.
 
 **Decision.**
 - Search targets: two collections, `decisions` (past decisions) and `rules` (rule articles).
 - Chunking: one decision is one chunk, one article is one chunk. An article gets its heading path in front (for example `Section B > 1 General > 1.8 Driving > 1.8.6`).
-- The text embedded for a decision is "what happened" (the session, Fact, and the factual part of Reason). Article numbers and penalties are removed from the text and kept in metadata.
-- Search: LangChain's BM25 retriever and vector retriever, combined by rank fusion (RRF).
+- The text searched for a decision is "what happened": the session and the Fact, joined as one line. The Reason field is not included; separating its findings of fact from its conclusion has not been tried. The article and the penalty are kept in metadata only.
+- Search method: not fixed in advance. Three candidates are built and compared on the dev questions (system design, section 4.3): BM25 alone, vector alone, and hybrid (the two rankings combined by reciprocal rank fusion, RRF). The best one is used; when they are level, the simplest. They are built with LangChain's BM25 retriever, the Chroma vector retriever and `EnsembleRetriever`, and all three stay in the code so the comparison can be repeated.
+- For past decisions the comparison gave vector search (below). For rule articles it is made in step 3.
 - Storage: Chroma, local files.
 - Metadata filter: `decisions` searches only events earlier than the question's event; `rules` searches only the issue in force on the question's event date.
-- Embedding: OpenAI `text-embedding-3-large` ($0.13 per 1 million tokens), called through `OpenAIEmbeddings` from `langchain-openai`. It is confirmed by comparing search evaluation numbers against `text-embedding-3-small` ($0.02) on the dev questions.
+- Embedding: OpenAI `text-embedding-3-large` ($0.13 per 1 million tokens), called through `OpenAIEmbeddings` from `langchain-openai`.
 - The number retrieved starts at 5 decisions and 8 articles and is settled on dev.
 - No reranker. If the search evaluation is low, it is reconsidered then.
 
@@ -171,6 +174,20 @@ The full rules are assumed to be 150,000 tokens.
 | LlamaIndex | Chunking that is aware of document structure | Overlaps with LangChain |
 | Hosted vector DB (Pinecone, Weaviate and others) | Suits large scale | Needs an account and a key, and makes reproduction harder. Nothing gained at this size. Original text would be stored externally |
 | Local open models (the sentence-transformers family) | Free; the version can be pinned | Needs a heavy library installed |
+
+**What the comparison showed for past decisions (dev events Monaco to Hungarian, 5 results, `text-embedding-3-large`, 2026-11-16).** hit@5 is the share of questions with at least one decision under the same article among the 5 results; precision@5 is the share of the 5 results that are under the same article.
+
+| Method | Reworded questions (94): hit@5 | precision@5 | Stewards' wording (87): hit@5 | precision@5 |
+|---|---|---|---|---|
+| BM25 alone | 0.702 (66 questions) | 0.357 | 0.770 (67) | 0.480 |
+| Vector alone | 0.745 (70) | 0.479 | 0.770 (67) | 0.487 |
+| Hybrid, equal weights, 20 candidates | 0.734 (69) | 0.447 | 0.747 (65) | 0.499 |
+| Hybrid, best of 18 settings (vector weight 0.9, 50 candidates) | 0.755 (71) | 0.474 | 0.759 (66) | 0.485 |
+
+- When the question uses other words than the stewards', vector search is clearly ahead of BM25 on precision@5 (0.479 against 0.357).
+- Hybrid was tried with vector weights 0.3, 0.5, 0.6, 0.7, 0.8 and 0.9 and with 10, 20 and 50 candidates from each search. On the reworded questions no setting beat vector alone: the best one has one more question in hit@5 and a slightly lower precision@5, and hybrid improved only as the vector weight rose, that is, as it became vector search. On the stewards' wording hybrid has a slightly higher precision@5 (at most 0.499 against 0.487) and one or two fewer questions in hit@5.
+- So vector search is used for past decisions: the same or slightly better numbers with one index and no weights to choose. Decided by the user on 2026-11-16. BM25 and hybrid remain available (`--method`) and remain in the reported comparison.
+- What this does not show. There are 94 questions, so one question is 1.1 points and no confidence interval was computed; "level" is the honest reading of the small gaps. The reworded questions were written by one model in one sitting and stay close to the originals (they keep car and turn numbers). The test events were not used. Rule articles are a different kind of text and may come out differently.
 
 **Trade-off.** If the provider retires an API embedding model, the index cannot be rebuilt identically. Which embedding model is better on these documents has not been measured either. On the other hand, the search evaluation (system design, section 4.3) runs without model calls, so it is easy to swap embedding models and settings and compare them.
 
@@ -265,12 +282,12 @@ The screen technology is unchanged from the first decision.
 
 **Status:** Decided
 
-**Decision.** The repository holds only the download script, the document URLs, the labels (article IDs, penalty type and size), the character positions of the spans to mask, and the hashes. Each person downloads the PDFs and the original text on their own machine.
+**Decision.** The repository holds only the download script, the document URLs, the labels (article IDs, penalty type and size) and the hashes. Each person downloads the PDFs and the original text on their own machine.
 
 **Grounds.** FIA website terms 3.4 (copyright in the regulations and the ISC), 3.5 (no reproduction or distribution without written consent), 3.7 (no embedding in other sites or applications), 3.9 (championship information and data). We stay within what 3.6 (personal, non-commercial viewing; short quotations with the source given) and 3.8 (direct links tolerated) allow.
 
 **Details added this time.**
-- The question text (the one line of Fact, the masked Reason) is original text too, so it does not go in the repository and is reassembled from position information.
+- The question text (the session and the Fact) is original text too, so it does not go in the repository. Each machine rebuilds it by parsing the downloaded PDFs. Nothing is masked, because the Reason field is not part of the question. The reworded questions in `data/questions/paraphrased.jsonl` were written for this project and are in the repository.
 - Of the run records, the model's written reasoning and the text of retrieved articles stay local. The repository's `results.jsonl` holds only the structured answers and the figures.
 - The public report page shows only aggregate figures and article IDs.
 
@@ -327,7 +344,7 @@ langsmith            optional
 |---|---|
 | Python (25) | All of it |
 | Evaluation (25) | Scorer, statistics, error classification, runner |
-| RAG (19) | Article-level chunking, hybrid search, search metrics |
+| RAG (19) | Article-level chunking, vector search chosen over BM25 and hybrid by measurement, search metrics |
 | Prompt engineering (14) | Shared instructions, cache structure |
 | Agents (27) | None (taken out of scope, ADR-008) |
 | MCP (12) | None (taken out of scope, ADR-008) |

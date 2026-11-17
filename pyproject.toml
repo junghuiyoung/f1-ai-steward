@@ -5,8 +5,14 @@ description = "Describe a Formula 1 incident, get the rule, the usual penalty an
 requires-python = ">=3.12"
 dependencies = [
     "httpx>=0.28.1",
+    "langchain-chroma>=1.1.0",
+    "langchain-community>=0.4.2",
+    "langchain-openai>=1.8.0",
+    "pdfplumber>=0.11.10",
     "pypdf>=7.1.0",
+    "python-dotenv>=1.2.4",
     "pyyaml>=6.0.3",
+    "rank-bm25>=0.2.2",
     "typer>=0.29.1",
 ]
 
@@ -22,6 +28,9 @@ packages = ["src/f1aisteward"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# langchain-community says on import that it is no longer maintained. Known, and written
+# down in PLAN.md; BM25Retriever lives nowhere else.
+filterwarnings = ["ignore:.*langchain-community.*:DeprecationWarning"]
 
 [dependency-groups]
 dev = [

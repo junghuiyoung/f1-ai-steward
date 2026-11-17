@@ -4,6 +4,8 @@ Written 2026-11-14 · Fully revised 2026-11-15 · Status: draft
 
 **Revised 2026-11-15.** The backbone of the project changed from "an experiment comparing three methods" to "a RAG product that searches past decisions" (user decision). The previous version is in `archive/2026-11-15-three-way-comparison/`. Decided the same day: no agent (LangGraph + MCP), every model call goes through LangChain, the CLI is named `f1aisteward`. The evaluation additions that came out of Codex's (`gpt-6.1-sol`) review of the README (citation precision, a comparison of search methods, failure counts, the number of out-of-scope questions) are in sections 3.7 and 4.
 
+**Revised 2026-11-16.** Section 3.5: the search method is chosen by comparing BM25, vector and hybrid on the dev questions instead of being fixed as hybrid. For past decisions the comparison was run and vector search was chosen (user decision). The numbers are in section 3.5 and ADR-004.
+
 Markers: **[verified]** is a fact checked directly, **[estimate]** is a value that has not been measured or an assumption, **[decision needed]** is something the user has to decide.
 
 ---
@@ -57,7 +59,8 @@ An agent (LangGraph, MCP), a production service, cloud deployment, TypeScript, u
    embedding                     embedding
         │                            │
    Chroma: decisions            Chroma: rules
-   + BM25 index                 + BM25 index
+   (BM25 only for the           + BM25 index, if the
+    comparison, section 3.5)     comparison favours it
 
 
 [Answer a question: for every question]
@@ -134,9 +137,9 @@ Because of FIA website terms 3.4 to 3.9 [verified], PDFs, rule text and decision
 ### 3.3 The decisions index
 
 - **Chunk**: one decision is one chunk. Decisions are short, so there is no reason to split further.
-- **Text that is embedded**: the part that says "what happened" (the session, Fact, and the findings-of-fact part of Reason). The question is also "what happened", so like is compared with like.
+- **Text that is searched**: the session and the Fact, joined as one line ("<session>. <Fact>"; the Fact alone for the four decisions with no session). The question is built the same way, so like is compared with like. The Reason field is not included: it mixes the findings of fact with the conclusion, and separating the two has not been tried.
 - **Metadata**: event, date, session, article IDs, penalty, kind, document URL. The date filters to "earlier events only", and the article and penalty are used to count distributions.
-- If article numbers and penalties are mixed into the embedded text, search turns into finding "the same number". They are removed from the embedded text and kept only in metadata. **[estimate: the accuracy of automatically filtering the conclusion sentences out of Reason has not been measured]**
+- If article numbers and penalties are mixed into the searched text, search turns into finding "the same number". The article and the penalty are kept only in metadata. Nothing has to be filtered out of the text: over the 2026 season no Fact names a penalty and two name an article (British 83, Mexico City 57). Those two stay in the index as they are and are left out of the evaluation questions. **[verified: counted over the 342 parsed decisions, 2026-11-16]**
 
 ### 3.4 Parsing and indexing the rules
 
@@ -147,14 +150,27 @@ Because of FIA website terms 3.4 to 3.9 [verified], PDFs, rule text and decision
 
 ### 3.5 Search
 
-Two kinds of search are combined (hybrid search).
+The search method is not fixed in advance. Three candidates are built, compared on the dev questions (section 4.3), and the best one is used. When they are level, the simplest is used.
 
 | | What it finds | Where it is strong |
 |---|---|---|
 | BM25 (keyword) | Documents containing the same words | Fixed expressions such as "pit lane" or "Turn 4" |
 | Vector (embedding) | Documents with similar meaning | The same situation described in different words |
+| Hybrid | Both of the above | The two rankings are combined with RRF (Reciprocal Rank Fusion: turn the rank in each list into a score and add them up) |
 
-- The two rankings are combined with RRF (Reciprocal Rank Fusion: turn the rank in each list into a score and add them up).
+**Past decisions: vector search** (user decision, 2026-11-16). Measured on the dev events (Monaco to Hungarian), 5 results **[verified: `eval --retrieval`, 2026-11-16]**:
+
+| Method | Reworded questions (94): hit@5 | precision@5 | Stewards' wording (87): hit@5 | precision@5 |
+|---|---|---|---|---|
+| BM25 alone | 0.702 (66 questions) | 0.357 | 0.770 (67) | 0.480 |
+| Vector alone | 0.745 (70) | 0.479 | 0.770 (67) | 0.487 |
+| Hybrid, equal weights, 20 candidates | 0.734 (69) | 0.447 | 0.747 (65) | 0.499 |
+| Hybrid, best of 18 settings (vector weight 0.9, 50 candidates) | 0.755 (71) | 0.474 | 0.759 (66) | 0.485 |
+
+Vector is clearly ahead of BM25 when the question is worded differently from the decision. Hybrid was tried at 18 settings (vector weight 0.3 to 0.9; 10, 20 or 50 candidates). On the reworded questions none beat vector alone: the best has one more question in hit@5 and a lower precision@5. On the stewards' wording hybrid is slightly higher on precision@5 and one or two questions lower on hit@5. No confidence interval was computed. BM25 and hybrid stay in the code and in the reported comparison. The full reading and its limits are in ADR-004.
+
+**Rule articles: not chosen yet.** The same comparison is made when the rules index exists (implementation step 3).
+
 - Implemented with LangChain retrievers; storage is Chroma (local files) and the embedding is `text-embedding-3-large` (ADR-004).
 - The number given to the model starts at 5 decisions and 8 articles and is settled on the dev questions.
 - The distribution on the screen ("5 of 8 got 10 seconds") is counted over the decisions, among a wider top 20, that have the same article as the answer. **[estimate: 20 is a provisional value and is settled on dev]**
@@ -233,7 +249,7 @@ This looks at "does it find similar incidents properly".
 | Article recall@k | Is the gold article among the k retrieved articles |
 | Out-of-scope questions | The number of questions whose gold article is in none of the included rule documents. They are not removed from the questions; the count is reported separately |
 
-- The same questions are run through three search methods (BM25 only, vector only, hybrid) and reported side by side. This is to show with numbers whether hybrid is actually better.
+- The same questions are run through three search methods (BM25 only, vector only, hybrid) and reported side by side. This is to show with numbers which method is actually better; the product uses the one the dev numbers favour (section 3.5).
 
 - It uses embeddings only, so it is nearly free and finishes in seconds. Settings such as what goes into a chunk, the weight between BM25 and vector, and k are compared here.
 - "Same article" is an approximation of "similar incident". The same article can cover different situations, and a different article can still be a useful reference.
@@ -356,7 +372,7 @@ With some margin, about $10. The rules are not put in whole, so this is less tha
 3. **Repeated decisions inflate the numbers.** Decisions such as component allowance exceeded have nearly identical wording, so both search and answering are easy. They are reported per kind.
 4. **Article extraction from the rules PDFs is unverified** (section 3.4).
 5. **The decision format at other events is unknown.** Only São Paulo has been looked at.
-6. **The Fact field may be too short.** If it is at the level of "Car 12 – causing a collision", search becomes matching the article's name. In step 2, after reading the real text, decide whether to put the factual part of Reason into the question.
+6. **The Fact field may be too short.** If it is at the level of "Car 12 – causing a collision", search becomes matching the article's name. In step 2, after reading the real text, decide whether to put the factual part of Reason into the question. **Settled 2026-11-15:** the Facts say which car did what where (12 words at the median), so the question and the searched text are the session and the Fact, without Reason.
 
 ---
 
