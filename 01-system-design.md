@@ -134,7 +134,7 @@ Because of FIA website terms 3.4 to 3.9 [verified], PDFs, rule text and decision
   - **Article**: the citation in the Infringement field, normalised to an ID. Examples: `F1-B:1.8.6`, `ISC-L:IV.2.d`
   - **Penalty**: the Decision field as `{type, value, unit}`. The type is one of `no_further_action, warning, reprimand, fine, time_penalty, grid_drop, pit_lane_start, drive_through, stop_go, disqualification, other`
   - **Kind**: judgment incident / procedural or technical breach / component allowance exceeded / pit lane speeding
-- Parsing failures are not thrown away; their count is reported. "0 failed" means every required field was found, not that every label is right: five decisions were compared with their page images, and the 30-decision sample of section 4.1 has not been checked yet.
+- Parsing failures are not thrown away; their count is reported. "0 failed" means every required field was found, not that every label is right: five decisions were compared with their page images, and then a random sample of 30 (section 4.1), with no label wrong.
 
 ### 3.3 The decisions index
 
@@ -240,7 +240,7 @@ Whether the product answers correctly is looked at in two layers. The gold answe
 
 - One decision is one question. The question is that decision's session and Fact field. The gold answer is the labels from section 3.2. Decisions of one event that share the same Fact (one per car in the same incident) are one question whose gold answer is all their articles. `car_table` decisions are left out: their Fact only points at a table.
 - A second question set asks the same incidents in other words (`data/questions/paraphrased.jsonl`, one per `single_car` decision, written for this project), to measure search on wording a user would write.
-- Questions and gold answers come out of parsing automatically, so nobody writes them by hand. Instead, 30 questions are sampled and their labels are checked against the original text **[not done yet]**.
+- Questions and gold answers come out of parsing automatically, so nobody writes them by hand. Instead, 30 questions are sampled and their labels are checked against the original text. **[verified, 2026-11-17]** 30 decisions drawn at random by kind in proportion to the season; article ids, penalty, kind, session and Fact compared with the rendered pages: 0 wrong. Zero in 30 bounds the error rate at about 10% (one-sided 95%), and no more. The decisions and the conventions met are listed in PLAN.md, step 1.
 - Every question text is checked with regular expressions for leftover article numbers or penalty values.
 
 ### 4.2 Split by time
