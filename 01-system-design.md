@@ -6,6 +6,8 @@ Written 2026-11-14 · Fully revised 2026-11-15 · Status: draft
 
 **Revised 2026-11-16.** Section 3.5: the search method is chosen by comparing BM25, vector and hybrid on the dev questions instead of being fixed as hybrid. For past decisions the comparison was run and vector search was chosen (user decision). The numbers are in section 3.5 and ADR-004.
 
+**Revised 2026-11-17.** Brought in line with implementation steps 1 to 3. Sections 3.2, 3.4, 4.2, 5.1 and 6: what parsing the real decisions and rules showed. Section 3.5: the search numbers after the label fix of step 3; rule articles use vector search plus the articles cited by the past decisions found (user decision). Section 8: what is decided now.
+
 Markers: **[verified]** is a fact checked directly, **[estimate]** is a value that has not been measured or an assumption, **[decision needed]** is something the user has to decide.
 
 ---
@@ -31,7 +33,7 @@ If the incident really happened, the stewards' actual decision and the original 
 
 RAG is the technique for when there are too many documents to put in the prompt whole.
 
-- **The rulebook fits whole.** It is about 150,000 tokens [estimate] and the model's limit is 1.05 million. With the rules alone as the target, RAG is not needed, and in the previous design RAG could lose the comparison and drop out of the product.
+- **The rulebook fits whole.** The four rule books in force on one date are about 210,000 tokens [verified: tiktoken `cl100k_base` count of the parsed articles, 2026-11-17] and the model's limit is 1.05 million. With the rules alone as the target, RAG is not needed, and in the previous design RAG could lose the comparison and drop out of the product.
 - **Past decisions keep growing.** The 2026 season alone has 359 [verified] and each event adds about 18. Several seasons together do not fit whole. Putting all of them in every question is also expensive.
 - **The penalty cannot be known from the rules alone.** Whether it is 5 seconds or 10 is at the stewards' discretion. How similar incidents were decided in the past is the best evidence.
 
@@ -59,8 +61,7 @@ An agent (LangGraph, MCP), a production service, cloud deployment, TypeScript, u
    embedding                     embedding
         │                            │
    Chroma: decisions            Chroma: rules
-   (BM25 only for the           + BM25 index, if the
-    comparison, section 3.5)     comparison favours it
+   (BM25 is built in memory, only for the comparison, section 3.5)
 
 
 [Answer a question: for every question]
@@ -68,7 +69,8 @@ An agent (LangGraph, MCP), a production service, cloud deployment, TypeScript, u
  incident description + event
       │
       ├──▶ search decisions ──▶ 5 similar past decisions   (earlier events only)
-      └──▶ search rules     ──▶ 8 relevant articles        (only the issue in force at that event)
+      └──▶ search rules     ──▶ 8 relevant articles        (only the issues in force at that event)
+                                + the articles the 5 decisions cite
                  │
                  ▼
       Model (LangChain ChatOpenAI): reads only what was retrieved and writes the answer
@@ -86,9 +88,9 @@ An agent (LangGraph, MCP), a production service, cloud deployment, TypeScript, u
 |---|---|---|
 | Question it answers | How did the stewards deal with similar incidents | Which rule is it, and what does it say |
 | One chunk | 1 decision | 1 article |
-| Count | 359 in the 2026 season [verified], still growing | 1,000 to 3,000 [estimate] |
-| Filter | Only events earlier than the question's event | Only the issue in force on the question's event date |
-| Without it | There is no product | The article text cannot be shown. Article numbers also come from past decisions |
+| Count | 342 parsed of the 359 in the 2026 season [verified], still growing | 3,630 in 11 issues; 1,147 to 1,356 in force on one event's date [verified] |
+| Filter | Only events earlier than the question's event | Only the issues in force on the question's event date |
+| Without it | There is no product | The article text cannot be shown. Article numbers also come from past decisions, and the articles they cite are added to rule search (section 3.5) |
 
 ### 2.3 Design principles
 
@@ -106,7 +108,7 @@ An agent (LangGraph, MCP), a production service, cloud deployment, TypeScript, u
 | `data/manifest/events.yaml` | Events, dates, URLs of the decision listings | Yes |
 | `data/labels/decisions.jsonl` | Decision ID, document URL and sha256, gold article IDs, penalty type and size, split (dev/test) | Yes |
 | `.cache/pdf`, `.cache/text` | Downloaded PDFs and extracted text | Local only |
-| `.cache/index` | Chroma and BM25 indexes | Local only |
+| `.cache/index` | Chroma collections `decisions` and `rules` (BM25 is built in memory when needed) | Local only |
 | `.cache/pages` | Page images of decisions for the screen | Local only |
 | `runs/<run_id>/results.jsonl` | Structured answers, retrieved document IDs, tokens, cost, time | Yes (no original text) |
 | `runs/<run_id>/transcripts/` | Full prompts and the model's written reasons | Local only |
@@ -126,13 +128,13 @@ Because of FIA website terms 3.4 to 3.9 [verified], PDFs, rule text and decision
 
 ### 3.2 Parsing decisions
 
-- Extract text with `pypdf` and cut the body at the positions of the field names (No / Driver, Competitor, Time, Session, Fact, Infringement, Decision, Reason). In the pilot all 31 São Paulo documents succeeded [verified: earlier session. That script is no longer in this folder and will be rewritten].
-- A document with no Driver field, such as a lap-time deletion list, is classified as `kind: lap_deletion_list` and left out.
+- Extract text with `pypdf` and cut the body at the positions of the field names (No / Driver, Competitor, Time, Session, Fact, Infringement, Decision, Reason). Over the whole 2026 season: 342 parsed (320 forms about one car, 22 cover pages with a table of cars), 17 left out, 0 failed [verified: `build --decisions`, 2026-11-15].
+- Documents that are not about an incident are left out and counted: 13 answers to a team's request, 2 Technical Delegate's reports, 1 list of deleted lap times under an ordinary title, 1 ruling on the running of the event. Their titles look like decisions, so only the text tells them apart.
 - Labels are built from the fields.
   - **Article**: the citation in the Infringement field, normalised to an ID. Examples: `F1-B:1.8.6`, `ISC-L:IV.2.d`
-  - **Penalty**: the Decision field as `{type, value, unit}`. The type is one of `no_further_action, warning, reprimand, fine, time_penalty, grid_drop, drive_through, stop_go, disqualification, other`
+  - **Penalty**: the Decision field as `{type, value, unit}`. The type is one of `no_further_action, warning, reprimand, fine, time_penalty, grid_drop, pit_lane_start, drive_through, stop_go, disqualification, other`
   - **Kind**: judgment incident / procedural or technical breach / component allowance exceeded / pit lane speeding
-- Other events may have documents in a different format. Parsing failures are not thrown away; their count is reported. **[estimate: only one event has been looked at]**
+- Parsing failures are not thrown away; their count is reported. "0 failed" means every required field was found, not that every label is right: five decisions were compared with their page images, and the 30-decision sample of section 4.1 has not been checked yet.
 
 ### 3.3 The decisions index
 
@@ -143,10 +145,11 @@ Because of FIA website terms 3.4 to 3.9 [verified], PDFs, rule text and decision
 
 ### 3.4 Parsing and indexing the rules
 
-- Documents covered **[decision needed: section 8]**: Sporting Regulations (Section B), the ISC body, ISC Appendix L and H, Driving Standards Guidelines.
-- One article is one chunk, with its heading path in front. Example: `Section B > 1 General > 1.8 Driving > 1.8.6`
-- Each article carries `{id, heading_path, text, doc, issue, valid_from, valid_to}`. The Sporting Regulations were reissued nine times in 2026 [verified], and only the issue in force on the question's event date is searched.
-- **Risk**: extracting the article tree from the rules PDFs has not been tried yet. The numbering is regular, so it should work [estimate], but places where tables and footnotes are mixed in may need hand fixes. The product works on decision search alone, so if this work runs late the earlier steps are not blocked.
+- Documents covered (user decision, 2026-11-16): the Sporting Regulations (Section B), the ISC body, ISC Appendix L and Appendix H. Of the decisions with an article, 98 of 99 dev and 158 of 160 test cite at least one article in these four; Section B alone would be 72 and 101. Section C is left out (7 decisions cite it). The Driving Standards Guidelines are not cited as an article by any decision and are not included.
+- Eleven issues were in force at some point of the season (`data/manifest/regulations.yaml`): Section B issues 5 to 9, two each of the ISC, Appendix L and Appendix H. An issue is in force from the date the document gives itself until the next issue of the same book, and only the issues in force on the question's event date are searched.
+- Text is read with `pdfplumber`. The ISC and its appendices print French on the left and English on the right; each page is cropped at the empty band between the columns, found from the words' positions.
+- One article is one chunk, with its heading path in front. Example: `ARTICLE B1: ORGANISATION OF A COMPETITION > B1.8 Driving > F1-B:1.8.7`. Each article carries `{key, id, book, issue, headings, text}`. 3,630 articles in all. Points such as a) to e) stay inside their article, so a citation of `ISC-L:IV.2.d` is found in the article `ISC-L:IV.2`.
+- Every article that the 342 decisions cite from the four books is in the issue in force on its decision's date [verified: `eval --retrieval` counts the ones that are not; 0].
 
 ### 3.5 Search
 
@@ -158,21 +161,36 @@ The search method is not fixed in advance. Three candidates are built, compared 
 | Vector (embedding) | Documents with similar meaning | The same situation described in different words |
 | Hybrid | Both of the above | The two rankings are combined with RRF (Reciprocal Rank Fusion: turn the rank in each list into a score and add them up) |
 
-**Past decisions: vector search** (user decision, 2026-11-16). Measured on the dev events (Monaco to Hungarian), 5 results **[verified: `eval --retrieval`, 2026-11-16]**:
+**Past decisions: vector search** (user decision, 2026-11-16). Measured on the dev events (Monaco to Hungarian), 5 results **[verified: `eval --retrieval` and a throwaway sweep of the hybrid settings, rerun 2026-11-17 after the label fix of step 3]**:
 
 | Method | Reworded questions (94): hit@5 | precision@5 | Stewards' wording (87): hit@5 | precision@5 |
 |---|---|---|---|---|
-| BM25 alone | 0.702 (66 questions) | 0.357 | 0.770 (67) | 0.480 |
-| Vector alone | 0.745 (70) | 0.479 | 0.770 (67) | 0.487 |
-| Hybrid, equal weights, 20 candidates | 0.734 (69) | 0.447 | 0.747 (65) | 0.499 |
-| Hybrid, best of 18 settings (vector weight 0.9, 50 candidates) | 0.755 (71) | 0.474 | 0.759 (66) | 0.485 |
+| BM25 alone | 0.713 (67 questions) | 0.360 | 0.782 (68) | 0.490 |
+| Vector alone | 0.755 (71) | 0.483 | 0.782 (68) | 0.499 |
+| Hybrid, equal weights, 20 candidates | 0.745 (70) | 0.451 | 0.759 (66) | 0.508 |
+| Hybrid, best of 18 settings (vector weight 0.9, 50 candidates) | 0.766 (72) | 0.479 | 0.782 (68) | 0.499 |
 
-Vector is clearly ahead of BM25 when the question is worded differently from the decision. Hybrid was tried at 18 settings (vector weight 0.3 to 0.9; 10, 20 or 50 candidates). On the reworded questions none beat vector alone: the best has one more question in hit@5 and a lower precision@5. On the stewards' wording hybrid is slightly higher on precision@5 and one or two questions lower on hit@5. No confidence interval was computed. BM25 and hybrid stay in the code and in the reported comparison. The full reading and its limits are in ADR-004.
+Vector is clearly ahead of BM25 when the question is worded differently from the decision. Hybrid was tried at 18 settings (vector weight 0.3 to 0.9; 10, 20 or 50 candidates). On the reworded questions none beat vector alone: the best has one more question in hit@5 and a lower precision@5. On the stewards' wording the best setting equals vector alone, and the others are slightly higher on precision@5 (at most 0.508 against 0.499) and one or two questions lower on hit@5. No confidence interval was computed. BM25 and hybrid stay in the code and in the reported comparison. The full reading and its limits are in ADR-004.
 
-**Rule articles: not chosen yet.** The same comparison is made when the rules index exists (implementation step 3).
+**Rule articles: vector search, plus the articles cited by the past decisions found** (user decisions, 2026-11-17). Recall is the share of the articles the stewards cited that are among the retrieved articles, averaged over questions; an article counts as found when a retrieved article holds it (`ISC-L:IV.2` holds `ISC-L:IV.2.d`). Dev events **[verified: `eval --retrieval`, 2026-11-17; the 14-article row is from a throwaway script]**:
+
+| Method | Articles per question | Reworded (94 questions citing 113 articles): recall | Stewards' wording (87 citing 104): recall |
+|---|---|---|---|
+| BM25 alone | 8 | 0.518 | 0.607 |
+| Vector alone | 8 | 0.644 | 0.699 |
+| Hybrid, equal weights, 20 candidates | 8 | 0.635 | 0.734 |
+| Vector alone, more articles (a control) | 14 | 0.702 | 0.762 |
+| **Vector + the articles the 5 decisions found cite** | 9.7 and 9.6 on average, at most 15 | **0.924** | **0.933** |
+
+The best possible recall is 0.989 on both sets: one citation is of Section C, which is not included.
+
+- Search alone missed mostly two general articles. Appendix L IV.2 (overtaking, car control, track limits, causing a collision) was found for 1 of 13 questions and ISC 12.2.1 (failure to follow instructions) for 0 of 12. The places went to text F1 does not use, such as Appendix L chapter V (offroad circuits) and Appendix H 2.10 (safety car procedures for championships without regulations of their own).
+- Every past decision names the articles it was decided under. The articles cited by the 5 decisions that decision search found are looked up in the issues in force on the question's date and added after the 8 found by search, without repeats. Returning more articles from search alone does not do the same (the control row).
+- Hybrid against vector for rules: three questions ahead on one question set, one behind on the other. Vector was chosen, as for decisions. No fusion weights were tried for rules.
+- The added articles inherit the mistakes of decision search: when none of the 5 decisions is right, what they cite is noise in the prompt. Answer evaluation (section 4.4) shows whether that costs anything.
 
 - Implemented with LangChain retrievers; storage is Chroma (local files) and the embedding is `text-embedding-3-large` (ADR-004).
-- The number given to the model starts at 5 decisions and 8 articles and is settled on the dev questions.
+- The model is given 5 decisions and 8 articles plus the articles those decisions cite (9.6 on average on dev).
 - The distribution on the screen ("5 of 8 got 10 seconds") is counted over the decisions, among a wider top 20, that have the same article as the answer. **[estimate: 20 is a provisional value and is settled on dev]**
 - No reranker (a step that re-sorts the search results with a model). If the search evaluation (section 4.3) is low, it is reconsidered then.
 
@@ -220,23 +238,24 @@ Whether the product answers correctly is looked at in two layers. The gold answe
 
 ### 4.1 Questions
 
-- One decision is one question. The question is that decision's session and Fact field. The gold answer is the labels from section 3.2.
-- Questions and gold answers come out of parsing automatically, so nobody writes them by hand. Instead, 30 questions are sampled and their labels are checked against the original text.
+- One decision is one question. The question is that decision's session and Fact field. The gold answer is the labels from section 3.2. Decisions of one event that share the same Fact (one per car in the same incident) are one question whose gold answer is all their articles. `car_table` decisions are left out: their Fact only points at a table.
+- A second question set asks the same incidents in other words (`data/questions/paraphrased.jsonl`, one per `single_car` decision, written for this project), to measure search on wording a user would write.
+- Questions and gold answers come out of parsing automatically, so nobody writes them by hand. Instead, 30 questions are sampled and their labels are checked against the original text **[not done yet]**.
 - Every question text is checked with regular expressions for leftover article numbers or penalty values.
 
 ### 4.2 Split by time
 
 The events are put in date order and divided.
 
-| Range | Use |
-|---|---|
-| Early-season events | Search corpus only. Too few earlier decisions to use them as questions |
-| Middle events (dev) | Questions used to tune search settings and the prompt |
-| Late events (test) | Questions that produce the reported numbers. Not used for tuning |
+| Range | Events | Use |
+|---|---|---|
+| Before 2026-06-01 | Australian to Canadian (5 events, 83 parsed decisions) | Search corpus only, never a question |
+| Dev, 2026-06-01 to 2026-07-31 | Monaco to Hungarian (6 events, 99) | Questions used to tune search settings and the prompt |
+| Test, from 2026-08-01 | Dutch to São Paulo (9 events, 160) | Questions that produce the reported numbers. Not used for tuning |
 
-For any question, the search corpus is the decisions from events earlier than its event. The boundaries are set after counting decisions per event. **[decision needed: in implementation step 2]**
+For any question, the search corpus is the decisions from events earlier than its event, whatever their range. Both boundaries are the user's decision (2026-11-16) and are set in `config.py`.
 
-The training cutoff of `gpt-6.1-terra` is 2026-06-01 [verified: ADR-003]. Taking the test range from events after that date avoids the model answering correctly because it memorised the decisions.
+The training cutoff of `gpt-6.1-terra` is 2026-06-01 [verified: ADR-003]. No question comes from an event before that date, so the model cannot answer correctly because it memorised the decision. The cut between dev and test is the summer break. With about 160 test questions, a score near 0.7 has a 95% interval of about ±7 points.
 
 ### 4.3 Search evaluation (no model calls)
 
@@ -246,8 +265,10 @@ This looks at "does it find similar incidents properly".
 |---|---|
 | Decision hit@k | Is at least one of the k retrieved decisions under the same article as the gold answer |
 | Decision precision@k | The share of the k retrieved decisions that are under the same article |
-| Article recall@k | Is the gold article among the k retrieved articles |
+| Article recall | The share of the gold articles held by one of the retrieved articles, averaged over questions. Reported for search alone (k = 8) and with the articles cited by the decisions found added, with the average number of articles beside it |
 | Out-of-scope questions | The number of questions whose gold article is in none of the included rule documents. They are not removed from the questions; the count is reported separately |
+
+Recall, not hit or precision, for the rules: the gold answer is the one to three articles the stewards cited, and the answer needs each of them. Hit would score a question that found one of three cited articles the same as a perfect search. Decisions are the other way round: the number of right earlier decisions runs from 0 to 26 per question, so their recall would measure how common an article is, and five good decisions are enough.
 
 - The same questions are run through three search methods (BM25 only, vector only, hybrid) and reported side by side. This is to show with numbers which method is actually better; the product uses the one the dev numbers favour (section 3.5).
 
@@ -330,7 +351,7 @@ The 2026 season document listings on fia.com were downloaded per event and count
 | Lap-time deletion lists (not used) | 129 |
 | **Decisions (the search corpus and the question candidates)** | **359** |
 
-Divided by title: about 180 incidents that need judgment, about 110 procedural or technical breaches, 35 component allowance exceeded, 33 pit lane speeding [verified: a rough classification from an earlier session. It may change once the PDFs are parsed].
+By kind, over the 342 parsed decisions: 164 incidents that need judgment, 109 procedural or technical breaches, 36 component allowance exceeded, 33 pit lane speeding [verified: `build --decisions`, 2026-11-15]. The rule documents give 3,630 articles across 11 issues.
 
 ### 5.2 Cost [estimate]
 
@@ -370,8 +391,8 @@ With some margin, about $10. The rules are not put in whole, so this is less tha
 1. **With one season only, the need for RAG may look weak.** 359 decisions may be an amount that could go in whole [unmeasured]. The case for RAG is that the documents keep growing, and the cost per question. The optional experiment in step 7 shows this difference in numbers.
 2. **Adding past seasons is hard.** The season selector on fia.com offers 2015 and 2019 to 2026 [verified: 2026-11-15]. Whether the decisions exist in the same format has not been checked. The rule numbering changed in 2026, so a table mapping the article numbers of earlier seasons' decisions to the 2026 numbers would be needed. Finish with the 2026 season first.
 3. **Repeated decisions inflate the numbers.** Decisions such as component allowance exceeded have nearly identical wording, so both search and answering are easy. They are reported per kind.
-4. **Article extraction from the rules PDFs is unverified** (section 3.4).
-5. **The decision format at other events is unknown.** Only São Paulo has been looked at.
+4. **Article extraction from the rules PDFs.** Resolved in step 3: every cited article of the four books is found in its issue (section 3.4).
+5. **The decision format at other events.** Resolved in step 1: three layouts over the season, all handled or counted (section 3.2).
 6. **The Fact field may be too short.** If it is at the level of "Car 12 – causing a collision", search becomes matching the article's name. In step 2, after reading the real text, decide whether to put the factual part of Reason into the question. **Settled 2026-11-15:** the Facts say which car did what where (12 words at the median), so the question and the searched text are the session and the Fact, without Reason.
 
 ---
@@ -401,8 +422,11 @@ Once step 2 is finished, "find similar incidents" works without calling a model.
 - Every model call goes through LangChain (ADR-002). LangSmith is used
 - No agent (ADR-008)
 - Past-decision search is at the centre
+- The question is the session and the Fact (2026-11-15)
+- Dev and test ranges by event date (section 4.2, 2026-11-16)
+- Past decisions: vector search (section 3.5, 2026-11-16)
+- Rule documents: Section B, the ISC body, Appendix L and H, 11 issues (section 3.4, 2026-11-16)
+- Rule articles: vector search plus the articles cited by the past decisions found (section 3.5, 2026-11-17)
 
 **Still open**
-- **Which rule documents to include** [decision needed]: the Sporting Regulations only, or also the ISC, Appendix L and H, and the guidelines. For São Paulo, 9 of the 24 decisions cite articles outside the Sporting Regulations [verified: earlier session]. This can be decided before step 3.
-- **The boundaries of the dev and test ranges**: decided in step 2 after looking at the counts per event.
 - **Whether to also run the final evaluation on `gpt-6-luna`**: the previous design had it. The product does not need it, and it costs about $1.

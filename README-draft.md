@@ -1,6 +1,7 @@
 <!--
-DRAFT for the public repository's README. Nothing here has been measured yet.
-Cells marked TBD get filled from results/summary.json after the evaluation run.
+DRAFT for the public repository's README. The tables under "Which search method?" are
+measured on the dev weekends (2026-11-17). Cells marked TBD get filled from
+results/summary.json after the evaluation run.
 Do not put FIA document text or PDFs in the repository (see "Documents"). The one exception is
 docs/demo.gif, which includes the stewards' decision and its page image (user decision, 2026-11-15).
 docs/demo.gif is recorded from the running app after the product screen is built. Until then
@@ -35,11 +36,12 @@ When it answers about a race weekend, it can only see decisions from earlier wee
 flowchart TD
     ID[("Past decisions index<br/>Chroma")]
     Q["Incident + race weekend"]
-    IR[("Rules index<br/>Chroma + BM25")]
+    IR[("Rules index<br/>Chroma")]
     ID --> SD["Search past decisions<br/>earlier weekends only"]
     Q --> SD
-    Q --> SR["Search the rules<br/>issue in force that weekend"]
+    Q --> SR["Search the rules<br/>issues in force that weekend"]
     IR --> SR
+    SD -->|"the articles they cite"| SR
     SD --> M["Model answers<br/>from what was found"]
     Q --> M
     SR --> M
@@ -50,7 +52,8 @@ flowchart TD
 Both indexes are built on your machine from documents downloaded from fia.com, and rebuilt after each race weekend.
 
 - One decision is one chunk. One article is one chunk, with its heading path in front.
-- Past decisions are searched by meaning, with embeddings. Keyword search (BM25) and a hybrid of the two (reciprocal rank fusion) were built and measured as well; the hybrid did not beat embeddings alone, so the simpler method is used. The numbers are under "Which search method" below. The method for searching the rules: TBD, chosen the same way.
+- Past decisions are searched by meaning, with embeddings. Keyword search (BM25) and a hybrid of the two (reciprocal rank fusion) were built and measured as well; the hybrid did not beat embeddings alone, so the simpler method is used. The numbers are under "Which search method" below.
+- The rules are searched by meaning too, chosen the same way. Search alone missed the general articles the stewards cite most, such as the one on causing a collision. Every past decision names the articles it was decided under, so the articles cited by the decisions found are added to the rules the model is given.
 - After the model answers, code checks that every rule and decision it cites was actually retrieved. This catches invented citations. It does not check that the reasoning follows from them.
 - The counts shown with an answer ("5 of 8 similar incidents got 10 seconds") are computed in code, not written by the model. They summarize a wider set of retrieved earlier decisions under the predicted rule. They describe those examples and are not outcome probabilities.
 
@@ -64,7 +67,8 @@ All numbers are from race weekends the system was not tuned on, except the one t
 |---|---|---|---|
 | A decision under the same rule is in the top 5 | TBD | TBD | TBD |
 | Share of the top 5 that are under the same rule | TBD | TBD | TBD |
-| The right article is in the top 8 rules | TBD | TBD | TBD |
+| Share of the stewards' articles among the 8 rules found | TBD | TBD | TBD |
+| The same, with the articles cited by the decisions found added | | TBD | |
 
 "Same rule" is a stand-in for "similar incident". Two incidents under the same rule can still be different situations.
 
@@ -74,12 +78,24 @@ The method was chosen on the six tuning weekends (Monaco to Hungarian), not on t
 
 | Method | A decision under the same rule is in the top 5 | Share of the top 5 under the same rule |
 |---|---|---|
-| BM25 only | 66 of 94 | 0.357 |
-| Embeddings only | 70 of 94 | 0.479 |
-| Hybrid, equal weights | 69 of 94 | 0.447 |
-| Hybrid, best of 18 settings | 71 of 94 | 0.474 |
+| BM25 only | 67 of 94 | 0.360 |
+| Embeddings only | 71 of 94 | 0.483 |
+| Hybrid, equal weights | 70 of 94 | 0.451 |
+| Hybrid, best of 18 settings | 72 of 94 | 0.479 |
 
-Embeddings beat keyword search clearly. The hybrid got better only as it leaned further towards embeddings, and its best setting is level with embeddings alone: one question either way. With the stewards' own wording as the question all three were level (65 to 67 of 87). The reworded questions were written by a model and stay close to the originals, so this is a mild test of wording, not a test on real users' questions.
+Embeddings beat keyword search clearly. The hybrid got better only as it leaned further towards embeddings, and its best setting is level with embeddings alone: one question either way. With the stewards' own wording as the question all three were level (66 to 68 of 87). The reworded questions were written by a model and stay close to the originals, so this is a mild test of wording, not a test on real users' questions.
+
+The same questions were asked of the rules in force that weekend. Recall is the share of the articles the stewards cited that are among the rules found.
+
+| Method | Rules given to the model | Recall |
+|---|---|---|
+| BM25 only | 8 | 0.518 |
+| Embeddings only | 8 | 0.644 |
+| Hybrid, equal weights | 8 | 0.635 |
+| Embeddings only, more rules | 14 | 0.702 |
+| Embeddings, plus the articles the decisions found cite (used) | 9.7 on average | 0.924 |
+
+Returning more rules from search alone does not do what the decisions do. For "Car 27 ran into car 55 at turn 8 in the race." the article on collisions is not among the 14 closest rules, while all five decisions found were decided under it.
 
 TBD of TBD questions cite an article outside the regulation documents included. They stay in the scores.
 
@@ -126,7 +142,7 @@ Results are also split by kind of incident (TBD table): judgment calls, procedur
 - The part of a penalty the stewards choose cannot be predicted from text. Past decisions narrow the range; they do not settle it.
 - Questions are one-line facts, shorter and more formulaic than what a person would type.
 - Agreement with the stewards' article and penalty is not the same as a sound explanation. Explanation quality is not measured.
-- Regulation documents included: TBD. Decisions that cite articles outside them are counted and reported, not removed.
+- Regulation documents included: Section B (sporting) of the F1 Regulations, the International Sporting Code and its Appendices L and H, in each of the 11 issues in force at some point of the season. Decisions that cite articles outside them are counted and reported, not removed.
 
 ## Run it
 
@@ -159,7 +175,7 @@ Rule and decision documents belong to the FIA. Apart from the demo above, which 
 
 | Part | Built with | What it does here |
 |---|---|---|
-| Search | LangChain retrievers, Chroma, `text-embedding-3-large`; BM25 and rank fusion for the comparison | Vector search over past decisions; search over the rules |
+| Search | LangChain retrievers, Chroma, `text-embedding-3-large`; BM25 and rank fusion for the comparison | Vector search over past decisions and over the rules; the rules also get the articles those decisions cite |
 | Answer | LangChain `ChatOpenAI`, Pydantic | One shared path for answer-generation calls, structured output |
 | Model | OpenAI `gpt-6.1-terra` | `gpt-6-luna` while building |
 | Evaluation | Own runner, rule-based scoring, pytest | Search and answer scores in `results/summary.json` |

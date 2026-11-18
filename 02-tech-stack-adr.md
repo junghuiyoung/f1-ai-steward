@@ -4,6 +4,8 @@ Written 2026-11-14 · Decision maker: the user · Status values: **Decided** (se
 
 **Revised 2026-11-14.** Following the user's decision, the models changed to OpenAI (`gpt-6.1-terra` for the final run, `gpt-6-luna` for development) and the embedding to `text-embedding-3-large`. The first draft assumed Anthropic, which had not been chosen by comparing it with other providers. The question count was also corrected to the real count taken from fia.com.
 
+**Revised 2026-11-17.** ADR-004: the numbers after the label fix of step 3, and the rule articles: vector search plus the articles cited by the past decisions found (user decision). ADR-010: pdfplumber reads every rule document.
+
 **Revised 2026-11-16.** ADR-004: the search method is no longer fixed in advance as hybrid. The three candidates are compared on the dev questions and the better one is used. For past decisions the comparison was run and vector search was chosen (user decision); the numbers are in ADR-004.
 
 **Revised 2026-11-15.** The screen became the product (AI Steward) and the method comparison moved to the README (ADR-007). The final question set is 100. Decisions are shown as page images instead of in a PDF viewer (ADR-010). Tool-based lookup (an agent) was taken out of scope (ADR-008). Model calls changed from direct OpenAI SDK calls to LangChain throughout (ADR-002).
@@ -37,13 +39,13 @@ How to read it: what the postings ask for is concepts more than tool names. 21 p
 | 001 | Language and packaging | Python 3.12, uv, a lock file | Proposed |
 | 002 | Model call layer | Every model call through LangChain `ChatOpenAI` | Decided |
 | 003 | Models | Final `gpt-6.1-terra` + `gpt-6-luna`, development `gpt-6-luna` | Decided |
-| 004 | RAG search | The search method is chosen by comparing BM25, vector and hybrid on dev. Past decisions: vector search (measured 2026-11-16). Rule articles: measured in step 3. Chroma, `text-embedding-3-large` | Targets decided; method for past decisions decided; method for rule articles open |
+| 004 | RAG search | The search method is chosen by comparing BM25, vector and hybrid on dev. Past decisions: vector search. Rule articles: vector search plus the articles the past decisions found cite. Chroma, `text-embedding-3-large` | Decided |
 | 005 | Running the evaluation and storing results | Two layers: search evaluation and answer evaluation. Our own runner + JSONL, rule-based scoring. LangSmith for tracing during development | Proposed |
 | 006 | Output format | Pydantic schema and structured output | Proposed |
 | 007 | Product screen and reporting results | The product screen is one static page + FastAPI (local); evaluation results go in the README | Decided |
 | 008 | Tool-based lookup | LangGraph + MCP server | Excluded (user decision, 2026-11-15) |
 | 009 | How the data is distributed | Only labels, positions and hashes in the repository; each person downloads the documents | Decided |
-| 010 | PDF parsing and display | pypdf for parsing, page images for display | Proposed |
+| 010 | PDF parsing and display | pypdf for decisions, pdfplumber for rule documents, page images for display | Parsing done; display proposed |
 
 ---
 
@@ -128,7 +130,7 @@ Above 272,000 input tokens, the price doubles for both models.
 | gpt-6.1-terra | $0.008 | $0.012 | $0.016 | $0.016 | $0.16 |
 | gpt-6-luna | $0.0008 | $0.0012 | $0.0016 | $0.0023 | $0.016 |
 
-The full rules are assumed to be 150,000 tokens.
+The full rules are assumed to be 150,000 tokens. Counted on the parsed articles of the four books in force on one date, they are about 210,000 (tiktoken `cl100k_base`, 2026-11-17), so the input part of the two full-rules columns is about 40% low. They are recomputed if the optional experiment is run.
 
 **Considered and not chosen**
 
@@ -151,43 +153,57 @@ The full rules are assumed to be 150,000 tokens.
 
 ## ADR-004: RAG search
 
-**Status:** The search targets are decided (user decision, 2026-11-15). The search method for past decisions is decided (user decision, 2026-11-16, after the comparison below). The method for rule articles is open until it is measured in step 3
+**Status:** Decided. The search targets (user decision, 2026-11-15); the method for past decisions (2026-11-16) and for rule articles (2026-11-17), both after the comparisons below
 
-**Context.** RAG is the centre of this product (system design, section 1.3). There are two search targets. Past decisions number 359 in the 2026 season and grow with each event. Rule articles are expected to number 1,000 to 3,000 [estimate]. Both are sizes that need no vector DB server. Decisions use fixed expressions such as "left the track" and "pit lane speeding", so keyword search may well be strong. The user wants to use LangChain.
+**Context.** RAG is the centre of this product (system design, section 1.3). There are two search targets. Past decisions number 359 in the 2026 season (342 parsed) and grow with each event. Rule articles number 3,630 across 11 issues, 1,147 to 1,356 of them in force on one event's date. Both are sizes that need no vector DB server. Decisions use fixed expressions such as "left the track" and "pit lane speeding", so keyword search may well be strong. The user wants to use LangChain.
 
 **Decision.**
 - Search targets: two collections, `decisions` (past decisions) and `rules` (rule articles).
-- Chunking: one decision is one chunk, one article is one chunk. An article gets its heading path in front (for example `Section B > 1 General > 1.8 Driving > 1.8.6`).
+- Chunking: one decision is one chunk, one article is one chunk. An article gets its heading path in front (for example `ARTICLE B1: ORGANISATION OF A COMPETITION > B1.8 Driving > F1-B:1.8.7`).
 - The text searched for a decision is "what happened": the session and the Fact, joined as one line. The Reason field is not included; separating its findings of fact from its conclusion has not been tried. The article and the penalty are kept in metadata only.
 - Search method: not fixed in advance. Three candidates are built and compared on the dev questions (system design, section 4.3): BM25 alone, vector alone, and hybrid (the two rankings combined by reciprocal rank fusion, RRF). The best one is used; when they are level, the simplest. They are built with LangChain's BM25 retriever, the Chroma vector retriever and `EnsembleRetriever`, and all three stay in the code so the comparison can be repeated.
-- For past decisions the comparison gave vector search (below). For rule articles it is made in step 3.
+- For past decisions the comparison gave vector search (below). For rule articles it also gave vector search, and the articles cited by the 5 past decisions found are added after the 8 found by search (below).
 - Storage: Chroma, local files.
-- Metadata filter: `decisions` searches only events earlier than the question's event; `rules` searches only the issue in force on the question's event date.
+- Metadata filter: `decisions` searches only events earlier than the question's event; `rules` searches only the issues in force on the question's event date. LangChain's BM25 retriever has no filter, so one small BM25 index is built per cut-off (per round for decisions, per set of issues for rules).
 - Embedding: OpenAI `text-embedding-3-large` ($0.13 per 1 million tokens), called through `OpenAIEmbeddings` from `langchain-openai`.
-- The number retrieved starts at 5 decisions and 8 articles and is settled on dev.
+- The number retrieved is 5 decisions and 8 articles, plus the articles those decisions cite (9.6 on average on dev).
 - No reranker. If the search evaluation is low, it is reconsidered then.
 
 | Option | Pros | Cons |
 |---|---|---|
-| **LangChain retrievers + Chroma + OpenAI embedding** | Matches what the user wants. The same library and the same API key as the model calls. The index is a local file, so it rarely has to be rebuilt. Metadata filters handle the date and the issue | In LangChain 1.x some retrievers may have moved package, so the import paths have to be checked during implementation [unverified] |
+| **LangChain retrievers + Chroma + OpenAI embedding** | Matches what the user wants. The same library and the same API key as the model calls. The index is a local file, so it rarely has to be rebuilt. Metadata filters handle the date and the issue | Retrievers have moved package [verified]: `EnsembleRetriever` is in `langchain_classic`, and `BM25Retriever` is in `langchain-community`, which is no longer maintained (0.4.2 pinned). Four defaults did not fit this data and are changed in the code (PLAN.md, step 2) |
 | Our own implementation (rank_bm25 + numpy) | Minimal dependencies, under 100 lines | LangChain would not be used. LangSmith tracing would have to be attached separately |
 | LlamaIndex | Chunking that is aware of document structure | Overlaps with LangChain |
 | Hosted vector DB (Pinecone, Weaviate and others) | Suits large scale | Needs an account and a key, and makes reproduction harder. Nothing gained at this size. Original text would be stored externally |
 | Local open models (the sentence-transformers family) | Free; the version can be pinned | Needs a heavy library installed |
 
-**What the comparison showed for past decisions (dev events Monaco to Hungarian, 5 results, `text-embedding-3-large`, 2026-11-16).** hit@5 is the share of questions with at least one decision under the same article among the 5 results; precision@5 is the share of the 5 results that are under the same article.
+**What the comparison showed for past decisions (dev events Monaco to Hungarian, 5 results, `text-embedding-3-large`).** hit@5 is the share of questions with at least one decision under the same article among the 5 results; precision@5 is the share of the 5 results that are under the same article. First measured on 2026-11-16; the numbers below were measured again on 2026-11-17, after step 3 fixed four labels, and the reading did not change.
 
 | Method | Reworded questions (94): hit@5 | precision@5 | Stewards' wording (87): hit@5 | precision@5 |
 |---|---|---|---|---|
-| BM25 alone | 0.702 (66 questions) | 0.357 | 0.770 (67) | 0.480 |
-| Vector alone | 0.745 (70) | 0.479 | 0.770 (67) | 0.487 |
-| Hybrid, equal weights, 20 candidates | 0.734 (69) | 0.447 | 0.747 (65) | 0.499 |
-| Hybrid, best of 18 settings (vector weight 0.9, 50 candidates) | 0.755 (71) | 0.474 | 0.759 (66) | 0.485 |
+| BM25 alone | 0.713 (67 questions) | 0.360 | 0.782 (68) | 0.490 |
+| Vector alone | 0.755 (71) | 0.483 | 0.782 (68) | 0.499 |
+| Hybrid, equal weights, 20 candidates | 0.745 (70) | 0.451 | 0.759 (66) | 0.508 |
+| Hybrid, best of 18 settings (vector weight 0.9, 50 candidates) | 0.766 (72) | 0.479 | 0.782 (68) | 0.499 |
 
-- When the question uses other words than the stewards', vector search is clearly ahead of BM25 on precision@5 (0.479 against 0.357).
-- Hybrid was tried with vector weights 0.3, 0.5, 0.6, 0.7, 0.8 and 0.9 and with 10, 20 and 50 candidates from each search. On the reworded questions no setting beat vector alone: the best one has one more question in hit@5 and a slightly lower precision@5, and hybrid improved only as the vector weight rose, that is, as it became vector search. On the stewards' wording hybrid has a slightly higher precision@5 (at most 0.499 against 0.487) and one or two fewer questions in hit@5.
+- When the question uses other words than the stewards', vector search is clearly ahead of BM25 on precision@5 (0.483 against 0.360).
+- Hybrid was tried with vector weights 0.3, 0.5, 0.6, 0.7, 0.8 and 0.9 and with 10, 20 and 50 candidates from each search. On the reworded questions no setting beat vector alone: the best one has one more question in hit@5 and a slightly lower precision@5, and hybrid improved only as the vector weight rose, that is, as it became vector search. On the stewards' wording the best setting equals vector alone; the others have a slightly higher precision@5 (at most 0.508 against 0.499) and one or two fewer questions in hit@5.
 - So vector search is used for past decisions: the same or slightly better numbers with one index and no weights to choose. Decided by the user on 2026-11-16. BM25 and hybrid remain available (`--method`) and remain in the reported comparison.
-- What this does not show. There are 94 questions, so one question is 1.1 points and no confidence interval was computed; "level" is the honest reading of the small gaps. The reworded questions were written by one model in one sitting and stay close to the originals (they keep car and turn numbers). The test events were not used. Rule articles are a different kind of text and may come out differently.
+- What this does not show. There are 94 questions, so one question is 1.1 points and no confidence interval was computed; "level" is the honest reading of the small gaps. The reworded questions were written by one model in one sitting and stay close to the originals (they keep car and turn numbers). The test events were not used. Rule articles are a different kind of text; they are measured separately below.
+
+**What the comparison showed for rule articles (the same dev questions, 2026-11-17).** Recall is the share of the articles the stewards cited that are among the retrieved articles, averaged over questions; `ISC-L:IV.2` counts as holding `ISC-L:IV.2.d`.
+
+| Method | Articles per question | Reworded (94): recall | Stewards' wording (87): recall |
+|---|---|---|---|
+| BM25 alone | 8 | 0.518 | 0.607 |
+| Vector alone | 8 | 0.644 | 0.699 |
+| Hybrid, equal weights, 20 candidates | 8 | 0.635 | 0.734 |
+| Vector alone, more articles (a control, throwaway script) | 14 | 0.702 | 0.762 |
+| Vector + the articles the 5 decisions found cite | 9.7 and 9.6 on average, at most 15 | 0.924 | 0.933 |
+
+- Hybrid against vector is three questions ahead on one set and one behind on the other, so vector was chosen, as for decisions (user decision). No fusion weights were tried.
+- Search alone mostly missed two general articles, Appendix L IV.2 (1 of 13 questions) and ISC 12.2.1 (0 of 12). Every past decision names its articles, so the articles cited by the decisions found are looked up in the issues in force and added after the 8 (user decision). The control row shows the gain does not come from returning more articles.
+- The added articles inherit the mistakes of decision search. Whether noise in the prompt costs anything shows in the answer evaluation.
 
 **Trade-off.** If the provider retires an API embedding model, the index cannot be rebuilt identically. Which embedding model is better on these documents has not been measured either. On the other hand, the search evaluation (system design, section 4.3) runs without model calls, so it is easy to swap embedding models and settings and compare them.
 
@@ -297,17 +313,17 @@ The screen technology is unchanged from the first decision.
 
 ## ADR-010: PDF parsing and display
 
-**Status:** Proposed
+**Status:** Parsing decided and built (steps 1 and 3). Display proposed
 
 **Parsing**
 
 | Option | Pros | Cons |
 |---|---|---|
-| **pypdf** | All 31 decisions succeeded in the pilot [verified]. Pure Python, BSD licence | Tables and multi-column layout in the rule documents are unverified |
-| pdfplumber | Good table extraction | Not needed for decisions |
+| **pypdf** | Reads all 359 decisions; its default text mode is the one that works (its `layout` mode returned nothing for a decision) [verified]. Pure Python, BSD licence | Reads the two languages of the ISC and its appendices in an order that changes within a page, and breaks ligatures in Section B ("O=icials") [verified] |
+| **pdfplumber** | Gives each word's position, so a page can be cropped to its English column; ligatures come out right [verified] | Slower: all 11 rule issues take 78 seconds |
 | PyMuPDF | Fastest, with accurate layout information | AGPL licence [from my memory; needs checking before implementation]. Affects the licence choice for a public repository |
 
-pypdf for decisions. The rule documents are also tried with pypdf first, and where the article tree breaks, pdfplumber is used for that document only.
+pypdf for decisions; pdfplumber for every rule document (step 3). The rule documents were meant to be tried with pypdf first, and it failed on the two-column pages, so pdfplumber reads all of them. The crop line on each page is the empty band between the columns, found from the words' positions.
 
 **Display**
 
@@ -324,7 +340,8 @@ The fetch stage renders the PDFs as page images into `.cache/pages`. The candida
 
 ```
 pydantic             schemas
-pypdf                PDF text
+pypdf                PDF text of decisions
+pdfplumber           PDF text of rule documents, one column at a time
 pypdfium2            page images of decisions (candidate; check before implementation)
 httpx                downloading documents
 langchain-core, langchain-community, langchain-chroma, langchain-openai
