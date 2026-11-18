@@ -15,6 +15,14 @@ The same questions are then asked of the rules, in the issues in force on the ev
 
     recall@8     share of the articles the stewards cited that are among the 8 retrieved
                  articles, averaged over questions
+
+Recall, not hit or precision, because every cited article is needed: the answer has to
+name it. Decisions are the other way round: a question can have 26 right earlier
+decisions, and five good ones are enough.
+
+The rules are measured twice: search alone, and search plus the articles cited by the
+5 decisions that decision search found for the question (search.py). The second one
+returns more than 8 articles, so its average count is printed next to its recall.
 """
 
 import json
@@ -24,7 +32,7 @@ from pathlib import Path
 
 from .. import config, index
 from ..parse import labels
-from ..search import DecisionSearch, RuleSearch
+from ..search import DecisionSearch, RuleSearch, holding
 
 
 @dataclass
@@ -134,27 +142,10 @@ def report(title: str, records: list[dict], questions: list[Question], left_out:
 
 @dataclass
 class RuleScore:
-    method: str
+    method: str  # "vector", or "vector + cited" when the decisions' articles were added
     recall: float
-
-
-def holding(cited: str, ids_in_issue: set[str]) -> set[str]:
-    """The articles of one issue whose text holds a cited article.
-
-    The stewards cite down to a point ("ISC-L:IV.2.d"); the rules are cut at numbered
-    paragraphs ("ISC-L:IV.2", whose text holds points a) to e)). So a citation is held by:
-    the article with the same id; else its nearest parent; else, when the citation is
-    broader than the paragraphs ("F1-B:5.11"), every article under it. Empty: not found.
-    """
-    if cited in ids_in_issue:
-        return {cited}
-    book, number = cited.split(":")
-    parts = number.split(".")
-    for end in range(len(parts) - 1, 0, -1):
-        parent = f"{book}:{'.'.join(parts[:end])}"
-        if parent in ids_in_issue:
-            return {parent}
-    return {i for i in ids_in_issue if i.startswith(cited + ".")}
+    articles: float  # how many articles a question got, on average
+    most: int  # and at most
 
 
 @dataclass
@@ -194,11 +185,21 @@ def rule_reach(searcher: RuleSearch, questions: list[Question]) -> RuleReach:
 
 
 def evaluate_rules(
-    searcher: RuleSearch, questions: list[Question], method: str, k: int = config.TOP_K_RULES
+    searcher: RuleSearch,
+    questions: list[Question],
+    method: str,
+    k: int = config.TOP_K_RULES,
+    decision_search: DecisionSearch | None = None,
 ) -> RuleScore:
+    """Rule recall. With `decision_search`, the articles cited by the decisions it finds are added."""
     recall = 0.0
+    counts = []
     for question in questions:
-        results = searcher.search(question.text, date=question.date, method=method, k=k)
+        decisions = None
+        if decision_search is not None:  # earlier events only, as in the decision evaluation
+            decisions = decision_search.search(question.text, before_round=question.round, method=config.SEARCH_METHOD)
+        results = searcher.search(question.text, date=question.date, method=method, k=k, decisions=decisions)
+        counts.append(len(results))
 
         # The rule of search.py, checked on every real question and not only in a unit test.
         in_force = set(searcher.issues_on(question.date))
@@ -209,18 +210,21 @@ def evaluate_rules(
         retrieved = {article["id"] for article in results}
         targets = _targets(searcher, question)
         recall += sum(bool(held_by and held_by & retrieved) for held_by in targets.values()) / len(targets)
-    return RuleScore(method, recall / (len(questions) or 1))
+    label = method if decision_search is None else f"{method} + cited"
+    total = len(questions) or 1
+    return RuleScore(label, recall / total, sum(counts) / total, max(counts, default=0))
 
 
 def report_rules(title: str, questions: list[Question], reach: RuleReach, scores: list[RuleScore]) -> str:
     """One block of the rules part of what `eval --retrieval` prints."""
-    k = config.TOP_K_RULES
     lines = [f"{title}: {len(questions)} questions citing {reach.cited} articles"]
     for book, count in sorted(reach.outside_the_books.items()):
         lines.append(f"  in a rule book that is not included ({book}): {count}")
     if reach.not_in_the_issue:
         lines.append(f"  not found in the issue in force: {', '.join(reach.not_in_the_issue)}")
-    lines.append(f"  best possible recall@{k}: {reach.best_recall:.3f}")
-    lines += ["", f"  {'method':<8}{f'recall@{k}':>10}"]
-    lines += [f"  {score.method:<8}{score.recall:>10.3f}" for score in scores]
+    lines.append(f"  best possible recall: {reach.best_recall:.3f}")
+    lines += ["", f"  {'method':<16}{'recall':>8}{'articles':>10}{'at most':>9}"]
+    lines += [
+        f"  {score.method:<16}{score.recall:>8.3f}{score.articles:>10.1f}{score.most:>9}" for score in scores
+    ]
     return "\n".join(lines)

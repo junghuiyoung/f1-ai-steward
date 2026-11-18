@@ -10,7 +10,7 @@ A local RAG app for Formula 1 racing incidents: describe an incident, get the ru
 ## How we work
 
 - Claude writes the code. The user must understand all of it.
-- For each step: explain what it builds and why, with a diagram; write the code; give the commands the user runs and the output to expect; ask one or two questions an interviewer might ask.
+- For each step: explain what it builds and why, with a diagram; write the code; give the commands the user runs and the output to expect; ask one or two questions an interviewer might ask. When the step is finished, add the questions worth keeping, with model answers, to `interview-prep.md` (local, not in git).
 - Explain a new concept the first time it appears. Install a library in the step that first needs it.
 - Add a tool or a method only when the product needs it, never to cover a keyword.
 

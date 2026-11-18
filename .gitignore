@@ -8,6 +8,9 @@ runs/*/transcripts/
 mockup-*
 archive/
 
+# Interview questions and model answers: the user's own preparation, not part of the project.
+interview-prep.md
+
 # Secrets
 .env
 

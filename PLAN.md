@@ -8,7 +8,7 @@
 | 0 | Project skeleton and `fetch` | Done 2026-11-15 |
 | 1 | Parse decisions and build labels | Done 2026-11-15 |
 | 2 | Search over past decisions | Done 2026-11-16 |
-| 3 | Parse the rules and search them | Done 2026-11-16 (default rule search method still to choose) |
+| 3 | Parse the rules and search them | Done 2026-11-16; articles cited by the decisions found added 2026-11-17 |
 | 4 | Generate answers and check citations | |
 | 5 | Evaluate answers | |
 | 6 | Product screen and final README | |
@@ -91,8 +91,11 @@ Things earlier steps learned from the real data. Read these before writing a par
 - **Every cited article is in the issue in force on its decision's date.** Over all 342 decisions: 279 citations match an article id exactly, 170 are a point inside an article (IV.2.d inside IV.2, 2.5.5.b inside 2.5.5, 1.6.3.a.iii inside 1.6.3; checked that only letters are dropped, never a number), 1 is broader than the paragraphs (B5.11), 7 are in Section C. None is missing. `eval --retrieval` prints the count of cited articles not found in their issue; it is 0.
 - **Rule search on dev, k=8, run 2026-11-16** (recall@8: the share of a question's cited articles held by one of the 8 retrieved articles, averaged over questions). Stewards' words, 87 questions citing 104 articles: BM25 0.607, vector 0.699, hybrid 0.734. Reworded, 94 questions citing 113: BM25 0.518, vector 0.644, hybrid 0.635. Best possible 0.989 for both (the one Section C citation). All 543 rule searches returned articles of the issues in force only.
 - **Two articles explain most misses** (vector). Appendix L IV.2 (overtaking, track limits, causing a collision) was found for 1 of 13 questions in the stewards' words and 0 of 13 reworded; ISC 12.2.1 (12.2.1.i, failure to follow the officials' instructions) 0 of 12 and 0 of 14. Most Section B articles are found (B1.6.3 pit lane 14 of 14, B1.8.4 yellow flags 8 of 8, B1.8.6 track limits 8 of 9). Many of the 8 places go to text F1 does not use: Appendix L chapter V (offroad circuits, 34 results) and Appendix H 2.10 (safety car procedures "except for FIA championships ... with specific regulations"; F1 has B5.13). Example: for "car 16 made contact with car 30 at turn 12" before São Paulo, IV.2 is not among the 8.
-- **Hybrid against vector for rules is not settled.** +3.5 points on the stewards' words, -0.9 on the reworded questions: three questions and one. `RULES_SEARCH_METHOD` is "vector" until the user decides.
+- **Hybrid against vector for rules is not settled.** +3.5 points on the stewards' words, -0.9 on the reworded questions: three questions and one. **Decided by the user, 2026-11-17: rule search defaults to vector** (`RULES_SEARCH_METHOD` in `config.py`), the same method as decision search. No fusion weights were tried for rules.
 - **Cost and size.** `build --index` now also embeds the 3,630 articles (608,000 tokens by tiktoken count, about $0.08; not read from the dashboard) in 23 seconds together with the decisions. The Chroma folder grew from 7 MB to 127 MB. `eval --retrieval` takes 5 seconds.
+- **Decided by the user, 2026-11-17: raise rule recall before step 4.** First idea, measured on dev with a throwaway script (vector for both searches): add to the rule results the articles cited by the 5 retrieved decisions, looked up in the issues in force (`holding`, so IV.2.d becomes IV.2). Recall, stewards' words / reworded: vector, 8 articles, 0.699 / 0.644; the linked articles alone 0.820 / 0.794 (2.7 articles on average); the 8 plus the linked ones 0.933 / 0.924 (9.6 and 9.7 articles on average, at most 14); linked first, filled to 8 by vector, 0.875 / 0.892. The gain is not from showing more articles: vector alone gives 0.728 / 0.676 at k=10 and 0.762 / 0.702 at k=14. The linked articles can find a cited article where decision search scores no hit, because a decision under IV.2.b and a question under IV.2.d share the chunk IV.2.
+- **Built the same day, the user's choice: the 8 plus the linked ones.** `RuleSearch.search(..., decisions=...)` adds `cited_by(decisions, date)` after the 8; `holding` moved from `eval/retrieval.py` to `search.py`. `search --rules` now also runs decision search and prints the two parts apart, with the decisions that cite each article. `eval --retrieval` adds a row "vector + cited": 0.933 / 0.924, 9.6 / 9.7 articles on average, at most 15 / 14 (the throwaway script counted an id once; two paragraphs the FIA numbered alike are two articles here). Example: for "Car 27 ran into car 55 at turn 8 in the race." before Monaco, IV.2 is not among vector's 14 closest, and all 5 decisions found cite IV.2.d, so it comes 9th. 7 tests added (218 in all).
+- **Rule hit@8 is reported nowhere, on purpose.** 73 of the 87 dev questions cite one article, and for them hit and recall are the same. For the 14 that cite more, hit hides the missing ones: vector hit@8 is 0.724 / 0.681 against recall@8 0.699 / 0.644. Decision search has no recall for the opposite reason: the number of right earlier decisions runs from 0 to 26 per question (median 5), so recall@5 would mostly measure how common an article is.
 
 ## Context
 
@@ -113,6 +116,7 @@ Things earlier steps learned from the real data. Read these before writing a par
 | `mockup-v4.html` | Product screen mockup (local, not in git) |
 | `mockup-readme.html` | How the README will look on GitHub (local, not in git) |
 | `archive/` | The design before 2026-11-15 (local, not in git) |
+| `interview-prep.md` | Interview questions with model answers, every step so far (local, not in git) |
 
 ## How we work
 
@@ -121,7 +125,7 @@ Claude writes the code. The user must understand all of it. **One step at a time
 1. Explain what this step builds and why, with a diagram.
 2. Write the code. Explain a new concept the first time it appears. Install a library in the step that first needs it.
 3. Give the commands the user runs and the output to expect.
-4. Ask one or two questions an interviewer might ask, to check understanding.
+4. Ask one or two questions an interviewer might ask, to check understanding. When the step is finished, add the ones worth keeping, with model answers, to `interview-prep.md`.
 5. Move on when the user says so. Update "Status" and "Found along the way" in this file first.
 
 Commit only when the user asks.
@@ -144,7 +148,7 @@ src/f1aisteward/
   parse/build.py      run both over the manifest, write records and labels (exists)
   parse/rules.py      rules PDF -> articles with heading paths, with pdfplumber (exists)
   index.py          decisions and articles -> documents, BM25, Chroma collections `decisions` and `rules` (exists)
-  search.py         bm25, vector and hybrid (RRF): decisions of earlier events, articles of the issues in force (exists)
+  search.py         bm25, vector and hybrid (RRF): decisions of earlier events, articles of the issues in force, plus the articles the decisions found cite (exists)
   llm/client.py     the one place ChatOpenAI is called; records tokens and cost
   answer.py         prompt, Answer schema, citation check, outcome counts
   eval/retrieval.py search evaluation (exists)
@@ -198,7 +202,8 @@ docs/demo.gif       recorded in step 6
 - **Risk**: extracting articles from the rules PDFs has never been tried. The product works on decision search alone, so if this stalls, cut down to the Sporting Regulations and move on.
 - **Decide first**: which rule documents to include.
 - **Built (2026-11-16)**: `data/manifest/regulations.yaml` (11 issues), `fetch --rules`, `parse/rules.py`, `build --rules` (articles to `.cache/text/rules.jsonl`), the Chroma collection `rules` in `build --index`, `RuleSearch` in `search.py`, `search --rules`, recall@8 in `eval --retrieval`, `manifest.issues_in_force`. The label fix in `parse/labels.py`. `pdfplumber` added. 43 new tests (211 in all).
-- **Left**: the user chooses the default rule search method, and whether to try to raise recall before step 4 (the misses are under "Found along the way"). Not updated yet: `01-system-design.md` sections 3.4, 3.5 and 8, ADR-005 (pdfplumber now reads every rule document), and the step 2 numbers in `README-draft.md`, `01-system-design.md` and ADR-004. Not done: the test-split run.
+- **Built (2026-11-17)**: the articles cited by the decisions found, added to rule search (`RuleSearch.cited_by`), in `search --rules` and as "vector + cited" in `eval --retrieval`. 7 new tests (218 in all).
+- **Left**: nothing that blocks step 4. Not updated yet: the linked articles anywhere outside this file and the code, `01-system-design.md` sections 3.4, 3.5 and 8, ADR-005 (pdfplumber now reads every rule document), and the step 2 numbers in `README-draft.md`, `01-system-design.md` and ADR-004. Not done: the test-split run.
 
 ### Step 4: generate answers and check citations
 
@@ -268,8 +273,9 @@ Creating the GitHub repository and pushing. Do it when the user asks.
 | Is the Fact field enough as the question | Decided 2026-11-15 | Session + Fact |
 | Which events are dev and which are test | Decided 2026-11-16 | Before 2026-06-01 never a question; dev Monaco to Hungarian (99 decisions); test Dutch to São Paulo (160) |
 | Which rule documents to include | Decided 2026-11-16 | Section B, ISC body, Appendix L and H (11 issues) |
-| Default rule search method | After step 3 | Vector, as for decisions: hybrid's lead is three questions on one question set and it trails on the other |
-| Try to raise rule recall before step 4 | After step 3 | See "Found along the way", step 3: the misses are two general articles |
+| Default rule search method | Decided 2026-11-17 | Vector, as for decisions |
+| Try to raise rule recall before step 4 | Decided 2026-11-17 | Yes. First idea: add the articles cited by the retrieved decisions |
+| How many articles go into the prompt | Decided 2026-11-17 | The 8 found by search plus the articles the decisions found cite (9.6 on average) |
 | Also run the final evaluation on `gpt-6-luna` | Step 5 | Yes, it costs about $1 |
 | Code licence | Before pushing to GitHub | The user decides |
 

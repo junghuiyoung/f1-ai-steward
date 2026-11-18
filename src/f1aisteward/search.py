@@ -13,6 +13,16 @@ and in the evaluation the question's own decision must never come back as a resu
 Articles: only the issue of each rule book that was in force on the event's date. The
 Sporting Regulations were changed five times during the 2026 season.
 
+Articles can also be reached through past decisions. Every decision names the articles
+it was decided under, so the articles cited by the decisions found for a question are
+added after the k articles found by search:
+
+    question ──▶ decision search ──▶ 5 decisions ──▶ the articles they cite ──┐
+        └──────▶ rule search ──────▶ 8 articles ─────────────────────────────┴──▶ both, no repeats
+
+Search alone misses the general articles that the stewards cite most (Appendix L IV.2 on
+collisions, ISC 12.2.1 on instructions); the decisions name them (PLAN.md, step 3).
+
 RRF looks only at ranks, never at scores. A document ranked 1st by BM25 and 3rd by the
 vector search gets w_bm25/(60+1) + w_vector/(60+3); the two weights add up to 1. BM25 scores and vector distances are on
 different scales and cannot be added; ranks can.
@@ -31,6 +41,25 @@ METHODS = ("bm25", "vector", "hybrid")
 def check_method(method: str) -> None:
     if method not in METHODS:
         raise ValueError(f"Unknown method {method!r}. Choose one of {', '.join(METHODS)}.")
+
+
+def holding(cited: str, ids_in_issue: set[str]) -> set[str]:
+    """The articles of one issue whose text holds a cited article.
+
+    The stewards cite down to a point ("ISC-L:IV.2.d"); the rules are cut at numbered
+    paragraphs ("ISC-L:IV.2", whose text holds points a) to e)). So a citation is held by:
+    the article with the same id; else its nearest parent; else, when the citation is
+    broader than the paragraphs ("F1-B:5.11"), every article under it. Empty: not found.
+    """
+    if cited in ids_in_issue:
+        return {cited}
+    book, number = cited.split(":")
+    parts = number.split(".")
+    for end in range(len(parts) - 1, 0, -1):
+        parent = f"{book}:{'.'.join(parts[:end])}"
+        if parent in ids_in_issue:
+            return {parent}
+    return {i for i in ids_in_issue if i.startswith(cited + ".")}
 
 
 def _retrieve(
@@ -125,9 +154,12 @@ class RuleSearch:
         self.articles = articles
         self.by_key = {article["key"]: article for article in articles}
         self.ids_in: dict[str, set[str]] = {}  # issue -> the article ids it holds
+        # (issue, article id) -> its articles; two when the FIA numbered two paragraphs alike
+        self.in_issue: dict[tuple[str, str], list[dict]] = {}
         self.book_of = {issue["id"]: issue["book"] for issue in regulations["issues"]}
         for article in articles:
             self.ids_in.setdefault(article["issue"], set()).add(article["id"])
+            self.in_issue.setdefault((article["issue"], article["id"]), []).append(article)
         self.regulations = regulations
         self.vector_store = vector_store
         self._bm25: dict[tuple[str, ...], BM25Retriever | None] = {}
@@ -142,8 +174,41 @@ class RuleSearch:
         date: str | None = None,
         method: str = config.RULES_SEARCH_METHOD,
         k: int = config.TOP_K_RULES,
+        decisions: list[dict] | None = None,
     ) -> list[dict]:
-        """The k articles closest to the question, from the issues in force on `date`, best first."""
+        """The k articles closest to the question, from the issues in force on `date`, best first.
+
+        When `decisions` are given (the past decisions found for the same question), the
+        articles they cite follow, unless search already found them. The result is then
+        longer than k.
+        """
+        found = self.closest(question, date, method, k)
+        if decisions:
+            shown = {article["key"] for article in found}
+            found += [article for article in self.cited_by(decisions, date) if article["key"] not in shown]
+        return found
+
+    def cited_by(self, decisions: list[dict], date: str | None = None) -> list[dict]:
+        """The articles these decisions cite, as they read in the issues in force on `date`.
+
+        A decision of May cites the rule of May; a question of November gets the article of
+        the same number from the November issue. A citation of a book that is not included
+        (Section C), or of a number the issue does not have, adds nothing.
+        """
+        issue_of = {self.book_of[issue]: issue for issue in self.issues_on(date)}
+        found: dict[str, dict] = {}
+        for decision in decisions:
+            for cited in decision["articles"]:
+                issue = issue_of.get(cited.split(":")[0])
+                if issue is None:
+                    continue
+                for article_id in sorted(holding(cited, self.ids_in.get(issue, set()))):
+                    for article in self.in_issue[(issue, article_id)]:
+                        found.setdefault(article["key"], article)
+        return list(found.values())
+
+    def closest(self, question: str, date: str | None, method: str, k: int) -> list[dict]:
+        """Search alone: the k articles closest to the question, in the issues in force on `date`."""
         issues = tuple(sorted(self.issues_on(date)))
         if issues not in self._bm25:  # like decisions: one small BM25 index per set of issues
             self._bm25[issues] = index.bm25_over(

@@ -40,7 +40,7 @@ VECTOR_WEIGHT = 0.5  # hybrid search: the vector ranking's share in the fusion; 
 
 # Rule search: the articles of the rule documents in force on the question's event date.
 RULES_COLLECTION = "rules"
-RULES_SEARCH_METHOD = "vector"  # not measured yet; step 3 compares the three methods on dev
+RULES_SEARCH_METHOD = "vector"  # chosen on dev in step 3: hybrid was not clearly better (PLAN.md)
 TOP_K_RULES = 8  # articles a rule search returns
 
 # Which events are used for what, by event date (ISO dates compare correctly as strings).

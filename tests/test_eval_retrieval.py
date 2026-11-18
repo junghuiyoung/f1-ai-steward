@@ -128,16 +128,6 @@ def test_the_real_search_scores_the_made_up_decisions():
 # ---------------------------------------------------------------- rules
 
 
-def test_a_citation_is_held_by_itself_its_parent_or_the_paragraphs_under_it():
-    ids = {"F1-B:1.6.3", "ISC-L:IV.2", "F1-B:5.11.1", "F1-B:5.11.2", "ISC:12.2.1.i"}
-
-    assert retrieval.holding("ISC:12.2.1.i", ids) == {"ISC:12.2.1.i"}  # a paragraph of its own
-    assert retrieval.holding("ISC-L:IV.2.d", ids) == {"ISC-L:IV.2"}  # point d) is inside article 2
-    assert retrieval.holding("F1-B:1.6.3.a.iii", ids) == {"F1-B:1.6.3"}
-    assert retrieval.holding("F1-B:5.11", ids) == {"F1-B:5.11.1", "F1-B:5.11.2"}  # broader than the paragraphs
-    assert retrieval.holding("F1-B:9.9.9", ids) == set()
-
-
 def rule_questions():
     """Made-up dev questions: two in March (issue B-01), one in July (issue B-02)."""
     from f1aisteward.eval.retrieval import Question
@@ -149,20 +139,29 @@ def rule_questions():
     ]
 
 
-class FixedRuleSearch:
-    """Returns the same articles for every question, and knows the made-up rules."""
+class FixedRuleSearch(RuleSearch):
+    """Search alone returns the same articles for every question; the rest is the real thing."""
 
     def __init__(self, results):
         from search_data import REGULATIONS, RULE_ARTICLES
 
-        self.real = RuleSearch(RULE_ARTICLES, REGULATIONS)
+        super().__init__(RULE_ARTICLES, REGULATIONS)
         self.results = results
 
-    def __getattr__(self, name):
-        return getattr(self.real, name)
-
-    def search(self, question, date, method, k):
+    def closest(self, question, date, method, k):
         return self.results[:k]
+
+
+class FixedDecisionSearch:
+    """Finds the same past decisions for every question, and notes which rounds it was asked about."""
+
+    def __init__(self, decisions):
+        self.decisions = decisions
+        self.before = []
+
+    def search(self, question, before_round, method):
+        self.before.append(before_round)
+        return self.decisions
 
 
 def test_recall_counts_the_share_of_cited_articles_found_per_question():
@@ -177,6 +176,23 @@ def test_recall_counts_the_share_of_cited_articles_found_per_question():
 
     # question 1 finds its one article; question 2 finds IV.2.d inside IV.2 but not F1-C:1.2
     assert score.recall == pytest.approx((1 + 1 / 2) / 2)
+    assert (score.method, score.articles, score.most) == ("bm25", 2, 2)
+
+
+def test_the_articles_cited_by_the_decisions_found_count_towards_recall():
+    # Search alone finds nothing. The one past decision found cites IV.2.b and a Section C article.
+    decisions = FixedDecisionSearch([{"id": "2031-round1-001", "articles": ["ISC-L:IV.2.b", "F1-C:1.2"]}])
+    questions = rule_questions()[:2]
+
+    alone = retrieval.evaluate_rules(FixedRuleSearch([]), questions, "bm25")
+    cited = retrieval.evaluate_rules(FixedRuleSearch([]), questions, "bm25", decision_search=decisions)
+
+    assert (alone.recall, alone.articles) == (0, 0)
+    # Question 2 cites IV.2.d, which IV.2 holds, and IV.2 also holds the decision's IV.2.b.
+    # F1-C is not included, so neither the decision's nor the question's F1-C:1.2 counts.
+    assert cited.recall == pytest.approx((0 + 1 / 2) / 2)
+    assert (cited.method, cited.articles, cited.most) == ("bm25 + cited", 1, 1)
+    assert decisions.before == [2, 2]  # decisions were looked for in earlier rounds only
 
 
 def test_the_evaluation_stops_if_search_returns_an_issue_not_in_force():
@@ -206,4 +222,5 @@ def test_the_real_rule_search_scores_the_made_up_rules():
 
     assert "Made-up: 3 questions citing 4 articles" in text
     assert "not included (F1-C): 1" in text
-    assert "recall@8" in text
+    assert "best possible recall: 0.833" in text
+    assert "bm25" in text and "recall" in text and "articles" in text

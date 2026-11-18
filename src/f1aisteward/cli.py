@@ -194,13 +194,31 @@ def search(
         raise typer.Exit(code=1)
 
     if rules:
-        searcher = _rule_searcher([method])
+        embeddings = _question_embeddings()  # one vector for the question, used by both searches
+        searcher = _rule_searcher([method], embeddings)
+        decision_searcher = _searcher(_parsed_decisions(), [config.SEARCH_METHOD], embeddings)
         date = events[event]["date"] if event else None
-        found = searcher.search(question, date=date, method=method, k=k)
-        typer.echo(f"Issues in force{' on ' + date if date else ' now'}: {', '.join(searcher.issues_on(date))}\n")
+        before_round = events[event]["round"] if event else None
+        decisions = decision_searcher.search(question, before_round=before_round, method=config.SEARCH_METHOD)
+
+        # What searcher.search(..., decisions=decisions) returns, split in two to show where each came from.
+        found = searcher.closest(question, date, method, k)
+        shown = {article["key"] for article in found}
+        added = [article for article in searcher.cited_by(decisions, date) if article["key"] not in shown]
+        citing: dict[str, list[str]] = {}
+        for decision in decisions:
+            for article in searcher.cited_by([decision], date):
+                citing.setdefault(article["key"], []).append(decision["id"])
+
+        typer.echo(f"Issues in force{' on ' + date if date else ' now'}: {', '.join(searcher.issues_on(date))}")
+        typer.echo(f"Past decisions found ({config.SEARCH_METHOD}): {', '.join(d['id'] for d in decisions) or 'none'}\n")
+        typer.echo(f"Found by rule search ({method}):\n")
         for rank, article in enumerate(found, start=1):
-            first = " ".join(article["text"].split())[:160]
-            typer.echo(f"{rank}. {article['id']}  ({article['issue']})\n   {' > '.join(article['headings'])}\n   {first} ...\n")
+            _echo_article(rank, article, citing.get(article["key"], []), "also cited by")
+        if added:
+            typer.echo("Cited by the past decisions found, and not found by rule search:\n")
+        for rank, article in enumerate(added, start=len(found) + 1):
+            _echo_article(rank, article, citing[article["key"]], "cited by")
         return
 
     records = _parsed_decisions()
@@ -275,17 +293,33 @@ def evaluate(
         typer.echo("No parsed rules, so no rule search to measure. Run `f1aisteward build --rules` first.")
         return
     rule_searcher = _rule_searcher(methods, embeddings)
+    # The product's way: the default rule method plus the articles the decisions found cite.
+    with_cited = config.RULES_SEARCH_METHOD in methods and searcher.vector_store is not None
     typer.echo(
         "Rule search: the same questions, asked of the articles in force on each event's date.\n"
         "An article counts as found when the retrieved article holds it (B1.8.4 holds B1.8.4.b).\n"
+        f"Each method returns {config.TOP_K_RULES} articles. \"+ cited\" adds the articles cited by the "
+        f"{config.TOP_K} past decisions that decision search ({config.SEARCH_METHOD}) found.\n"
     )
     searches = 0
     for title, (questions, _) in question_sets:
         reach = measuring.rule_reach(rule_searcher, questions)
         scores = [measuring.evaluate_rules(rule_searcher, questions, name) for name in methods]
         searches += len(questions) * len(methods)
+        if with_cited:
+            default = config.RULES_SEARCH_METHOD
+            scores.append(measuring.evaluate_rules(rule_searcher, questions, default, decision_search=searcher))
+            searches += len(questions)
         typer.echo(measuring.report_rules(title, questions, reach, scores) + "\n")
     typer.echo(f"Checked: all {searches} rule searches returned articles of the issues in force only.")
+
+
+def _echo_article(rank: int, article: dict, citing: list[str], label: str) -> None:
+    first = " ".join(article["text"].split())[:160]
+    typer.echo(f"{rank}. {article['id']}  ({article['issue']})\n   {' > '.join(article['headings'])}\n   {first} ...")
+    if citing:
+        typer.echo(f"   {label}: {', '.join(citing)}")
+    typer.echo()
 
 
 def _parsed_decisions() -> list[dict]:
