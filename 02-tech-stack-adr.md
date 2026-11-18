@@ -4,6 +4,8 @@ Written 2026-11-14 · Decision maker: the user · Status values: **Decided** (se
 
 **Revised 2026-11-14.** Following the user's decision, the models changed to OpenAI (`gpt-6.1-terra` for the final run, `gpt-6-luna` for development) and the embedding to `text-embedding-3-large`. The first draft assumed Anthropic, which had not been chosen by comparing it with other providers. The question count was also corrected to the real count taken from fia.com.
 
+**Revised 2026-11-17, after step 4.** ADR-002: what was checked while building the answer (structured output with the raw message, token fields, refusal and truncation). ADR-003: the token counts of three real questions. ADR-006: the schema as built.
+
 **Revised 2026-11-17.** ADR-004: the numbers after the label fix of step 3, and the rule articles: vector search plus the articles cited by the past decisions found (user decision). ADR-010: pdfplumber reads every rule document.
 
 **Revised 2026-11-16.** ADR-004: the search method is no longer fixed in advance as hybrid. The three candidates are compared on the dev questions and the better one is used. For past decisions the comparison was run and vector search was chosen (user decision); the numbers are in ADR-004.
@@ -41,7 +43,7 @@ How to read it: what the postings ask for is concepts more than tool names. 21 p
 | 003 | Models | Final `gpt-6.1-terra` + `gpt-6-luna`, development `gpt-6-luna` | Decided |
 | 004 | RAG search | The search method is chosen by comparing BM25, vector and hybrid on dev. Past decisions: vector search. Rule articles: vector search plus the articles the past decisions found cite. Chroma, `text-embedding-3-large` | Decided |
 | 005 | Running the evaluation and storing results | Two layers: search evaluation and answer evaluation. Our own runner + JSONL, rule-based scoring. LangSmith for tracing during development | Proposed |
-| 006 | Output format | Pydantic schema and structured output | Proposed |
+| 006 | Output format | Pydantic schema and strict structured output (built in step 4) | Proposed |
 | 007 | Product screen and reporting results | The product screen is one static page + FastAPI (local); evaluation results go in the README | Decided |
 | 008 | Tool-based lookup | LangGraph + MCP server | Excluded (user decision, 2026-11-15) |
 | 009 | How the data is distributed | Only labels, positions and hashes in the repository; each person downloads the documents | Decided |
@@ -93,10 +95,10 @@ The items below that deal with the cache apply only to the optional experiment o
 - Caching is on by default for supported models [verified: OpenAI documentation, 2026-11-15]. Models from GPT-5.6 on let you set the breakpoint yourself, and `langchain-openai` 1.3.5 and later supports this [verified: LangChain documentation, 2026-11-15]. Attach `"prompt_cache_breakpoint": {"mode": "explicit"}` to the last content block of the document block and set `prompt_cache_options={"mode": "explicit", "ttl": "30m"}`. The question goes after it. Putting a date or a run ID in the document block breaks the cache.
 - Cache lifetime: the OpenAI documentation lists `"30m"` (default) and `"12h"`, and the LangChain documentation says only `"30m"` is supported. We use 30 minutes. A write costs 1.25 times the input price (30 minutes); a read costs 0.05 times on terra and 0.1 times on luna. The minimum length that gets cached is 1,024 tokens.
 - Cache-hit tokens are in `response.usage_metadata.input_token_details.cache_read` and cache writes in `cache_creation` [verified: LangChain documentation]. If `cache_read` stays at 0 the cache is not taking effect, so the runner warns.
-- The Responses API is used through `ChatOpenAI(use_responses_api=True)` [verified: LangChain documentation].
-- Structured output is received with `llm.with_structured_output(Answer, include_raw=True)`. `include_raw` is needed to get the raw message carrying usage along with the parsed answer [from my memory; verify during implementation].
-- Reasoning tokens are billed at the output rate. Set `reasoning.effort` explicitly and record it in the settings. Which field carries the reasoning token count in LangChain has not been confirmed.
-- A truncated response (`max_output_tokens`) and a refusal are recorded as separate states, not as wrong answers. Where to read these two in a LangChain response has not been confirmed.
+- The Responses API is used through `ChatOpenAI(use_responses_api=True)` [verified: LangChain documentation, and on real calls in step 4].
+- Structured output is received with `llm.with_structured_output(Answer, strict=True, include_raw=True)`. It returns a dict with `raw` (the `AIMessage`, which carries the usage), `parsed` and `parsing_error`, so a reply that cannot be parsed comes back as a value instead of an exception [verified: the source of `langchain-openai` 1.8.0, the installed version, and real calls, 2026-11-17].
+- Reasoning tokens are billed at the output rate. `reasoning.effort` is set explicitly (`REASONING_EFFORT` in `config.py`, `medium` for now, untuned). The count is in `usage_metadata.output_token_details.reasoning`, and it is part of `output_tokens`, so it is not added again for the cost [verified: the source, and a real call with 605 output tokens, 494 of them reasoning].
+- A truncated response (`max_output_tokens`) and a refusal are recorded as separate states, not as wrong answers. Truncated: `response_metadata["status"] == "incomplete"`, with the reason in `incomplete_details`. Refused, or stopped by a content filter: a `ModelRefusalError` in `parsing_error`. A timeout raises `ModelTimeoutError` [verified: the source; none of the three has happened on a real call, so only unit tests cover them]. `max_tokens` on `ChatOpenAI` is sent as `max_output_tokens` [verified: the source].
 - Above 272,000 input tokens the price doubles. Measure the token count of the document bundle first and confirm it is under this line.
 - LangSmith tracing is switched off for the full-document method and for runs that measure response time (ADR-005).
 - Not confirmed: whether `temperature` is supported, and how to count input tokens before sending a request. Deterministic runs are not assumed; variance is measured by repeating some questions.
@@ -129,6 +131,8 @@ Above 272,000 input tokens, the price doubles for both models.
 |---|---|---|---|---|---|
 | gpt-6.1-terra | $0.008 | $0.012 | $0.016 | $0.016 | $0.16 |
 | gpt-6-luna | $0.0008 | $0.0012 | $0.0016 | $0.0023 | $0.016 |
+
+**Measured in step 4** [verified: `ask`, 2026-11-17]: three dev questions with rules and past decisions on `gpt-6-luna` took 2,170 to 3,007 input tokens and 236 to 605 output tokens, $0.0004 to $0.0005 each, against the $0.0016 above. The table keeps the assumptions until step 5 has measured ten dev questions on both models.
 
 The full rules are assumed to be 150,000 tokens. Counted on the parsed articles of the four books in force on one date, they are about 210,000 (tiktoken `cl100k_base`, 2026-11-17), so the input part of the two full-rules columns is about 40% low. They are recomputed if the optional experiment is run.
 
@@ -245,6 +249,8 @@ The full rules are assumed to be 150,000 tokens. Counted on the parsed articles 
 | Free text + an LLM judge | Evaluates the quality of the reasoning too | Adds judge variance and cost, and blurs the differences between methods |
 
 **Note.** Receiving the citation's position within the article text is not done in this scope. The schema size limits (number of properties, enum size) could not be confirmed from the OpenAI documentation.
+
+**Built in step 4 (2026-11-17)**, as proposed, with strict structured output (`strict=True`): OpenAI holds the reply to the schema while generating it. Strict mode needs every field to be required, so a field that can be empty is "X or None". `penalty_type` is an enum of the 11 penalty labels of step 1, so an answer compares with a decision without translation; the schema has 6 properties and enums of 11 and 3 values, which OpenAI accepted. Articles stay free strings. The citation check compares them with the ids shown in the prompt and does not normalise them: a citation not written as an id fails the check. The three real answers so far all used the ids as shown. Whether the scorer of step 5 also has to normalise free-form citations depends on whether answers keep doing that; the parent and child match of system design section 4.5 is needed either way.
 
 ---
 

@@ -8,6 +8,8 @@ Written 2026-11-14 · Fully revised 2026-11-15 · Status: draft
 
 **Revised 2026-11-17.** Brought in line with implementation steps 1 to 3. Sections 3.2, 3.4, 4.2, 5.1 and 6: what parsing the real decisions and rules showed. Section 3.5: the search numbers after the label fix of step 3; rule articles use vector search plus the articles cited by the past decisions found (user decision). Section 8: what is decided now.
 
+**Revised 2026-11-17, after step 4.** Sections 3.5 to 3.7: the answer as built (call settings, prompt, `Answer`, the citation check, the outcome counts) and three real answers. Section 5.2: token counts measured on three dev questions. Section 8.
+
 Markers: **[verified]** is a fact checked directly, **[estimate]** is a value that has not been measured or an assumption, **[decision needed]** is something the user has to decide.
 
 ---
@@ -191,25 +193,41 @@ The best possible recall is 0.989 on both sets: one citation is of Section C, wh
 
 - Implemented with LangChain retrievers; storage is Chroma (local files) and the embedding is `text-embedding-3-large` (ADR-004).
 - The model is given 5 decisions and 8 articles plus the articles those decisions cite (9.6 on average on dev).
-- The distribution on the screen ("5 of 8 got 10 seconds") is counted over the decisions, among a wider top 20, that have the same article as the answer. **[estimate: 20 is a provisional value and is settled on dev]**
+- The distribution on the screen ("5 of 8 got 10 seconds") is counted over the decisions, among a wider top 20, that have the same article as the answer. A second decision search with k = 20 (`OUTCOME_POOL`) finds them, so the 5 in the prompt stay the 5 that were measured. "The same article" is the rule of the citation check (section 3.7), applied to the answer's articles that passed it. **[estimate: 20 is a provisional value and is settled on dev]**
 - No reranker (a step that re-sorts the search results with a model). If the search evaluation (section 4.3) is low, it is reconsidered then.
 
 ### 3.6 Generating the answer
 
-- Model calls go through a single LangChain `ChatOpenAI` (ADR-002). The calling code lives in one place only, `llm/client.py`.
-- Prompt layout: instructions → retrieved articles → retrieved past decisions (facts, article, penalty) → question.
-- The answer comes back in a fixed format (Pydantic, structured output).
+- Model calls go through a single LangChain `ChatOpenAI` (ADR-002). The calling code lives in one place only, `llm/client.py`; the rest of the answer is in `answer.py`.
+- Call settings (`config.py`): the Responses API, `gpt-6-luna` while building, reasoning effort `medium`, at most 4,000 output tokens (reasoning included), a 120-second timeout. **[estimate: the effort and the token cap are first values, not tuned; the effort is fixed on dev in step 5]**
+- Prompt layout: a system message with the instructions, then one message with the retrieved articles, the retrieved past decisions (session, Fact, articles, penalty) and the question, in that order. Each article and decision starts with its id in square brackets, the form the answer must cite.
+- The answer comes back in a fixed format (Pydantic, strict structured output; ADR-006).
 
 ```
 Answer {
-  articles:        [article ID]       # 1 or more
-  penalty_type:    enum
-  penalty_value:   number | null
+  articles:        [article ID]       # 1 or more; free strings, checked in section 3.7
+  penalty_type:    enum               # the 11 penalty labels of section 3.2
+  penalty_value:   integer | null
   penalty_unit:    "s" | "places" | "EUR" | null
   rationale:       string (3 sentences at most)
   precedents_used: [decision ID]      # past decisions used as grounds
 }
 ```
+
+Strict structured output needs every field to be required, so "1 or more" and "3 sentences at most" are in the field descriptions, not enforced by the schema; an answer with no article fails the check.
+
+- Every call returns a status beside the answer: `ok`, `refused` (the model declined, or a content filter stopped it), `truncated` (stopped at the token cap), `unparsed` (the reply did not fit `Answer`), `timeout`. The token counts, the time and the cost (from the price table in `config.py`) are recorded whatever the status. Only `ok` was seen on real calls; the others are covered by unit tests.
+- `f1aisteward ask "<incident>" --event <slug>` prints the answer, the check, the outcome counts, what the model was shown, the time and the cost.
+
+Three real dev incidents, asked in the stewards' words (`gpt-6-luna`, 2026-11-17) **[verified: `ask`]**:
+
+| Incident | Stewards | Answer | Under the answer's article, of the 20 closest |
+|---|---|---|---|
+| A race collision (Hungarian) | ISC-L:IV.2.d, 5 s | ISC-L:IV.2, no further action | 15: 8 no further action, 6 × 10 s, 1 × 5 s |
+| Impeding in qualifying (Hungarian) | F1-B:4.1.1, 3 places | F1-B:4.1.1, 3 places | 11: 5 warnings, 4 no further action, 1 × 3 places, 1 × €5,000 |
+| An unsafe release in qualifying (British) | F1-B:1.6.2.b.i, €5,000 | F1-B:1.6.2.b.i, €5,000 | 3: 2 × €7,500, 1 × €5,000 |
+
+All three were well formed and passed the check. The counts can disagree with the answer (impeding), and they are shown side by side. Three answers are not a score; that is section 4.
 
 ### 3.7 Citation check
 
@@ -218,9 +236,11 @@ After the answer arrives, code checks it.
 - Is each article in `articles` among the retrieved articles or the articles of the retrieved decisions?
 - Is each decision in `precedents_used` among the retrieved decisions?
 
-On a mismatch the answer is flagged and recorded, and on the screen that citation is removed from the list of grounds. There is no loop that asks again.
+An article counts as retrieved when its id equals one of those or one lies inside the other (`ISC-L:IV.2.d` and `ISC-L:IV.2`; `answer.related`). That is the rule rule recall was measured with (section 3.5): the rules are cut at paragraphs and the stewards cite points. A decision's Section C article counts too, though Section C is not searched. A citation not written as an id, such as "Appendix L, Chapter IV, Article 2 d)", matches nothing and fails; the prompt asks for the ids as shown, and on the three real answers the model used them.
 
-This check only looks at whether the cited IDs were in the search results. It catches invented citations, but it does not check whether the written reason actually follows from those grounds.
+On a mismatch the answer is flagged and recorded, and on the screen that citation is removed from the list of grounds. There is no loop that asks again. The outcome counts (section 3.5) use only the articles that passed.
+
+This check only looks at whether the cited IDs were in the search results. It catches invented citations, but it does not check whether the written reason actually follows from those grounds. An answer can cite the right article with the wrong penalty and pass, as the race collision in section 3.6 did. No real answer has failed the check yet; the failing path is covered by unit tests.
 
 ### 3.8 Product screen
 
@@ -355,7 +375,9 @@ By kind, over the 342 parsed decisions: 164 incidents that need judgment, 109 pr
 
 ### 5.2 Cost [estimate]
 
-Assumptions: 4,000 tokens of retrieved articles, 4,000 tokens for 5 past decisions, 1,500 tokens of output (reasoning included). **None of the three has been measured.** Prices are from the table in ADR-003.
+Assumptions: 4,000 tokens of retrieved articles, 4,000 tokens for 5 past decisions, 1,500 tokens of output (reasoning included). Prices are from the table in ADR-003.
+
+**Measured on three dev questions in step 4** (`gpt-6-luna`, reasoning effort medium) **[verified: `ask`, 2026-11-17]**: 2,170 to 3,007 input tokens for the articles (8 to 11) and the 5 decisions together, 236 to 605 output tokens (127 to 494 of them reasoning), $0.0004 to $0.0005 per question. That is well under the assumptions above. The tables below still use the assumptions: three questions on one model are not enough to replace them. Step 5 measures ten dev questions first and recomputes the cost before the full run. Whether `gpt-6.1-terra` spends as many reasoning tokens as `gpt-6-luna` is not known.
 
 | Per question | No search | Rules only | Rules + past decisions |
 |---|---|---|---|
@@ -427,6 +449,8 @@ Once step 2 is finished, "find similar incidents" works without calling a model.
 - Past decisions: vector search (section 3.5, 2026-11-16)
 - Rule documents: Section B, the ISC body, Appendix L and H, 11 issues (section 3.4, 2026-11-16)
 - Rule articles: vector search plus the articles cited by the past decisions found (section 3.5, 2026-11-17)
+- The answer (sections 3.6 and 3.7, 2026-11-17; Claude's suggestions, which the user let stand): `gpt-6-luna` while building; the penalty type is an enum of the step 1 labels; a cited article counts as retrieved when one id equals or lies inside the other
 
 **Still open**
+- **Reasoning effort and the size of the pool for the outcome counts**: `medium` and 20 for now, both untuned. Settled on dev in step 5.
 - **Whether to also run the final evaluation on `gpt-6-luna`**: the previous design had it. The product does not need it, and it costs about $1.
