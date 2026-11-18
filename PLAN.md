@@ -9,7 +9,7 @@
 | 1 | Parse decisions and build labels | Done 2026-11-15 |
 | 2 | Search over past decisions | Done 2026-11-16 |
 | 3 | Parse the rules and search them | Done 2026-11-16; articles cited by the decisions found added 2026-11-17 |
-| 4 | Generate answers and check citations | |
+| 4 | Generate answers and check citations | Done 2026-11-17 |
 | 5 | Evaluate answers | |
 | 6 | Product screen and final README | |
 | 7 | Optional: compare with the whole rulebook in the prompt | |
@@ -97,6 +97,28 @@ Things earlier steps learned from the real data. Read these before writing a par
 - **Built the same day, the user's choice: the 8 plus the linked ones.** `RuleSearch.search(..., decisions=...)` adds `cited_by(decisions, date)` after the 8; `holding` moved from `eval/retrieval.py` to `search.py`. `search --rules` now also runs decision search and prints the two parts apart, with the decisions that cite each article. `eval --retrieval` adds a row "vector + cited": 0.933 / 0.924, 9.6 / 9.7 articles on average, at most 15 / 14 (the throwaway script counted an id once; two paragraphs the FIA numbered alike are two articles here). Example: for "Car 27 ran into car 55 at turn 8 in the race." before Monaco, IV.2 is not among vector's 14 closest, and all 5 decisions found cite IV.2.d, so it comes 9th. 7 tests added (218 in all).
 - **Rule hit@8 is reported nowhere, on purpose.** 73 of the 87 dev questions cite one article, and for them hit and recall are the same. For the 14 that cite more, hit hides the missing ones: vector hit@8 is 0.724 / 0.681 against recall@8 0.699 / 0.644. Decision search has no recall for the opposite reason: the number of right earlier decisions runs from 0 to 26 per question (median 5), so recall@5 would mostly measure how common an article is.
 
+**Step 4**
+
+- **What LangChain returns, read in the installed source** (`langchain-openai` 1.8.0, so above 1.3.5). `with_structured_output(..., include_raw=True)` returns a dict with `raw` (the `AIMessage`), `parsed` and `parsing_error`. Token counts are in `raw.usage_metadata`: `input_tokens`, `output_tokens`, `input_token_details.cache_read`, and the reasoning tokens in `output_token_details.reasoning`. A refusal, or a content filter, comes back as a `ModelRefusalError` in `parsing_error`. An answer cut off at the token limit has `response_metadata["status"] == "incomplete"`. `max_tokens` is sent as `max_output_tokens`. A timeout raises `ModelTimeoutError`. Refusal, truncation and timeout have not happened on a real call; only unit tests cover them.
+- **Output tokens include the reasoning tokens.** The first real answer had 605 output tokens, 494 of them reasoning, which leaves about 110 for the JSON answer. So the cost counts output tokens once and never adds reasoning on top.
+- **The prompt is far smaller than estimated.** Three real questions: 2,170, 2,646 and 3,007 input tokens (9, 8 and 11 articles, 5 decisions); 236 to 605 output tokens. `01-system-design.md` section 5.2 and ADR-003 assume 8,000 in and 1,500 out. On `gpt-6-luna` the three cost $0.0004 to $0.0005 each against $0.0016 estimated. Three questions are not a measurement for step 5, which still measures ten dev questions first.
+- **Time.** Search 1.1 to 1.4 s, the question's embedding request included. The model 4.0 to 8.2 s at reasoning effort medium.
+- **Three real incidents, dev events, in the stewards' words (session and Fact):**
+
+  | Decision | Stewards | Answer | Earlier decisions under the answer's article (of the 20 closest) |
+  |---|---|---|---|
+  | `2026-hungarian-054`, a collision in the race | ISC-L:IV.2.d, 5 s | ISC-L:IV.2, no further action | 15: 8 no further action, 6 × 10 s, 1 × 5 s |
+  | `2026-hungarian-036`, impeding in qualifying | F1-B:4.1.1, 3 places | F1-B:4.1.1, 3 places | 11: 5 warning, 4 no further action, 1 × 3 places, 1 × €5,000 |
+  | `2026-british-062`, an unsafe release in qualifying | F1-B:1.6.2.b.i, €5,000 | F1-B:1.6.2.b.i, €5,000 | 3: 2 × €7,500, 1 × €5,000 |
+
+  All three are well formed and passed the citation check. The article was right three times (the first at paragraph level, which is how the rules are cut), the penalty twice. For the collision the model said the Fact does not establish who caused it. For impeding it followed the one qualifying precedent it cited, not the majority of the 11; which sessions those 11 come from was not looked at. No real answer has failed the citation check yet; the failing path is covered by unit tests only.
+- **The counts can disagree with the answer**, as for impeding. They are printed side by side and neither is changed to fit the other.
+- **The model also wrote ids inside the rationale** ("[2026-british-060]"). The check reads only `articles` and `precedents_used`.
+- **Dev events were used, not São Paulo.** The step's check named `--event sao-paulo`, a test event. The prompt is still being written, so its questions came from dev, to keep the test events unseen.
+- **`ask` searches decisions twice:** k=5 for the prompt, the same 5 that step 2 measured, and k=20 for the counts. The question's vector is fetched once and reused.
+- **LangSmith is not set up.** `.env` holds `OPENAI_API_KEY` only (the names were checked, not the values). Tracing attaches without code once `LANGSMITH_TRACING=true` and `LANGSMITH_API_KEY` are added there.
+- **Taken as Claude suggested, 2026-11-17** (the user said to start without changing them): `ask` uses `gpt-6-luna`; the citation check counts an article as shown when it is one of the articles or decisions shown, or lies inside one or holds one (the rule of `search.holding`, as `answer.related`); `penalty_type` is an enum of the step 1 labels (`labels.PENALTY_TYPES`). Also Claude's first values, untuned: reasoning effort medium, 4,000 output tokens at most, 120-second timeout, 20 decisions for the counts.
+
 ## Context
 
 **What we are building.** A local web app. You describe a Formula 1 incident in text; it searches stewards' decisions from earlier race weekends, names the rule in question and says what penalty usually follows. For a real incident it shows the stewards' actual decision under the answer.
@@ -139,8 +161,8 @@ data/manifest/regulations.yaml     rule document issues, date in force, link, sh
 data/labels/decisions.jsonl        decision id, article ids, penalty, kind, split (no FIA text)  (exists, 342 rows)
 scripts/make_events_manifest.py    builds events.yaml from a saved fia.com listing (exists)
 src/f1aisteward/
-  cli.py            fetch [--rules], build --decisions/--rules/--index, search [--rules], eval --retrieval (exist) / ask / serve
-  config.py         paths, settings (exists); later model names and price table
+  cli.py            fetch [--rules], build --decisions/--rules/--index, search [--rules], eval --retrieval, ask (exist) / serve
+  config.py         paths, settings, model settings and price table (exists)
   manifest.py       title filter, read and write the manifests, issues in force on a date (exists)
   fetch.py          download PDFs, check hashes (exists)
   parse/decisions.py  decision PDF -> its eight fields (exists)
@@ -149,15 +171,15 @@ src/f1aisteward/
   parse/rules.py      rules PDF -> articles with heading paths, with pdfplumber (exists)
   index.py          decisions and articles -> documents, BM25, Chroma collections `decisions` and `rules` (exists)
   search.py         bm25, vector and hybrid (RRF): decisions of earlier events, articles of the issues in force, plus the articles the decisions found cite (exists)
-  llm/client.py     the one place ChatOpenAI is called; records tokens and cost
-  answer.py         prompt, Answer schema, citation check, outcome counts
+  llm/client.py     the one place ChatOpenAI is called; records tokens and cost (exists)
+  answer.py         prompt, Answer schema, citation check, outcome counts (exists)
   eval/retrieval.py search evaluation (exists)
   eval/answers.py   answer evaluation runner (three configurations)
   eval/score.py     scoring rules
   eval/report.py    results/summary.json and the README tables
   app/server.py     FastAPI
   app/static/index.html
-tests/              manifest, fetch, parse_decisions, labels, build, questions, index, search, eval_retrieval, rules (exist)
+tests/              manifest, fetch, parse_decisions, labels, build, questions, index, search, eval_retrieval, rules, llm_client, answer (exist)
 docs/demo.gif       recorded in step 6
 .cache/  runs/      local only, not in git
 ```
@@ -213,7 +235,9 @@ docs/demo.gif       recorded in step 6
 - **Learn**: building a prompt, structured output, checking grounding, tokens and cost, reading a call in LangSmith.
 - **Check**: `uv run f1aisteward ask "..." --event sao-paulo` prints the answer, the outcome counts, the time and the cost.
 - **Done when**: three real incidents give well-formed answers and the citation check works.
-- **Verify while building**: `langchain-openai` is 1.3.5 or later; `with_structured_output(..., include_raw=True)` returns token usage; which field carries reasoning tokens.
+- **Verify while building**: `langchain-openai` is 1.3.5 or later; `with_structured_output(..., include_raw=True)` returns token usage; which field carries reasoning tokens. All three checked (under "Found along the way", step 4).
+- **Built (2026-11-17)**: `llm/client.py` (`ask`, `read`, `Usage`, `Reply`), `answer.py` (`Answer`, `messages`, `check`, `outcomes`, `answer`, `report`), CLI `ask`, the model settings and price table in `config.py`. 25 new tests (243 in all).
+- **Left**: nothing that blocks step 5. Not done: reading a call in LangSmith (no LangSmith key in `.env` yet); `REASONING_EFFORT` and `OUTCOME_POOL` are untuned first values. `01-system-design.md` sections 3.6 and 5.2 and ADR-002 and ADR-003 still carry the pre-step-4 notes ("verify during implementation", the 8,000-token prompt estimate).
 
 ### Step 5: evaluate answers
 
@@ -277,6 +301,9 @@ Creating the GitHub repository and pushing. Do it when the user asks.
 | Default rule search method | Decided 2026-11-17 | Vector, as for decisions |
 | Try to raise rule recall before step 4 | Decided 2026-11-17 | Yes. First idea: add the articles cited by the retrieved decisions |
 | How many articles go into the prompt | Decided 2026-11-17 | The 8 found by search plus the articles the decisions found cite (9.6 on average) |
+| Model for `ask` while building | Taken 2026-11-17 | `gpt-6-luna` |
+| When does a cited article count as shown | Taken 2026-11-17 | Same id, or one inside the other (`answer.related`) |
+| Reasoning effort | Step 5, on dev | Medium for now, untuned |
 | Also run the final evaluation on `gpt-6-luna` | Step 5 | Yes, it costs about $1 |
 | Code licence | Before pushing to GitHub | The user decides |
 

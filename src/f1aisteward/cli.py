@@ -237,6 +237,38 @@ def search(
         )
 
 
+@app.command()
+def ask(
+    question: Annotated[str, typer.Argument(help="What happened, in plain English.")],
+    event: Annotated[
+        str | None,
+        typer.Option(
+            "--event",
+            "-e",
+            help="e.g. hungarian. Decisions of earlier events only, and the rules in force then. "
+            "Default: every decision and the latest rules.",
+        ),
+    ] = None,
+) -> None:
+    """Answer an incident: the article, the likely penalty, and how earlier decisions under it ended. Calls OpenAI."""
+    from . import answer as answering
+
+    events = {e["slug"]: e for e in manifest.load()["events"]}
+    if event is not None and event not in events:
+        typer.echo(f"Unknown event: {event}\nAvailable: {', '.join(events)}", err=True)
+        raise typer.Exit(code=1)
+    embeddings = _question_embeddings()  # one vector for the question, used by every search
+    decision_searcher = _searcher(_parsed_decisions(), [config.SEARCH_METHOD], embeddings)
+    rule_searcher = _rule_searcher([config.RULES_SEARCH_METHOD], embeddings)
+    date = events[event]["date"] if event else None
+    before_round = events[event]["round"] if event else None
+
+    result = answering.answer(question, decision_searcher, rule_searcher, date, before_round)
+    typer.echo(answering.report(result, rule_searcher.issues_on(date)))
+    if result.reply.status != "ok":
+        raise typer.Exit(code=1)
+
+
 @app.command("eval")
 def evaluate(
     retrieval: Annotated[

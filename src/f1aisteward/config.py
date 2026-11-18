@@ -43,6 +43,22 @@ RULES_COLLECTION = "rules"
 RULES_SEARCH_METHOD = "vector"  # chosen on dev in step 3: hybrid was not clearly better (PLAN.md)
 TOP_K_RULES = 8  # articles a rule search returns
 
+# Answering (ADR-003): gpt-6-luna while building, gpt-6.1-terra for the final numbers.
+ANSWER_MODEL = "gpt-6-luna"
+REASONING_EFFORT = "medium"  # not tuned yet; fixed on the dev questions in step 5, then the same for both models
+MAX_OUTPUT_TOKENS = 4000  # reasoning included. An answer cut off here is reported as truncated, not as wrong
+MODEL_TIMEOUT_SECONDS = 120.0
+# The outcome counts under an answer ("5 of 8 got 5 seconds") are counted over this many
+# of the closest earlier decisions, the 5 the model read among them. Provisional: settled on dev.
+OUTCOME_POOL = 20
+
+# USD per 1 million tokens, from OpenAI's pricing page, checked 2026-11-14 (ADR-003).
+# Above 272,000 input tokens the price doubles; an answer's prompt is far below that.
+PRICES = {
+    "gpt-6-luna": {"input": 0.10, "cached": 0.01, "output": 0.50},
+    "gpt-6.1-terra": {"input": 1.00, "cached": 0.05, "output": 5.00},
+}
+
 # Which events are used for what, by event date (ISO dates compare correctly as strings).
 #   before DEV_FROM            never a question. The answering model may have seen these in training.
 #   DEV_FROM up to TEST_FROM   dev: questions used to tune search settings and the prompt.
