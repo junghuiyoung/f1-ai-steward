@@ -237,7 +237,8 @@ docs/demo.gif       recorded in step 6
 - **Done when**: three real incidents give well-formed answers and the citation check works.
 - **Verify while building**: `langchain-openai` is 1.3.5 or later; `with_structured_output(..., include_raw=True)` returns token usage; which field carries reasoning tokens. All three checked (under "Found along the way", step 4).
 - **Built (2026-11-17)**: `llm/client.py` (`ask`, `read`, `Usage`, `Reply`), `answer.py` (`Answer`, `messages`, `check`, `outcomes`, `answer`, `report`), CLI `ask`, the model settings and price table in `config.py`. 25 new tests (243 in all).
-- **Left**: nothing that blocks step 5. Not done: reading a call in LangSmith (no LangSmith key in `.env` yet); `REASONING_EFFORT` and `OUTCOME_POOL` are untuned first values. `01-system-design.md` sections 3.6 and 5.2 and ADR-002 and ADR-003 still carry the pre-step-4 notes ("verify during implementation", the 8,000-token prompt estimate).
+- **Left**: nothing that blocks step 5. Not done: reading a call in LangSmith (no LangSmith key in `.env` yet); `REASONING_EFFORT` and `OUTCOME_POOL` are untuned first values.
+- **Docs brought up to date (2026-11-17)**: `01-system-design.md` (sections 3.5 to 3.7, 5.2 and 8) and ADR-002, ADR-003 and ADR-006 in `02-tech-stack-adr.md`. The cost tables there still use the assumed 8,000 input tokens; step 5 recomputes them after measuring ten dev questions.
 
 ### Step 5: evaluate answers
 
