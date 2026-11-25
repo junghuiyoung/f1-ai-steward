@@ -1,6 +1,7 @@
 """The command line: `uv run f1aisteward <command>`."""
 
 import os
+from collections import Counter
 from typing import Annotated
 
 import typer
@@ -275,75 +276,221 @@ def evaluate(
         bool,
         typer.Option("--retrieval", help="Measure search: hit@5 and precision@5 of decisions, recall@8 of articles."),
     ] = False,
+    answers: Annotated[
+        bool,
+        typer.Option("--answers", help="Answer every question three ways and record the answers. Calls OpenAI."),
+    ] = False,
+    report: Annotated[
+        bool,
+        typer.Option("--report", help="Score the recorded answers; write results/summary.json and print the tables."),
+    ] = False,
     split: Annotated[str, typer.Option("--split", help="dev or test. Tune on dev; report test.")] = "dev",
     method: Annotated[
         list[str] | None,
-        typer.Option("--method", "-m", help="bm25, vector or hybrid. Repeat for several. Default: all three."),
+        typer.Option("--method", "-m", help="Search: bm25, vector or hybrid. Repeat for several. Default: all three."),
     ] = None,
+    model: Annotated[str, typer.Option("--model", help="Answers: the chat model.")] = config.ANSWER_MODEL,
+    effort: Annotated[str, typer.Option("--effort", help="Answers: reasoning effort, low, medium or high.")] = config.REASONING_EFFORT,
+    configuration: Annotated[
+        list[str] | None,
+        typer.Option("--config", "-c", help="Answers: none, rules or rules_and_decisions. Repeat. Default: all three."),
+    ] = None,
+    sample: Annotated[int | None, typer.Option("--sample", help="Answers: only this many questions, drawn at random.")] = None,
+    run: Annotated[
+        list[str] | None,
+        typer.Option("--run", help="Answers: the run's name, to resume it. Report: the runs to score; repeat."),
+    ] = None,
+    workers: Annotated[int, typer.Option("--workers", help="Answers: model calls at the same time.")] = 4,
 ) -> None:
     """Measure how well the app does, with numbers."""
-    if not retrieval:
-        typer.echo("Nothing to evaluate. Use --retrieval.", err=True)
+    if not (retrieval or answers or report):
+        typer.echo("Nothing to evaluate. Use --retrieval, --answers or --report.", err=True)
         raise typer.Exit(code=1)
+    if split not in ("dev", "test"):
+        typer.echo("Use --split dev or test.", err=True)
+        raise typer.Exit(code=1)
+    if retrieval:
+        _evaluate_retrieval(split, method)
+    if answers:
+        _evaluate_answers(split, model, effort, configuration, sample, (run or [None])[0], workers)
+    if report:
+        _report(run)
+
+
+def _evaluate_retrieval(split: str, method: list[str] | None) -> None:
+    import json
+
     from .eval import retrieval as measuring
     from .search import METHODS
 
     methods = method or list(METHODS)
     unknown = [name for name in methods if name not in METHODS]
-    if unknown or split not in ("dev", "test"):
-        typer.echo(f"Use --split dev or test, and --method from: {', '.join(METHODS)}", err=True)
+    if unknown:
+        typer.echo(f"Use --method from: {', '.join(METHODS)}", err=True)
         raise typer.Exit(code=1)
 
     records = _parsed_decisions()
     question_sets = [
-        ("Questions in the stewards' own words (session and Fact)", measuring.build_questions(records, split)),
+        ("stewards", "Questions in the stewards' own words (session and Fact)", measuring.build_questions(records, split)),
         (
+            "reworded",
             "The same incidents reworded (data/questions/paraphrased.jsonl)",
             measuring.build_questions(records, split, measuring.load_reworded()),
         ),
     ]
-    every_question = [question.text for _, (questions, _) in question_sets for question in questions]
+    every_question = [question.text for _, _, (questions, _) in question_sets for question in questions]
     embeddings = None
     if methods != ["bm25"]:
         embeddings = _question_embeddings()
         embeddings.warm(every_question)  # one request for all questions instead of one per search
     searcher = _searcher(records, methods, embeddings)
 
-    events = list(dict.fromkeys(q.event for _, (questions, _) in question_sets for q in questions))
+    events = list(dict.fromkeys(q.event for _, _, (questions, _) in question_sets for q in questions))
     typer.echo(
         f"Search evaluation on the {split} events ({events[0]} to {events[-1]}).\n"
         "Each question is searched in the decisions of earlier events only.\n"
     )
+    # What results/retrieval-<split>.json records: the numbers printed below, nothing else.
+    saved: dict = {"split": split, "events": events, "k": config.TOP_K, "k_rules": config.TOP_K_RULES, "sets": {}}
     searches = 0
-    for title, (questions, left_out) in question_sets:
+    for key, title, (questions, left_out) in question_sets:
         scores = [measuring.evaluate(searcher, questions, name) for name in methods]
         searches += len(questions) * len(methods)
         typer.echo(measuring.report(title, records, questions, left_out, scores) + "\n")
+        saved["sets"][key] = {
+            "questions": len(questions),
+            "left_out": dict(left_out),
+            "out_of_reach": measuring.out_of_reach(records, questions),
+            "decisions": {sc.method: {"hit": sc.hit, "precision": sc.precision} for sc in scores},
+        }
     typer.echo(f"Checked: none of the {searches} searches returned a decision from its own or a later event.\n")
 
-    if not config.PARSED_RULES.exists():
+    if config.PARSED_RULES.exists():
+        rule_searcher = _rule_searcher(methods, embeddings)
+        # The product's way: the default rule method plus the articles the decisions found cite.
+        with_cited = config.RULES_SEARCH_METHOD in methods and searcher.vector_store is not None
+        typer.echo(
+            "Rule search: the same questions, asked of the articles in force on each event's date.\n"
+            "An article counts as found when the retrieved article holds it (B1.8.4 holds B1.8.4.b).\n"
+            f"Each method returns {config.TOP_K_RULES} articles. \"+ cited\" adds the articles cited by the "
+            f"{config.TOP_K} past decisions that decision search ({config.SEARCH_METHOD}) found.\n"
+        )
+        searches = 0
+        for key, title, (questions, _) in question_sets:
+            reach = measuring.rule_reach(rule_searcher, questions)
+            scores = [measuring.evaluate_rules(rule_searcher, questions, name) for name in methods]
+            searches += len(questions) * len(methods)
+            if with_cited:
+                default = config.RULES_SEARCH_METHOD
+                scores.append(measuring.evaluate_rules(rule_searcher, questions, default, decision_search=searcher))
+                searches += len(questions)
+            typer.echo(measuring.report_rules(title, questions, reach, scores) + "\n")
+            saved["sets"][key]["rules"] = {
+                "cited": reach.cited,
+                "outside_the_books": dict(reach.outside_the_books),
+                "not_in_the_issue": reach.not_in_the_issue,
+                "best_recall": reach.best_recall,
+                "methods": {sc.method: {"recall": sc.recall, "articles": sc.articles, "most": sc.most} for sc in scores},
+            }
+        typer.echo(f"Checked: all {searches} rule searches returned articles of the issues in force only.")
+    else:
         typer.echo("No parsed rules, so no rule search to measure. Run `f1aisteward build --rules` first.")
-        return
-    rule_searcher = _rule_searcher(methods, embeddings)
-    # The product's way: the default rule method plus the articles the decisions found cite.
-    with_cited = config.RULES_SEARCH_METHOD in methods and searcher.vector_store is not None
-    typer.echo(
-        "Rule search: the same questions, asked of the articles in force on each event's date.\n"
-        "An article counts as found when the retrieved article holds it (B1.8.4 holds B1.8.4.b).\n"
-        f"Each method returns {config.TOP_K_RULES} articles. \"+ cited\" adds the articles cited by the "
-        f"{config.TOP_K} past decisions that decision search ({config.SEARCH_METHOD}) found.\n"
+
+    out = config.ROOT / "results" / f"retrieval-{split}.json"
+    out.parent.mkdir(exist_ok=True)
+    out.write_text(json.dumps(saved, indent=2) + "\n", "utf-8")
+    typer.echo(f"\nWrote {out.relative_to(config.ROOT)} (numbers only)")
+
+
+def _evaluate_answers(
+    split: str, model: str, effort: str, configuration: list[str] | None, sample: int | None, name: str | None, workers: int
+) -> None:
+    from . import answer as answering
+    from .eval import answers as asking
+
+    configs = tuple(configuration or asking.CONFIGS)
+    if any(c not in asking.CONFIGS for c in configs) or model not in config.PRICES or effort not in ("low", "medium", "high"):
+        typer.echo(
+            f"Use --config from {', '.join(asking.CONFIGS)}, --model from {', '.join(config.PRICES)}, "
+            "--effort low, medium or high.",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+    records = _parsed_decisions()
+    questions, left_out = asking.questions_for(records, split, sample)
+    name = name or f"{split}-{model}-{effort}" + (f"-sample{sample}" if sample else "")
+    run_dir = asking.RUNS_DIR / name
+
+    embeddings = _question_embeddings()
+    embeddings.warm([q.text for q in questions])
+    decision_searcher = _searcher(records, [config.SEARCH_METHOD], embeddings)
+    rule_searcher = _rule_searcher([config.RULES_SEARCH_METHOD], embeddings)
+    typer.echo(f"{len(questions)} {split} questions, {len(configs)} configurations, {model} (reasoning {effort}).")
+    for reason, count in left_out.most_common():
+        typer.echo(f"  left out {count:>3}  {reason}")
+    prepared = asking.prepare(questions, {r["id"]: r for r in records}, decision_searcher, rule_searcher, configs)
+    typer.echo("Searched: no question was shown a decision from its own or a later event.")
+
+    asking.write_meta(
+        run_dir, model=model, reasoning_effort=effort, split=split, configs=list(configs),
+        questions=len(questions), sample=sample, left_out=dict(left_out),
+        search={"decisions": config.SEARCH_METHOD, "k": config.TOP_K, "rules": config.RULES_SEARCH_METHOD,
+                "k_rules": config.TOP_K_RULES, "embedding": config.EMBEDDING_MODEL},
+        max_output_tokens=config.MAX_OUTPUT_TOKENS, prompt=answering.prompt_version(),
     )
-    searches = 0
-    for title, (questions, _) in question_sets:
-        reach = measuring.rule_reach(rule_searcher, questions)
-        scores = [measuring.evaluate_rules(rule_searcher, questions, name) for name in methods]
-        searches += len(questions) * len(methods)
-        if with_cited:
-            default = config.RULES_SEARCH_METHOD
-            scores.append(measuring.evaluate_rules(rule_searcher, questions, default, decision_search=searcher))
-            searches += len(questions)
-        typer.echo(measuring.report_rules(title, questions, reach, scores) + "\n")
-    typer.echo(f"Checked: all {searches} rule searches returned articles of the issues in force only.")
+    rows = asking.run(prepared, run_dir, model, effort, configs, workers, progress=typer.echo)
+    statuses = Counter(row["status"] for row in rows)
+    typer.echo(
+        f"Done: {dict(statuses)}. Cost of this run ${sum(r['cost'] for r in rows):.3f}.\n"
+        f"Recorded in {(run_dir / 'results.jsonl').relative_to(config.ROOT)}. "
+        f"Score it with: f1aisteward eval --report --run {name}"
+    )
+
+
+def _report(names: list[str] | None) -> None:
+    from .eval import answers as asking
+    from .eval import report as reporting
+
+    if not names:
+        typer.echo("Name the runs to score: --run <name>, repeated.", err=True)
+        raise typer.Exit(code=1)
+    run_dirs = [asking.RUNS_DIR / n for n in names]
+    missing = [str(d.relative_to(config.ROOT)) for d in run_dirs if not (d / "results.jsonl").exists()]
+    if missing:
+        typer.echo(f"No recorded answers in {', '.join(missing)}", err=True)
+        raise typer.Exit(code=1)
+    retrieval_files = sorted((config.ROOT / "results").glob("retrieval-*.json"))
+    summary = reporting.summarise(run_dirs, retrieval_files)
+    reporting.write(summary)
+    typer.echo(reporting.markdown(summary))
+    for name, result in summary["answers"].items():
+        c = result["checks"]
+        typer.echo(
+            f"Checks, {name}: gold labels score {c['gold_in_scores']['both']:.0%}; an empty answer "
+            f"{c['empty_answer_scores']['both']:.0%}; searches that returned their own or a later event "
+            f"{c['searches_that_returned_own_or_later_event']}; articles from an issue not in force "
+            f"{c['articles_shown_from_an_issue_not_in_force']}."
+        )
+    typer.echo(f"\nWrote {reporting.SUMMARY.relative_to(config.ROOT)}")
+
+
+@app.command()
+def serve(
+    port: Annotated[int, typer.Option("--port", help="The port on this machine.")] = 8000,
+    model: Annotated[str, typer.Option("--model", help="The chat model that answers.")] = config.ANSWER_MODEL,
+) -> None:
+    """The app in your browser, at http://localhost:8000. Each answer calls OpenAI."""
+    import uvicorn
+
+    from .app import server
+
+    if model not in config.PRICES:
+        typer.echo(f"Unknown model: {model}\nAvailable: {', '.join(config.PRICES)}", err=True)
+        raise typer.Exit(code=1)
+    steward = server.load(model)  # load everything before the first request, and fail now if something is missing
+    typer.echo(f"AI Steward on http://localhost:{port} ({model}). Stop it with Ctrl+C.")
+    # 127.0.0.1: only this machine can reach it. The indexes hold FIA text, which is not to be served to others.
+    uvicorn.run(server.create_app(steward), host="127.0.0.1", port=port, log_level="warning")
 
 
 def _echo_article(rank: int, article: dict, citing: list[str], label: str) -> None:

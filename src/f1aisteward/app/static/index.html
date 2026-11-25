@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Steward</title>
+<link rel="icon" href="data:,"><!-- no icon; stops the browser asking the server for /favicon.ico -->
+
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --wash: #f0efec; --paper: #ffffff;
+  --ink: #0b0b0b; --ink-2: #52514e; --muted: #6b6a65;
+  --rule: #c3c2b7; --rule-strong: #8a8982;
+  --accent: #1c5cab;
+  --match: #0b6e4f; --differ: #a8431a; --partial: #7a5a00;
+  --hatch: rgba(11,11,11,0.07);
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --page: #0d0d0d; --wash: #242422; --paper: #ffffff;
+    --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9c9a92;
+    --rule: #383835; --rule-strong: #77756e;
+    --accent: #86b6ef;
+    --match: #4cc79a; --differ: #f08a5d; --partial: #e0b84a;
+    --hatch: rgba(255,255,255,0.08);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --wash: #242422; --paper: #ffffff;
+  --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9c9a92;
+  --rule: #383835; --rule-strong: #77756e;
+  --accent: #86b6ef;
+  --match: #4cc79a; --differ: #f08a5d; --partial: #e0b84a;
+  --hatch: rgba(255,255,255,0.08);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--page); color: var(--ink); font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.serif { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+.mono, code { font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.93em; }
+code { background: var(--wash); padding: 1px 5px; border-radius: 4px; }
+a { color: var(--accent); text-underline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+.skip { position: absolute; left: -999px; top: 0; background: var(--ink); color: var(--page); padding: 8px 12px; z-index: 20; }
+.skip:focus { left: 8px; top: 8px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.n { font-variant-numeric: tabular-nums; }
+
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px 80px; }
+@media (max-width: 719px) { .wrap { padding: 0 16px 64px; } }
+
+.mast { display: flex; align-items: baseline; justify-content: space-between; gap: 4px 32px; flex-wrap: wrap; padding: 28px 0 20px; border-bottom: 1px solid var(--rule); }
+.brand { font-size: 26px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+.unofficial { color: var(--muted); font-size: 13px; margin: 0; }
+.pitch { font-size: 20px; line-height: 1.4; margin: 28px 0 0; max-width: 34em; }
+
+.grid { display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 56px; align-items: start; margin-top: 36px; }
+@media (max-width: 959px) { .grid { grid-template-columns: minmax(0, 1fr); gap: 40px; } }
+h2 { font-size: 15px; font-weight: 600; margin: 0 0 12px; letter-spacing: 0.01em; }
+.eyebrow { font-size: 13px; color: var(--ink-2); margin: 0 0 6px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.prov { display: inline-block; font-size: 12px; line-height: 1.3; padding: 2px 8px; border-radius: 3px; font-weight: 500; }
+.prov.real { color: var(--ink-2); border: 1px solid var(--rule-strong); }
+
+/* ask panel */
+.field { display: block; margin-bottom: 14px; }
+.field > span { display: block; font-size: 13px; color: var(--ink-2); margin-bottom: 4px; }
+select, textarea { width: 100%; font: inherit; color: var(--ink); background: var(--page); border: 1px solid var(--rule-strong); border-radius: 6px; padding: 9px 12px; }
+select { min-height: 44px; }
+textarea { min-height: 150px; resize: vertical; line-height: 1.5; }
+.rules-in-force { font-size: 13px; color: var(--muted); margin: -6px 0 14px; }
+.ask { appearance: none; width: 100%; font: inherit; font-weight: 600; color: var(--page); background: var(--ink); border: 1px solid var(--ink); border-radius: 6px; min-height: 48px; cursor: pointer; }
+.ask:disabled { background: none; color: var(--ink-2); border-color: var(--rule-strong); cursor: default; }
+.notice { font-size: 14px; color: var(--ink); background: var(--wash); border-left: 3px solid var(--rule-strong); border-radius: 2px; padding: 10px 14px; margin: 12px 0 0; max-width: 62ch; }
+.examples { margin-top: 36px; }
+.examples .hd { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.caselist { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); max-height: 420px; overflow-y: auto; }
+.hint { color: var(--muted); font-size: 13px; margin: 0; }
+.caselist li { border-bottom: 1px solid var(--rule); }
+.case { appearance: none; display: block; width: 100%; text-align: left; font: inherit; color: var(--ink); background: none; border: 0; border-left: 3px solid transparent; padding: 9px 8px 9px 10px; min-height: 48px; cursor: pointer; }
+.case:hover { background: var(--wash); }
+.case[aria-current="true"] { background: var(--wash); border-left-color: var(--ink); }
+.case .t { display: block; font-weight: 500; }
+.case .s { display: block; color: var(--ink-2); font-size: 13px; }
+
+/* ruling */
+.ruling { min-height: 420px; }
+.empty { border: 1px dashed var(--rule-strong); border-radius: 6px; padding: 56px 24px; text-align: center; color: var(--ink-2); }
+.empty b { display: block; color: var(--ink); font-size: 18px; font-weight: 500; margin-bottom: 6px; }
+.steps { list-style: none; margin: 0; padding: 24px 0 0; }
+.steps li { display: flex; align-items: center; gap: 10px; padding: 8px 0; color: var(--muted); }
+.steps li i { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--rule-strong); flex: none; }
+.steps li.now { color: var(--ink); } .steps li.now i { border-color: var(--ink); border-right-color: transparent; animation: spin .8s linear infinite; }
+.steps li.done { color: var(--ink-2); } .steps li.done i { background: var(--ink-2); border-color: var(--ink-2); }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadein { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+.answer { animation: fadein .2s ease-out; }
+@media (prefers-reduced-motion: reduce) { .answer, .decided { animation: none !important; } .steps li.now i { animation: none; border-right-color: var(--ink); } }
+.outcome { font-size: 34px; line-height: 1.2; font-weight: 500; letter-spacing: -0.01em; margin: 0 0 8px; }
+@media (max-width: 719px) { .outcome { font-size: 27px; } }
+.basis { display: inline-block; font-size: 13px; color: var(--ink-2); border: 1px solid var(--rule-strong); border-radius: 3px; padding: 2px 8px; }
+dl.sheet { margin: 28px 0 0; border-top: 2px solid var(--ink); }
+dl.sheet > div { display: grid; grid-template-columns: 124px minmax(0, 1fr); gap: 8px 20px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+@media (max-width: 559px) { dl.sheet > div { grid-template-columns: minmax(0, 1fr); gap: 2px; } }
+dl.sheet dt { color: var(--ink-2); font-size: 14px; }
+dl.sheet dd { margin: 0; max-width: 62ch; }
+.art { display: block; }
+.art + .art { margin-top: 6px; }
+.art .id { font-weight: 600; }
+.art .what { color: var(--ink-2); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 13px; border: 1px solid var(--rule-strong); border-radius: 3px; padding: 1px 7px; background: var(--wash); }
+.howmade { color: var(--muted); font-size: 13px; margin: 12px 0 0; }
+
+/* similar past incidents */
+.simhd { margin: 0 0 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.dist { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr) 2ch; gap: 6px 12px; align-items: center; font-size: 14px; max-width: 480px; }
+.dist li { display: contents; }
+.dist .bar { height: 10px; background: var(--wash); border-radius: 2px; }
+.dist .bar i { display: block; height: 100%; background: var(--ink-2); border-radius: 2px; }
+.dist .cnt { text-align: right; }
+.prec { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); font-size: 14px; }
+.prec li { display: grid; grid-template-columns: 150px minmax(0, 1fr) max-content; gap: 2px 14px; padding: 8px 0; border-bottom: 1px solid var(--rule); }
+@media (max-width: 559px) { .prec li { grid-template-columns: minmax(0, 1fr); } .dist { grid-template-columns: minmax(0, 1fr) 72px 2ch; } }
+.prec .where { color: var(--ink-2); }
+.prec .pen { font-weight: 500; }
+.simnote { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
+
+.decided { margin-top: 48px; border-top: 2px solid var(--ink); padding-top: 14px; animation: fadein .25s ease-out; }
+.decided .hd { display: flex; align-items: baseline; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; margin-bottom: 10px; }
+.decided h2 { font-size: 20px; margin: 0; letter-spacing: -0.005em; }
+.ruling:focus-visible { outline: none; }
+.compare .h { padding-top: 12px; }
+.decided p.lead { color: var(--ink-2); margin: 0 0 14px; max-width: 62ch; }
+.compare { display: grid; grid-template-columns: 124px minmax(0, 1fr) minmax(0, 1fr); gap: 0 20px; border-top: 1px solid var(--rule-strong); margin: 4px 0 0; font-size: 14px; }
+.compare > * { padding: 10px 0; border-bottom: 1px solid var(--rule); }
+.compare .h { font-weight: 600; font-size: 13px; color: var(--ink-2); border-bottom-color: var(--rule-strong); }
+.compare .k { color: var(--ink-2); }
+@media (max-width: 559px) { .compare { grid-template-columns: 72px minmax(0, 1fr) minmax(0, 1fr); gap: 0 12px; } }
+.verdict { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; margin-top: 4px; white-space: nowrap; }
+.verdict i { font-style: normal; display: inline-grid; place-items: center; width: 16px; height: 16px; border: 1.5px solid currentColor; border-radius: 50%; font-size: 10px; line-height: 1; }
+.verdict.yes { color: var(--match); } .verdict.no { color: var(--differ); } .verdict.partial { color: var(--partial); }
+.docgrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: start; margin-top: 28px; }
+@media (max-width: 1099px) { .docgrid { grid-template-columns: minmax(0, 1fr); } }
+dl.fields { margin: 0; font-size: 14px; }
+dl.fields dt { color: var(--muted); font-size: 13px; } dl.fields dd { margin: 0 0 14px; max-width: 62ch; }
+.pdfbar { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--ink-2); margin-bottom: 6px; flex-wrap: wrap; }
+.docimg { display: block; width: 100%; height: auto; border: 1px solid var(--rule-strong); background: var(--paper); }
+.missing { border: 1px dashed var(--rule-strong); padding: 24px; color: var(--ink-2); font-size: 14px; }
+footer { margin-top: 80px; border-top: 1px solid var(--rule); padding-top: 16px; font-size: 13px; color: var(--muted); max-width: 90ch; }
+footer p { margin: 0 0 6px; }
+/* added for the live page */
+.prec li[hidden] { display: none; }
+.prec .where a { color: inherit; }
+.prec .fact { overflow-wrap: anywhere; }
+.showall { appearance: none; font: inherit; font-size: 13px; color: var(--accent); background: none; border: 0; padding: 10px 0; min-height: 44px; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.rel { list-style: none; margin: 0; padding: 0; font-size: 14px; }
+.rel li + li { margin-top: 4px; }
+.small { font-size: 13px; color: var(--ink-2); }
+.err b { display: block; font-weight: 600; margin-bottom: 2px; }
+</style></head>
+<body>
+<a class="skip" href="#ruling">Skip to the answer</a>
+
+<div class="wrap">
+  <header class="mast">
+    <p class="brand serif">AI Steward</p>
+    <p class="unofficial">Unofficial. Not affiliated with the FIA or Formula 1.</p>
+  </header>
+  <p class="pitch serif">Describe a racing incident. AI Steward finds the rule in question and similar past incidents, and says how stewards usually deal with it.</p>
+
+  <main class="grid">
+    <!-- ============ ASK ============ -->
+    <section aria-labelledby="h-ask">
+      <h2 id="h-ask">The incident</h2>
+      <label class="field"><span>Session</span>
+        <select id="session">
+          <option>Race</option><option>Qualifying</option><option>Sprint</option>
+          <option>Free Practice 1</option><option>Free Practice 2</option><option>Free Practice 3</option>
+          <option>Reconnaissance Laps</option><option value="">No session</option>
+        </select>
+      </label>
+      <label class="field"><span>Race weekend</span>
+        <select id="event" disabled><option>Loading race weekends…</option></select>
+      </label>
+      <p class="rules-in-force" id="scope"></p>
+      <label class="field"><span>What happened</span>
+        <textarea id="incident" placeholder="Car 4 overtook Car 81 under yellow flags at Turn 3 and gave the place back two corners later."></textarea>
+      </label>
+      <button class="ask" id="ask" type="button">Ask AI Steward</button>
+      <div id="notice"></div>
+
+      <div class="examples">
+        <div class="hd"><h2 id="h-ex">Or start from a real incident</h2></div>
+        <ul class="caselist" id="caselist" aria-labelledby="h-ex"></ul>
+      </div>
+    </section>
+
+    <!-- ============ RULING ============ -->
+    <section class="ruling" id="ruling" aria-labelledby="h-ruling" tabindex="-1">
+      <h2 id="h-ruling" class="sr">AI Steward's answer</h2>
+      <div id="out"></div>
+      <div id="decided"></div>
+    </section>
+  </main>
+  <div class="sr" id="live" aria-live="polite"></div>
+
+  <footer>
+    <p>AI Steward answers from the rules and from earlier stewards' decisions only. It has no video, no telemetry and no hearing, so it gives the usual outcome and the stewards may decide otherwise.</p>
+    <p>Rule and decision documents belong to the FIA. This repository doesn't include them; a script downloads each one from fia.com to your machine, and the app runs locally.</p>
+    <p>How it was evaluated, and how often it agrees with the stewards: see the README.</p>
+  </footer>
+</div>
+
+<script>
+// Everything on this page comes from the server's JSON API (/api/events, /api/ask,
+// /api/decisions/...). Nothing is stored in the browser.
+
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => [...document.querySelectorAll(s)];
+// Every string that comes from the API goes through esc() before it is put into HTML.
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+// Links are only followed when they are plain web addresses.
+const safeUrl = (u) => (/^https?:\/\//i.test(u) ? esc(u) : '#');
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const say = (t) => { $('#live').textContent = t; };
+
+const BASIS = {
+  usual: 'Usual outcome. The stewards can go higher or lower.',
+  fixed: 'Fixed by the rules. No discretion.',
+  rules_only: 'Based on the rules only.',
+};
+const VERDICT = { yes: ['✓', 'Matches'], no: ['✕', 'Differs'], partial: ['~', 'Partly matches'] };
+const VERDICT_SAID = { yes: 'matches', no: 'differs', partial: 'partly matches' };
+const SHOWN_AT_FIRST = 3; // how many similar incidents show before "Show all"
+
+// What the page knows right now.
+const state = {
+  events: [],        // from /api/events
+  defaultSlug: null,
+  pickedId: null,    // id of the real incident picked from the list, or null
+  pickedFact: '',    // its text, to notice when the user changes it
+  pickedSession: '',
+  busy: false,
+  timers: [],
+  step: 0,           // which of the three waiting steps is active
+  request: 0,        // counts asks, so a late reply to an old ask is ignored
+};
+const currentEvent = () => state.events.find((e) => (e.slug || '') === $('#event').value) || null;
+
+// ---------------------------------------------------------------- small helpers
+
+function clearTimers() { state.timers.forEach(clearTimeout); state.timers = []; }
+function later(fn, ms) { state.timers.push(setTimeout(fn, ms)); }
+function where(d) { return `${d.event} · ${d.session} · Doc ${d.number}`; }
+function plainDate(iso) {
+  const d = new Date(iso + 'T00:00:00');
+  return isNaN(d) ? iso : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' });
+}
+function verdictHtml(v) {
+  const [mark, word] = VERDICT[v] || VERDICT.no;
+  return `<span class="verdict ${VERDICT[v] ? v : 'no'}"><i aria-hidden="true">${mark}</i>${word}</span>`;
+}
+function setButton(text, disabled) { const b = $('#ask'); b.textContent = text; b.disabled = disabled; }
+
+// ---------------------------------------------------------------- race weekends and real incidents
+
+function renderEvents() {
+  $('#event').innerHTML = state.events.map((e) =>
+    `<option value="${esc(e.slug || '')}">${esc(e.slug ? `${e.name} · ${plainDate(e.date)}` : e.name)}</option>`).join('');
+  $('#event').disabled = false;
+}
+
+// "Past decisions searched" and "Rules in force", for the selected weekend.
+function renderScope() {
+  const e = currentEvent(), el = $('#scope');
+  if (!e) { el.textContent = ''; return; }
+  let first;
+  if (!e.slug) first = `Past decisions searched: all ${e.weekends_before} race weekends so far.`;
+  else if (e.weekends_before === 0) first = 'No earlier race weekend exists, so there are no past decisions to search.';
+  else first = `Past decisions searched: the ${e.weekends_before} race weekend${e.weekends_before === 1 ? '' : 's'} before this one.`;
+  const rules = e.rules.length ? `Rules in force ${e.slug ? 'that weekend' : 'now'}: ${e.rules.map(esc).join('; ')}.` : '';
+  el.innerHTML = `${first}${rules ? '<br>' + rules : ''}`;
+}
+
+function renderCases() {
+  const e = currentEvent(), list = $('#caselist');
+  const items = e ? e.incidents : [];
+  if (!items.length) {
+    list.innerHTML = `<li><p class="hint" style="padding:10px 0">${e && !e.slug ? 'This choice has no real incidents. Pick a race weekend to see its incidents.' : 'No real incidents for this race weekend.'}</p></li>`;
+    return;
+  }
+  list.innerHTML = items.map((c) => `<li><button type="button" class="case" data-id="${esc(c.id)}" aria-current="${c.id === state.pickedId}">
+    <span class="t">${esc(c.title)}</span><span class="s">${esc(c.session || 'No session')} · document ${esc(c.number)}</span></button></li>`).join('');
+  $$('#caselist .case').forEach((b) => b.addEventListener('click', () => pickCase(b.dataset.id)));
+}
+
+// Fill the form from a real incident. The id is only sent while the form still holds it unchanged.
+function pickCase(id) {
+  const c = currentEvent().incidents.find((x) => x.id === id);
+  if (!c) return;
+  // Four decisions name no session; "" is the "No session" option, and the question is the fact alone.
+  state.pickedId = c.id; state.pickedFact = c.fact; state.pickedSession = c.session || '';
+  $('#incident').value = c.fact;
+  setSession(c.session || '');
+  $('#notice').innerHTML = '';
+  renderCases();
+}
+function setSession(name) {
+  const sel = $('#session');
+  if (![...sel.options].some((o) => o.value === name)) sel.add(new Option(name, name));
+  sel.value = name;
+}
+// Editing the text or the session means it is no longer that real incident.
+function detachIfChanged() {
+  if (!state.pickedId) return;
+  if ($('#incident').value.trim() !== state.pickedFact.trim() || $('#session').value !== state.pickedSession) {
+    state.pickedId = null; renderCases();
+  }
+}
+
+// ---------------------------------------------------------------- the answer area
+
+function renderEmpty() {
+  $('#out').innerHTML = `<div class="empty"><b class="serif">No answer yet</b>Describe an incident on the left, or start from a real one, then ask.</div>`;
+  $('#decided').innerHTML = '';
+}
+function renderLoading() {
+  const steps = ['Finding similar past incidents', 'Finding the rules that apply', 'Writing the answer'];
+  $('#out').innerHTML = `<p class="eyebrow">AI Steward is searching earlier decisions and the rules in force</p><ol class="steps">` +
+    steps.map((s, i) => `<li class="${i < state.step ? 'done' : i === state.step ? 'now' : ''}"><i aria-hidden="true"></i>${s}</li>`).join('') + '</ol>';
+  $('#decided').innerHTML = '';
+}
+function renderProblem(message) {
+  $('#out').innerHTML = `<div class="answer"><p class="notice err" role="alert"><b>No answer this time</b>${esc(message)}</p></div>`;
+  $('#decided').innerHTML = '';
+}
+
+function similarHtml(s) {
+  if (!s.total) {
+    return `<div><dt>Similar past incidents</dt><dd>No similar incident in earlier race weekends.</dd></div>`;
+  }
+  const max = Math.max(...s.counts.map((c) => c[1]));
+  const bars = s.counts.map(([name, n]) =>
+    `<li><span>${esc(name)}</span><span class="bar" aria-hidden="true"><i style="width:${Math.round((n / max) * 100)}%"></i></span><span class="cnt n">${n}</span></li>`).join('');
+  const rows = s.list.map((d, i) =>
+    `<li${i >= SHOWN_AT_FIRST ? ' class="more" hidden' : ''}><span class="where"><a href="${safeUrl(d.url)}" target="_blank" rel="noopener">${esc(where(d))}</a></span><span class="fact">${esc(d.fact)}</span><span class="pen">${esc(d.outcome)}</span></li>`).join('');
+  const toggle = s.list.length > SHOWN_AT_FIRST
+    ? `<button type="button" class="showall" aria-expanded="false" data-all="${s.list.length}">Show all ${s.total}</button>` : '';
+  return `<div><dt>Similar past incidents</dt><dd>
+    <p class="simhd"><span>${s.total} under this rule, from earlier race weekends</span></p>
+    <ul class="dist" aria-label="How those ${s.total} incidents were decided">${bars}</ul>
+    <ul class="prec" aria-label="The closest incidents">${rows}</ul>${toggle}
+    <p class="simnote">Counts come from the retrieved decisions, not from the model.</p>
+  </dd></div>`;
+}
+
+function renderAnswer(r) {
+  const a = r.answer, m = r.meta;
+  const arts = a.articles.map((x) => `<span class="art"><span class="id mono">${esc(x.label)}</span> <span class="what">${esc(x.title)}</span></span>`).join('');
+  const prec = a.precedents.length
+    ? `<div><dt>Decisions it relied on</dt><dd><ul class="rel">${a.precedents.map((d) =>
+        `<li><a href="${safeUrl(d.url)}" target="_blank" rel="noopener">${esc(where(d))}</a> <span class="small">${esc(d.fact)} · ${esc(d.outcome)}</span></li>`).join('')}</ul></dd></div>` : '';
+  const chips = a.articles.length
+    ? `<div><dt>Rules it relied on</dt><dd><span class="chips">${a.articles.map((x) => `<span class="chip mono">${esc(x.label)}</span>`).join('')}</span></dd></div>` : '';
+  const left = a.left_out.length
+    ? `<div><dt>Left out after the citation check</dt><dd class="small">${a.left_out.map(esc).join('<br>')}</dd></div>` : '';
+  const seconds = (m.search_seconds + m.model_seconds).toFixed(1);
+  const howmade = `Answered in ${seconds} s for $${m.cost.toFixed(4)} · ${m.model} · ${r.shown.decisions} past decisions and ${r.shown.articles} rules retrieved`;
+  $('#out').innerHTML = `<div class="answer">
+    <p class="eyebrow">AI Steward's answer</p>
+    <p class="outcome serif">${esc(a.outcome)}</p>
+    <span class="basis">${esc(BASIS[a.basis] || BASIS.rules_only)}</span>
+    <dl class="sheet">
+      <div><dt>Rule in question</dt><dd>${arts || 'None named.'}</dd></div>
+      <div><dt>Why</dt><dd>${esc(a.rationale)}</dd></div>
+      ${similarHtml(r.similar)}
+      ${prec}${chips}${left}
+    </dl>
+    <p class="howmade">${esc(howmade)}</p></div>`;
+  const btn = $('#out .showall');
+  if (btn) btn.addEventListener('click', () => {
+    const open = btn.getAttribute('aria-expanded') === 'true';
+    $$('#out .prec .more').forEach((li) => { li.hidden = open; });
+    btn.setAttribute('aria-expanded', String(!open));
+    btn.textContent = open ? `Show all ${r.similar.total}` : 'Show fewer';
+  });
+  $('#decided').innerHTML = '';
+}
+
+// The stewards' real decision, next to the answer. Only for real incidents.
+function renderDecided(r) {
+  const s = r.stewards, a = r.answer, v = s.verdict || {};
+  const labels = (list) => list.map((x) => `<span class="mono">${esc(x)}</span>`).join('<br>');
+  const image = s.has_document
+    ? `<img class="docimg" src="/api/decisions/${encodeURIComponent(s.id)}.png" alt="The stewards' decision, document ${esc(s.number)}, as published. Its text is in the fields beside this image."
+        onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+       <div class="missing" hidden>This document isn't on your machine yet. Run <code>uv run f1aisteward fetch</code> to download it from fia.com.</div>`
+    : `<div class="missing">This document isn't on your machine yet. Run <code>uv run f1aisteward fetch</code> to download it from fia.com.</div>`;
+  $('#decided').innerHTML = `<section class="decided" aria-labelledby="h-dec">
+    <div class="hd"><h2 id="h-dec" class="serif">What the stewards decided</h2><span class="prov real">Real document · ${esc(s.number)}</span></div>
+    <p class="lead">This incident is real: document ${esc(s.number)} of the 2026 ${esc(s.event)}. AI Steward was not shown this document when it answered.</p>
+    <div class="compare" role="table" aria-label="AI Steward's answer beside the stewards' decision">
+      <div role="row" style="display:contents"><span class="h" role="columnheader"></span><span class="h" role="columnheader">AI Steward</span><span class="h" role="columnheader">The stewards</span></div>
+      <div role="row" style="display:contents"><span class="k" role="rowheader">Rule</span>
+        <span role="cell">${labels(a.articles.map((x) => x.label))}${a.articles.length ? '<br>' : ''}${verdictHtml(v.rule)}</span>
+        <span role="cell"><b>${labels(s.articles)}</b></span></div>
+      <div role="row" style="display:contents"><span class="k" role="rowheader">Outcome</span>
+        <span role="cell">${esc(a.outcome)}<br>${verdictHtml(v.outcome)}</span>
+        <span role="cell"><b>${esc(s.outcome)}</b></span></div>
+    </div>
+    <div class="docgrid"><div>
+      <dl class="fields">
+        <dt>Fact</dt><dd>${esc(s.fact)}</dd>
+        <dt>Infringement</dt><dd>${esc(s.infringement)}</dd>
+        <dt>Decision</dt><dd>${esc(s.decision)}</dd>
+        <dt>Reason</dt><dd>${esc(s.reason)}</dd>
+      </dl>
+    </div><div>
+      <div class="pdfbar"><span>Original document, from your local copy</span><span>${s.has_document ? `<a href="/api/decisions/${encodeURIComponent(s.id)}.pdf" target="_blank" rel="noopener">Open the PDF</a> · ` : ''}<a href="${safeUrl(s.url)}" target="_blank" rel="noopener">fia.com</a></span></div>
+      ${image}
+    </div></div></section>`;
+  say(`The stewards decided: ${s.outcome}. Rule ${VERDICT_SAID[v.rule] || 'differs'}. Outcome ${VERDICT_SAID[v.outcome] || 'differs'}.`);
+}
+
+// ---------------------------------------------------------------- asking
+
+function finishAsk() { state.busy = false; setButton('Ask again', false); }
+
+async function ask() {
+  if (state.busy) return;
+  const text = $('#incident').value.trim();
+  $('#notice').innerHTML = '';
+  if (!text) {
+    $('#notice').innerHTML = '<p class="notice" role="alert">Describe what happened first.</p>';
+    $('#incident').focus();
+    return;
+  }
+  const ev = currentEvent();
+  // The real incident's id is only sent while the form still holds it unchanged.
+  const unchanged = state.pickedId && text === state.pickedFact.trim() && $('#session').value === state.pickedSession;
+  const body = { text, session: $('#session').value || null, event: ev && ev.slug ? ev.slug : null, decision: unchanged ? state.pickedId : null };
+
+  clearTimers();
+  const mine = ++state.request;
+  state.busy = true; state.step = 0;
+  setButton('Searching past decisions…', true);
+  say('AI Steward is searching past decisions and the rules.');
+  renderLoading();
+  // On a narrow screen the answer sits below the form, so bring it into view.
+  if (matchMedia('(max-width: 959px)').matches) $('#ruling').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+  // There are no real progress events from the server, so the first two steps are timed guesses.
+  const k = reduced ? 0.15 : 1;
+  [1, 2].forEach((n) => later(() => { state.step = n; renderLoading(); }, 600 * n * k));
+
+  let reply;
+  try {
+    const res = await fetch('/api/ask', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(typeof data.detail === 'string' ? data.detail : `The server answered with an error (HTTP ${res.status}).`);
+    reply = data;
+  } catch (err) {
+    if (mine !== state.request) return;
+    clearTimers(); finishAsk();
+    const msg = err instanceof TypeError ? 'Could not reach the server. Is it still running?' : err.message;
+    renderProblem(msg); say(msg);
+    return;
+  }
+  if (mine !== state.request) return;
+  clearTimers(); finishAsk();
+  if (reply.status !== 'ok' || !reply.answer) {
+    const msg = reply.message || 'No answer this time.';
+    renderProblem(msg); say(msg);
+    return;
+  }
+  renderAnswer(reply);
+  say(`AI Steward's answer: ${reply.answer.outcome}. Rule in question: ${reply.answer.articles.map((x) => x.label).join(' and ') || 'none named'}.`);
+  if (reply.stewards) later(() => renderDecided(reply), 700 * k);
+}
+
+// ---------------------------------------------------------------- start up
+
+function onEventChange() {
+  state.pickedId = null;
+  renderScope(); renderCases();
+}
+
+async function boot() {
+  renderEmpty();
+  $('#ask').addEventListener('click', ask);
+  $('#incident').addEventListener('input', detachIfChanged);
+  $('#session').addEventListener('change', detachIfChanged);
+  $('#event').addEventListener('change', onEventChange);
+
+  try {
+    const res = await fetch('/api/events');
+    if (!res.ok) throw new Error(`The server answered with an error (HTTP ${res.status}).`);
+    const data = await res.json();
+    state.events = data.events; state.defaultSlug = data.default;
+  } catch (err) {
+    $('#event').innerHTML = '<option>Race weekends not loaded</option>';
+    renderProblem(err instanceof TypeError ? 'Could not reach the server. Is it still running?' : err.message);
+    return;
+  }
+  renderEvents();
+  // Deep link for screenshots and recordings: #event=<slug>&case=<decision id>&ask=1
+  const p = new URLSearchParams(location.hash.slice(1));
+  const wanted = p.get('event') || state.defaultSlug || '';
+  $('#event').value = [...$('#event').options].some((o) => o.value === wanted) ? wanted : (state.defaultSlug || '');
+  onEventChange();
+  if (p.get('case')) {
+    pickCase(p.get('case'));
+    if (p.get('ask')) ask();
+  }
+}
+boot();
+</script>
+</body>
+</html>

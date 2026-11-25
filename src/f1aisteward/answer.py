@@ -37,8 +37,8 @@ class Answer(BaseModel):
     """
 
     articles: list[str] = Field(
-        description="The articles the incident breaches, at least one: the ids in square brackets "
-        "in the articles above, written exactly as shown, e.g. ISC-L:IV.2."
+        description="The articles the incident breaches, at least one. When articles are given above, the id "
+        "shown in square brackets before each, without the brackets, e.g. ISC-L:IV.2; otherwise the article numbers."
     )
     penalty_type: Literal[labels.PENALTY_TYPES] = Field(description="The penalty the stewards would most likely give.")
     penalty_value: int | None = Field(description="Seconds, grid places or euros; null when the penalty has no number.")
@@ -47,7 +47,8 @@ class Answer(BaseModel):
     )
     rationale: str = Field(description="Why, in at most three sentences.")
     precedents_used: list[str] = Field(
-        description="The ids in square brackets of the earlier decisions this answer relies on. Empty if none."
+        description="The ids of the earlier decisions this answer relies on, as shown in square brackets, "
+        "without the brackets. Empty if none."
     )
 
 
@@ -58,7 +59,8 @@ and a new incident.
 
 Say which articles the incident breaches and which penalty the stewards would most likely give.
 
-- Cite only articles and decisions given here, by the id in square brackets, written exactly as shown.
+- Always name at least one article. When articles and decisions are given here, cite only those,
+  by the id shown in square brackets before each, written exactly as shown, without the brackets.
 - The earlier decisions show how the stewards apply an article in practice. Prefer the penalty
   they gave in comparable cases, and list the decisions you relied on.
 - Search finds decisions by similar wording. Some may not be comparable; do not rely on those.
@@ -67,6 +69,25 @@ Say which articles the incident breaches and which penalty the stewards would mo
 
 
 # ---------------------------------------------------------------- 2. prompt
+
+
+def prompt_version() -> str:
+    """A short fingerprint of the whole prompt, recorded with every evaluation run, so a
+    number can always be traced to the prompt that produced it.
+
+    It covers the instructions, the Answer format and the template that lays out the
+    articles, the decisions and the incident: the template is filled with a made-up
+    example, empty and full, and the result is hashed.
+    """
+    import hashlib
+    import json
+
+    article = {"id": "X:1", "headings": ["H"], "text": "T"}
+    decision = {"id": "d", "event": "e", "session": "s", "fact": "f", "articles": ["X:1"],
+                "penalty": {"type": "warning", "value": None, "unit": None}}
+    filled = [m.content for m in messages("q", [article], [decision]) + messages("q", [], [])]
+    text = json.dumps([filled, Answer.model_json_schema()], sort_keys=True)
+    return hashlib.sha256(text.encode()).hexdigest()[:12]
 
 
 def penalty_label(penalty: dict) -> str:
@@ -94,7 +115,7 @@ def messages(question: str, articles: list[dict], decisions: list[dict]) -> list
         "# Articles of the rules in force",
         "\n\n".join(rules) or "None.",
         "# Earlier stewards' decisions",
-        "\n\n".join(earlier) or "None: no event came before this one.",
+        "\n\n".join(earlier) or "None.",
         "# The incident",
         question,
     ]
@@ -125,6 +146,12 @@ class Check:
         return bool(self.articles) and not (self.unknown_articles or self.unknown_decisions)
 
 
+def _bare(cited: str) -> str:
+    """'[ISC-L:IV.2]' -> 'ISC-L:IV.2'. The brackets mark an id in the prompt; a model that
+    copies them has still written the id. Nothing else about a citation is forgiven."""
+    return cited.strip().removeprefix("[").removesuffix("]").strip()
+
+
 def check(answer: Answer, articles: list[dict], decisions: list[dict]) -> Check:
     """Was every article and decision the answer cites in the prompt?
 
@@ -133,10 +160,10 @@ def check(answer: Answer, articles: list[dict], decisions: list[dict]) -> Check:
     This catches invented citations. It does not check that the reason follows from them.
     """
     shown = {a["id"] for a in articles} | {cited for d in decisions for cited in d["articles"]}
-    cited = list(dict.fromkeys(answer.articles))
+    cited = list(dict.fromkeys(_bare(a) for a in answer.articles))
     good = [a for a in cited if any(related(a, s) for s in shown)]
     ids = {d["id"] for d in decisions}
-    used = list(dict.fromkeys(answer.precedents_used))
+    used = list(dict.fromkeys(_bare(d) for d in answer.precedents_used))
     return Check(
         articles=good,
         unknown_articles=[a for a in cited if a not in good],
@@ -183,6 +210,8 @@ def answer(
     rule_search: RuleSearch,
     date: str | None = None,
     before_round: int | None = None,
+    model: str = config.ANSWER_MODEL,
+    effort: str = config.REASONING_EFFORT,
 ) -> Result:
     """Answer one incident. `date` and `before_round` say which event it belongs to.
 
@@ -196,7 +225,7 @@ def answer(
     articles = rule_search.search(question, date=date, decisions=decisions)
     search_seconds = perf_counter() - start
 
-    reply = client.ask(messages(question, articles, decisions), Answer)
+    reply = client.ask(messages(question, articles, decisions), Answer, model=model, effort=effort)
     if reply.status != "ok":
         return Result(question, articles, decisions, reply, None, None, search_seconds)
     checked = check(reply.parsed, articles, decisions)
@@ -210,6 +239,8 @@ _NO_ANSWER = {
     "truncated": f"the answer was cut off at {config.MAX_OUTPUT_TOKENS:,} output tokens",
     "unparsed": "the reply did not fit the Answer format",
     "timeout": f"no reply within {config.MODEL_TIMEOUT_SECONDS:.0f} seconds",
+    "rate_limited": "OpenAI answered 429 (too many requests); try again in a minute",
+    "error": "no connection to OpenAI, or a server error",
 }
 
 

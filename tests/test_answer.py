@@ -65,12 +65,24 @@ def test_each_decision_shows_its_fact_articles_and_penalty():
     assert "Penalty: time_penalty 5 s" in user.content
 
 
-def test_the_first_event_of_a_season_says_there_are_no_earlier_decisions():
-    _, user = answering.messages("q", RULE_ARTICLES[:1], [])
-    assert "None: no event came before this one." in user.content
+def test_an_empty_part_of_the_prompt_says_none():
+    # The same words whether search found nothing (the first event of a season) or was
+    # switched off (the no-search configuration of the answer evaluation).
+    _, user = answering.messages("q", [], [])
+    assert user.content == "\n\n".join(
+        ["# Articles of the rules in force", "None.", "# Earlier stewards' decisions", "None.", "# The incident", "q"]
+    )
 
 
 # ---------------------------------------------------------------- the check
+
+
+def test_an_id_copied_with_its_square_brackets_is_still_the_id():
+    checked = answering.check(
+        an_answer(articles=["[ISC-L:IV.2]"], precedents_used=["[2031-round1-001]"]), [RULE_ARTICLES[4]], RECORDS[:1]
+    )
+    assert checked.passed
+    assert (checked.articles, checked.decisions) == (["ISC-L:IV.2"], ["2031-round1-001"])
 
 SHOWN_ARTICLES = [RULE_ARTICLES[4]]  # ISC-L:IV.2
 SHOWN_DECISIONS = [decision(1, 1, "Car 7 pushed Car 8 wide.", ["ISC-L:IV.2.d", "F1-C:9.3"])]
@@ -142,7 +154,7 @@ def searchers(tmp_path):
 def test_answer_shows_the_model_earlier_decisions_only_and_checks_what_comes_back(searchers, monkeypatch):
     seen = []
 
-    def stand_in(messages, schema):
+    def stand_in(messages, schema, **settings):
         seen.append(messages[1].content)
         return ok(an_answer(articles=["ISC-L:IV.2", "F1-B:9.9.9"], precedents_used=["2031-round1-001"]))
 
@@ -157,7 +169,7 @@ def test_answer_shows_the_model_earlier_decisions_only_and_checks_what_comes_bac
 
 
 def test_no_answer_means_nothing_to_check_or_count(searchers, monkeypatch):
-    monkeypatch.setattr(client, "ask", lambda messages, schema: client.Reply("truncated", None, "gpt-6-luna", 9.0))
+    monkeypatch.setattr(client, "ask", lambda messages, schema, **settings: client.Reply("truncated", None, "gpt-6-luna", 9.0))
     result = answering.answer("Car 7 pushed Car 8 wide.", *searchers, "2031-09-01", before_round=3)
 
     assert (result.check, result.outcomes) == (None, None)
@@ -165,10 +177,16 @@ def test_no_answer_means_nothing_to_check_or_count(searchers, monkeypatch):
 
 
 def test_the_report_leaves_a_failed_citation_out_of_the_grounds(searchers, monkeypatch):
-    monkeypatch.setattr(client, "ask", lambda messages, schema: ok(an_answer(articles=["ISC-L:IV.2", "F1-B:9.9.9"])))
+    monkeypatch.setattr(client, "ask", lambda messages, schema, **settings: ok(an_answer(articles=["ISC-L:IV.2", "F1-B:9.9.9"])))
     result = answering.answer("Car 7 pushed Car 8 wide.", *searchers, "2031-09-01", before_round=3)
     text = answering.report(result, ["B-02", "L-01"])
 
     assert "Articles   ISC-L:IV.2\n" in text
     assert "Citation check: FAILED" in text
     assert "F1-B:9.9.9  is not among the articles shown" in text
+
+
+def test_the_prompt_fingerprint_changes_with_the_template_not_only_the_instructions(monkeypatch):
+    before = answering.prompt_version()
+    monkeypatch.setattr(answering, "penalty_label", lambda penalty: "a different layout")
+    assert answering.prompt_version() != before

@@ -1,0 +1,118 @@
+{
+  "split": "dev",
+  "events": [
+    "monaco",
+    "barcelona-catalunya",
+    "austrian",
+    "british",
+    "belgian",
+    "hungarian"
+  ],
+  "k": 5,
+  "k_rules": 8,
+  "sets": {
+    "stewards": {
+      "questions": 87,
+      "left_out": {
+        "the Fact only points at a table of cars": 5,
+        "the question names an article": 1
+      },
+      "out_of_reach": 13,
+      "decisions": {
+        "bm25": {
+          "hit": 0.7816091954022989,
+          "precision": 0.489655172413793
+        },
+        "vector": {
+          "hit": 0.7816091954022989,
+          "precision": 0.4988505747126435
+        },
+        "hybrid": {
+          "hit": 0.7586206896551724,
+          "precision": 0.5080459770114941
+        }
+      },
+      "rules": {
+        "cited": 104,
+        "outside_the_books": {
+          "F1-C": 1
+        },
+        "not_in_the_issue": [],
+        "best_recall": 0.9885057471264368,
+        "methods": {
+          "bm25": {
+            "recall": 0.60727969348659,
+            "articles": 8.0,
+            "most": 8
+          },
+          "vector": {
+            "recall": 0.6992337164750958,
+            "articles": 8.0,
+            "most": 8
+          },
+          "hybrid": {
+            "recall": 0.7337164750957854,
+            "articles": 8.0,
+            "most": 8
+          },
+          "vector + cited": {
+            "recall": 0.9329501915708811,
+            "articles": 9.632183908045977,
+            "most": 15
+          }
+        }
+      }
+    },
+    "reworded": {
+      "questions": 94,
+      "left_out": {
+        "the Fact only points at a table of cars": 5
+      },
+      "out_of_reach": 15,
+      "decisions": {
+        "bm25": {
+          "hit": 0.7127659574468085,
+          "precision": 0.35957446808510635
+        },
+        "vector": {
+          "hit": 0.7553191489361702,
+          "precision": 0.48297872340425513
+        },
+        "hybrid": {
+          "hit": 0.7446808510638298,
+          "precision": 0.4510638297872338
+        }
+      },
+      "rules": {
+        "cited": 113,
+        "outside_the_books": {
+          "F1-C": 1
+        },
+        "not_in_the_issue": [],
+        "best_recall": 0.9893617021276596,
+        "methods": {
+          "bm25": {
+            "recall": 0.5177304964539007,
+            "articles": 8.0,
+            "most": 8
+          },
+          "vector": {
+            "recall": 0.6436170212765957,
+            "articles": 8.0,
+            "most": 8
+          },
+          "hybrid": {
+            "recall": 0.6347517730496454,
+            "articles": 8.0,
+            "most": 8
+          },
+          "vector + cited": {
+            "recall": 0.9237588652482269,
+            "articles": 9.712765957446809,
+            "most": 14
+          }
+        }
+      }
+    }
+  }
+}

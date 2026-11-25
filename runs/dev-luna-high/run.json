@@ -1,0 +1,25 @@
+{
+  "model": "gpt-6-luna",
+  "reasoning_effort": "high",
+  "split": "dev",
+  "configs": [
+    "rules_and_decisions"
+  ],
+  "questions": 87,
+  "sample": null,
+  "left_out": {
+    "the Fact only points at a table of cars": 5,
+    "the question names an article": 1
+  },
+  "search": {
+    "decisions": "vector",
+    "k": 5,
+    "rules": "vector",
+    "k_rules": 8,
+    "embedding": "text-embedding-3-large"
+  },
+  "max_output_tokens": 4000,
+  "prompt": "c6559ecf1aa3",
+  "last_resumed": "2026-11-25T00:22:53+00:00",
+  "started": "2026-11-25T00:22:53+00:00"
+}

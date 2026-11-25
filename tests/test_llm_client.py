@@ -1,7 +1,14 @@
 """Reading the model's reply: status, token counts and cost. No network: the replies are built here."""
 
 import pytest
-from langchain_core.exceptions import ModelRefusalError, ModelTimeoutError, OutputParserException
+from langchain_core.exceptions import (
+    ModelAuthenticationError,
+    ModelConnectionError,
+    ModelRateLimitError,
+    ModelRefusalError,
+    ModelTimeoutError,
+    OutputParserException,
+)
 from langchain_core.messages import AIMessage
 from pydantic import BaseModel
 
@@ -65,17 +72,43 @@ def test_a_reply_without_usage_counts_zero():
     assert usage == client.Usage()
 
 
-def test_a_timeout_is_a_status_not_a_crash(monkeypatch):
-    class Slow:
-        def with_structured_output(self, schema, **kwargs):
-            return self
+class Failing:
+    """A stand-in chat model whose call raises `error`."""
 
-        def invoke(self, messages):
-            raise ModelTimeoutError("took too long")
+    def __init__(self, error):
+        self.error = error
 
-    monkeypatch.setattr(client, "chat_model", lambda model: Slow())
+    def with_structured_output(self, schema, **kwargs):
+        return self
+
+    def invoke(self, messages):
+        raise self.error
+
+
+@pytest.mark.parametrize(
+    "error, status",
+    [
+        (ModelTimeoutError("took too long"), "timeout"),
+        (ModelRateLimitError("429"), "rate_limited"),
+        (ModelConnectionError("no network"), "error"),
+    ],
+)
+def test_a_timeout_a_rate_limit_or_no_connection_is_a_status_not_a_crash(monkeypatch, error, status):
+    monkeypatch.setattr(client, "chat_model", lambda model, effort: Failing(error))
     reply = client.ask([], Small)
 
-    assert reply.status == "timeout"
+    assert reply.status == status
     assert reply.parsed is None
-    assert reply.cost == 0
+    assert reply.error
+
+
+def test_a_wrong_key_raises_because_every_call_would_fail_the_same_way(monkeypatch):
+    monkeypatch.setattr(client, "chat_model", lambda model, effort: Failing(ModelAuthenticationError("bad key")))
+    with pytest.raises(ModelAuthenticationError):
+        client.ask([], Small)
+
+
+def test_the_reasoning_effort_can_be_set_per_call(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "not-a-real-key")  # building the client needs one; nothing is sent
+    model = client.chat_model("gpt-6-luna", "low")
+    assert model.reasoning == {"effort": "low"}

@@ -5,20 +5,30 @@ structured output: the request carries a JSON schema made from a Pydantic class,
 model has to reply with JSON that fits it, and LangChain turns that JSON back into an
 instance of the class. Whatever happens, `ask` returns a `Reply`:
 
-    status    "ok", or why there is no answer: "refused", "truncated", "unparsed", "timeout"
+    status    "ok", or why there is no answer: "refused", "truncated", "unparsed", "timeout",
+              "rate_limited" (OpenAI answered 429 after LangChain's retries), "error" (no
+              connection, or a server error)
     parsed    the answer, an instance of the schema; None unless the status is "ok"
     usage     tokens in and out, read from the model's raw response
     seconds   how long the call took
     cost      in USD, from the token counts and the price table in config.py
 
-A refusal, an answer cut off at the token limit and a timeout are kept apart from a
-wrong answer. The answer evaluation (step 5) counts them instead of scoring them.
+A refusal, an answer cut off at the token limit, a timeout and a rate limit are kept apart
+from a wrong answer. The answer evaluation (step 5) counts them instead of scoring them.
+A wrong key or a wrong model name is not one of these: it raises, because every call
+would fail the same way.
 """
 
 from dataclasses import dataclass, field
 from time import perf_counter
 
-from langchain_core.exceptions import ModelRefusalError, ModelTimeoutError
+from langchain_core.exceptions import (
+    ModelAPIError,
+    ModelConnectionError,
+    ModelRateLimitError,
+    ModelRefusalError,
+    ModelTimeoutError,
+)
 from langchain_core.messages import AIMessage, BaseMessage
 from pydantic import BaseModel
 
@@ -56,7 +66,7 @@ class Reply:
         return self.usage.cost(self.model)
 
 
-def chat_model(model: str = config.ANSWER_MODEL):
+def chat_model(model: str = config.ANSWER_MODEL, effort: str = config.REASONING_EFFORT):
     """The chat model with this project's settings. It reads OPENAI_API_KEY from the environment.
 
     `use_responses_api`: OpenAI's newer API, the one its reasoning models are built for.
@@ -68,13 +78,18 @@ def chat_model(model: str = config.ANSWER_MODEL):
     return ChatOpenAI(
         model=model,
         use_responses_api=True,
-        reasoning={"effort": config.REASONING_EFFORT},
+        reasoning={"effort": effort},
         max_tokens=config.MAX_OUTPUT_TOKENS,
         timeout=config.MODEL_TIMEOUT_SECONDS,
     )
 
 
-def ask(messages: list[BaseMessage], schema: type[BaseModel], model: str = config.ANSWER_MODEL) -> Reply:
+def ask(
+    messages: list[BaseMessage],
+    schema: type[BaseModel],
+    model: str = config.ANSWER_MODEL,
+    effort: str = config.REASONING_EFFORT,
+) -> Reply:
     """One call to the model; the answer must fit `schema`.
 
     `strict=True` makes OpenAI hold the reply to the schema while it is being generated,
@@ -82,12 +97,16 @@ def ask(messages: list[BaseMessage], schema: type[BaseModel], model: str = confi
     well as the parsed answer: the token counts are only in the raw message, and a reply
     that cannot be parsed comes back as an error value instead of an exception.
     """
-    structured = chat_model(model).with_structured_output(schema, strict=True, include_raw=True)
+    structured = chat_model(model, effort).with_structured_output(schema, strict=True, include_raw=True)
     start = perf_counter()
     try:
         result = structured.invoke(messages)
     except ModelTimeoutError as error:
         return Reply("timeout", None, model, perf_counter() - start, error=str(error))
+    except ModelRateLimitError as error:  # LangChain has already retried twice by then
+        return Reply("rate_limited", None, model, perf_counter() - start, error=str(error))
+    except (ModelConnectionError, ModelAPIError) as error:  # no connection, or a 5xx from OpenAI
+        return Reply("error", None, model, perf_counter() - start, error=str(error))
     return read(result, model, perf_counter() - start)
 
 

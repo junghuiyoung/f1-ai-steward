@@ -4,16 +4,20 @@ version = "0.1.0"
 description = "Describe a Formula 1 incident, get the rule, the usual penalty and similar past stewards' decisions."
 requires-python = ">=3.12"
 dependencies = [
+    "fastapi>=0.165.0",
     "httpx>=0.28.1",
     "langchain-chroma>=1.1.0",
     "langchain-community>=0.4.2",
     "langchain-openai>=1.8.0",
     "pdfplumber>=0.11.10",
+    "pillow>=13.0.0",
     "pypdf>=7.1.0",
+    "pypdfium2>=5.15.2",
     "python-dotenv>=1.2.4",
     "pyyaml>=6.0.3",
     "rank-bm25>=0.2.2",
     "typer>=0.29.1",
+    "uvicorn>=0.54.0",
 ]
 
 [project.scripts]

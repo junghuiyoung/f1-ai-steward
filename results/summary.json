@@ -1,0 +1,1005 @@
+{
+  "runs": {
+    "test-gpt-6.1-terra-medium": {
+      "model": "gpt-6.1-terra",
+      "reasoning_effort": "medium",
+      "split": "test",
+      "configs": [
+        "none",
+        "rules",
+        "rules_and_decisions"
+      ],
+      "questions": 144,
+      "sample": null,
+      "left_out": {
+        "the Fact only points at a table of cars": 7,
+        "the question names an article": 1
+      },
+      "search": {
+        "decisions": "vector",
+        "k": 5,
+        "rules": "vector",
+        "k_rules": 8,
+        "embedding": "text-embedding-3-large"
+      },
+      "max_output_tokens": 4000,
+      "prompt": "76d18a9a7a07",
+      "last_resumed": "2026-11-25T00:30:46+00:00",
+      "started": "2026-11-25T00:30:46+00:00",
+      "prompt_note": "Recomputed 2026-11-24 when the fingerprint was widened to cover the message template as well as the instructions and the Answer format; the prompt itself did not change (it was cb2483d3131a under the narrower fingerprint)."
+    },
+    "test-gpt-6-luna-medium": {
+      "model": "gpt-6-luna",
+      "reasoning_effort": "medium",
+      "split": "test",
+      "configs": [
+        "none",
+        "rules",
+        "rules_and_decisions"
+      ],
+      "questions": 144,
+      "sample": null,
+      "left_out": {
+        "the Fact only points at a table of cars": 7,
+        "the question names an article": 1
+      },
+      "search": {
+        "decisions": "vector",
+        "k": 5,
+        "rules": "vector",
+        "k_rules": 8,
+        "embedding": "text-embedding-3-large"
+      },
+      "max_output_tokens": 4000,
+      "prompt": "76d18a9a7a07",
+      "last_resumed": "2026-11-25T00:30:46+00:00",
+      "started": "2026-11-25T00:30:46+00:00",
+      "prompt_note": "Recomputed 2026-11-24 when the fingerprint was widened to cover the message template as well as the instructions and the Answer format; the prompt itself did not change (it was cb2483d3131a under the narrower fingerprint)."
+    }
+  },
+  "answers": {
+    "test-gpt-6.1-terra-medium": {
+      "configurations": {
+        "none": {
+          "questions": 144,
+          "answered": 144,
+          "failed": {},
+          "scores": {
+            "article_hit": 0.2222222222222222,
+            "citation_precision": 0.2222222222222222,
+            "penalty_type": 0.6111111111111112,
+            "penalty": 0.4583333333333333,
+            "both": 0.1111111111111111
+          },
+          "citation_check_passed": 0.0,
+          "cost_per_question": 0.0031169097222222223,
+          "cost_total": 0.448835,
+          "seconds_per_question": 8.693333333333333,
+          "tokens_per_question": {
+            "input": 663.1597222222222,
+            "output": 490.75,
+            "reasoning": 413.36805555555554
+          },
+          "by_kind": {
+            "component_allowance": {
+              "questions": 28,
+              "answered": 28,
+              "article_hit": 0.0,
+              "citation_precision": 0.0,
+              "penalty_type": 0.8928571428571429,
+              "penalty": 0.4642857142857143,
+              "both": 0.0
+            },
+            "judgment_incident": {
+              "questions": 59,
+              "answered": 59,
+              "article_hit": 0.2542372881355932,
+              "citation_precision": 0.2542372881355932,
+              "penalty_type": 0.4745762711864407,
+              "penalty": 0.3728813559322034,
+              "both": 0.11864406779661017
+            },
+            "pit_lane_speeding": {
+              "questions": 10,
+              "answered": 10,
+              "article_hit": 0.0,
+              "citation_precision": 0.0,
+              "penalty_type": 1.0,
+              "penalty": 1.0,
+              "both": 0.0
+            },
+            "procedural_or_technical": {
+              "questions": 47,
+              "answered": 47,
+              "article_hit": 0.3617021276595745,
+              "citation_precision": 0.3617021276595745,
+              "penalty_type": 0.5319148936170213,
+              "penalty": 0.44680851063829785,
+              "both": 0.19148936170212766
+            }
+          },
+          "by_basis": {
+            "discretionary": {
+              "questions": 106,
+              "answered": 106,
+              "article_hit": 0.3018867924528302,
+              "citation_precision": 0.3018867924528302,
+              "penalty_type": 0.5,
+              "penalty": 0.4056603773584906,
+              "both": 0.1509433962264151
+            },
+            "fixed": {
+              "questions": 38,
+              "answered": 38,
+              "article_hit": 0.0,
+              "citation_precision": 0.0,
+              "penalty_type": 0.9210526315789473,
+              "penalty": 0.6052631578947368,
+              "both": 0.0
+            }
+          }
+        },
+        "rules": {
+          "questions": 144,
+          "answered": 144,
+          "failed": {},
+          "scores": {
+            "article_hit": 0.6527777777777778,
+            "citation_precision": 0.5092592592592592,
+            "penalty_type": 0.5972222222222222,
+            "penalty": 0.5069444444444444,
+            "both": 0.3541666666666667
+          },
+          "citation_check_passed": 1.0,
+          "cost_per_question": 0.003679076388888889,
+          "cost_total": 0.529787,
+          "seconds_per_question": 4.740902777777778,
+          "tokens_per_question": {
+            "input": 2477.8611111111113,
+            "output": 240.24305555555554,
+            "reasoning": 151.29166666666666
+          },
+          "by_kind": {
+            "component_allowance": {
+              "questions": 28,
+              "answered": 28,
+              "article_hit": 1.0,
+              "citation_precision": 0.625,
+              "penalty_type": 0.8571428571428571,
+              "penalty": 0.8214285714285714,
+              "both": 0.8214285714285714
+            },
+            "judgment_incident": {
+              "questions": 59,
+              "answered": 59,
+              "article_hit": 0.6101694915254238,
+              "citation_precision": 0.5169491525423728,
+              "penalty_type": 0.4915254237288136,
+              "penalty": 0.3898305084745763,
+              "both": 0.2033898305084746
+            },
+            "pit_lane_speeding": {
+              "questions": 10,
+              "answered": 10,
+              "article_hit": 1.0,
+              "citation_precision": 0.75,
+              "penalty_type": 0.8,
+              "penalty": 0.6,
+              "both": 0.6
+            },
+            "procedural_or_technical": {
+              "questions": 47,
+              "answered": 47,
+              "article_hit": 0.425531914893617,
+              "citation_precision": 0.37943262411347517,
+              "penalty_type": 0.5319148936170213,
+              "penalty": 0.44680851063829785,
+              "both": 0.2127659574468085
+            }
+          },
+          "by_basis": {
+            "discretionary": {
+              "questions": 106,
+              "answered": 106,
+              "article_hit": 0.5283018867924528,
+              "citation_precision": 0.4559748427672956,
+              "penalty_type": 0.5094339622641509,
+              "penalty": 0.41509433962264153,
+              "both": 0.20754716981132076
+            },
+            "fixed": {
+              "questions": 38,
+              "answered": 38,
+              "article_hit": 1.0,
+              "citation_precision": 0.6578947368421053,
+              "penalty_type": 0.8421052631578947,
+              "penalty": 0.7631578947368421,
+              "both": 0.7631578947368421
+            }
+          }
+        },
+        "rules_and_decisions": {
+          "questions": 144,
+          "answered": 144,
+          "failed": {},
+          "scores": {
+            "article_hit": 0.8680555555555556,
+            "citation_precision": 0.7775462962962963,
+            "penalty_type": 0.6875,
+            "penalty": 0.6527777777777778,
+            "both": 0.5694444444444444
+          },
+          "citation_check_passed": 1.0,
+          "cost_per_question": 0.004282604166666666,
+          "cost_total": 0.616695,
+          "seconds_per_question": 3.8615972222222226,
+          "tokens_per_question": {
+            "input": 3279.5833333333335,
+            "output": 200.60416666666666,
+            "reasoning": 99.5625
+          },
+          "by_kind": {
+            "component_allowance": {
+              "questions": 28,
+              "answered": 28,
+              "article_hit": 1.0,
+              "citation_precision": 0.7220238095238095,
+              "penalty_type": 1.0,
+              "penalty": 1.0,
+              "both": 1.0
+            },
+            "judgment_incident": {
+              "questions": 59,
+              "answered": 59,
+              "article_hit": 0.8813559322033898,
+              "citation_precision": 0.8050847457627118,
+              "penalty_type": 0.5932203389830508,
+              "penalty": 0.5254237288135594,
+              "both": 0.4745762711864407
+            },
+            "pit_lane_speeding": {
+              "questions": 10,
+              "answered": 10,
+              "article_hit": 1.0,
+              "citation_precision": 1.0,
+              "penalty_type": 0.9,
+              "penalty": 0.8,
+              "both": 0.8
+            },
+            "procedural_or_technical": {
+              "questions": 47,
+              "answered": 47,
+              "article_hit": 0.7446808510638298,
+              "citation_precision": 0.7287234042553191,
+              "penalty_type": 0.574468085106383,
+              "penalty": 0.574468085106383,
+              "both": 0.3829787234042553
+            }
+          },
+          "by_basis": {
+            "discretionary": {
+              "questions": 106,
+              "answered": 106,
+              "article_hit": 0.8207547169811321,
+              "citation_precision": 0.7712264150943396,
+              "penalty_type": 0.5849056603773585,
+              "penalty": 0.5471698113207547,
+              "both": 0.4339622641509434
+            },
+            "fixed": {
+              "questions": 38,
+              "answered": 38,
+              "article_hit": 1.0,
+              "citation_precision": 0.7951754385964912,
+              "penalty_type": 0.9736842105263158,
+              "penalty": 0.9473684210526315,
+              "both": 0.9473684210526315
+            }
+          }
+        }
+      },
+      "differences": {
+        "rules - none": {
+          "article_hit": {
+            "difference": 0.4305555555555556,
+            "low": 0.3055555555555556,
+            "high": 0.5486111111111112,
+            "questions": 144
+          },
+          "penalty": {
+            "difference": 0.04861111111111111,
+            "low": -0.041666666666666664,
+            "high": 0.1388888888888889,
+            "questions": 144
+          },
+          "both": {
+            "difference": 0.24305555555555555,
+            "low": 0.14583333333333334,
+            "high": 0.3402777777777778,
+            "questions": 144
+          }
+        },
+        "rules_and_decisions - rules": {
+          "article_hit": {
+            "difference": 0.2152777777777778,
+            "low": 0.1388888888888889,
+            "high": 0.2916666666666667,
+            "questions": 144
+          },
+          "penalty": {
+            "difference": 0.14583333333333334,
+            "low": 0.05555555555555555,
+            "high": 0.2361111111111111,
+            "questions": 144
+          },
+          "both": {
+            "difference": 0.2152777777777778,
+            "low": 0.13194444444444445,
+            "high": 0.2986111111111111,
+            "questions": 144
+          }
+        },
+        "rules_and_decisions - none": {
+          "article_hit": {
+            "difference": 0.6458333333333334,
+            "low": 0.5555555555555556,
+            "high": 0.7291666666666666,
+            "questions": 144
+          },
+          "penalty": {
+            "difference": 0.19444444444444445,
+            "low": 0.09027777777777778,
+            "high": 0.2986111111111111,
+            "questions": 144
+          },
+          "both": {
+            "difference": 0.4583333333333333,
+            "low": 0.3541666666666667,
+            "high": 0.5555555555555556,
+            "questions": 144
+          }
+        }
+      },
+      "checks": {
+        "gold_in_scores": {
+          "article_hit": 1.0,
+          "citation_precision": 1.0,
+          "penalty_type": 1.0,
+          "penalty": 1.0,
+          "both": 1.0
+        },
+        "empty_answer_scores": {
+          "article_hit": 0.0,
+          "citation_precision": 0.0,
+          "penalty_type": 0.0,
+          "penalty": 0.0,
+          "both": 0.0
+        },
+        "searches_that_returned_own_or_later_event": 0,
+        "articles_shown_from_an_issue_not_in_force": 0,
+        "search_off_sends_the_no_search_prompt": "tests/test_eval_answers.py::test_with_search_switched_off_every_configuration_sends_the_no_search_prompt"
+      },
+      "baselines": {
+        "most_common": {
+          "questions": 144,
+          "article_hit": 0.2152777777777778,
+          "citation_precision": 0.2152777777777778,
+          "penalty_type": 0.2013888888888889,
+          "penalty": 0.2013888888888889,
+          "both": 0.0625
+        },
+        "majority_of_5": {
+          "questions": 144,
+          "article_hit": 0.75,
+          "citation_precision": 0.75,
+          "penalty_type": 0.5138888888888888,
+          "penalty": 0.3611111111111111,
+          "both": 0.2847222222222222
+        }
+      }
+    },
+    "test-gpt-6-luna-medium": {
+      "configurations": {
+        "none": {
+          "questions": 144,
+          "answered": 144,
+          "failed": {},
+          "scores": {
+            "article_hit": 0.2361111111111111,
+            "citation_precision": 0.2326388888888889,
+            "penalty_type": 0.6458333333333334,
+            "penalty": 0.4652777777777778,
+            "both": 0.1111111111111111
+          },
+          "citation_check_passed": 0.0,
+          "cost_per_question": 0.0004921319444444445,
+          "cost_total": 0.070867,
+          "seconds_per_question": 7.007152777777778,
+          "tokens_per_question": {
+            "input": 663.1597222222222,
+            "output": 851.6319444444445,
+            "reasoning": 764.1388888888889
+          },
+          "by_kind": {
+            "component_allowance": {
+              "questions": 28,
+              "answered": 28,
+              "article_hit": 0.0,
+              "citation_precision": 0.0,
+              "penalty_type": 0.9642857142857143,
+              "penalty": 0.42857142857142855,
+              "both": 0.0
+            },
+            "judgment_incident": {
+              "questions": 59,
+              "answered": 59,
+              "article_hit": 0.3220338983050847,
+              "citation_precision": 0.3220338983050847,
+              "penalty_type": 0.4745762711864407,
+              "penalty": 0.3728813559322034,
+              "both": 0.11864406779661017
+            },
+            "pit_lane_speeding": {
+              "questions": 10,
+              "answered": 10,
+              "article_hit": 0.0,
+              "citation_precision": 0.0,
+              "penalty_type": 1.0,
+              "penalty": 0.7,
+              "both": 0.0
+            },
+            "procedural_or_technical": {
+              "questions": 47,
+              "answered": 47,
+              "article_hit": 0.3191489361702128,
+              "citation_precision": 0.30851063829787234,
+              "penalty_type": 0.5957446808510638,
+              "penalty": 0.5531914893617021,
+              "both": 0.19148936170212766
+            }
+          },
+          "by_basis": {
+            "discretionary": {
+              "questions": 106,
+              "answered": 106,
+              "article_hit": 0.32075471698113206,
+              "citation_precision": 0.3160377358490566,
+              "penalty_type": 0.5283018867924528,
+              "penalty": 0.4528301886792453,
+              "both": 0.1509433962264151
+            },
+            "fixed": {
+              "questions": 38,
+              "answered": 38,
+              "article_hit": 0.0,
+              "citation_precision": 0.0,
+              "penalty_type": 0.9736842105263158,
+              "penalty": 0.5,
+              "both": 0.0
+            }
+          }
+        },
+        "rules": {
+          "questions": 144,
+          "answered": 144,
+          "failed": {},
+          "scores": {
+            "article_hit": 0.625,
+            "citation_precision": 0.5052083333333334,
+            "penalty_type": 0.5625,
+            "penalty": 0.4305555555555556,
+            "both": 0.2916666666666667
+          },
+          "citation_check_passed": 1.0,
+          "cost_per_question": 0.0005101511111111111,
+          "cost_total": 0.07346176,
+          "seconds_per_question": 4.399375,
+          "tokens_per_question": {
+            "input": 2480.1319444444443,
+            "output": 526.8958333333334,
+            "reasoning": 423.3333333333333
+          },
+          "by_kind": {
+            "component_allowance": {
+              "questions": 28,
+              "answered": 28,
+              "article_hit": 0.9642857142857143,
+              "citation_precision": 0.5714285714285714,
+              "penalty_type": 0.8571428571428571,
+              "penalty": 0.42857142857142855,
+              "both": 0.42857142857142855
+            },
+            "judgment_incident": {
+              "questions": 59,
+              "answered": 59,
+              "article_hit": 0.5423728813559322,
+              "citation_precision": 0.4887005649717514,
+              "penalty_type": 0.4576271186440678,
+              "penalty": 0.3898305084745763,
+              "both": 0.22033898305084745
+            },
+            "pit_lane_speeding": {
+              "questions": 10,
+              "answered": 10,
+              "article_hit": 1.0,
+              "citation_precision": 1.0,
+              "penalty_type": 0.9,
+              "penalty": 0.7,
+              "both": 0.7
+            },
+            "procedural_or_technical": {
+              "questions": 47,
+              "answered": 47,
+              "article_hit": 0.44680851063829785,
+              "citation_precision": 0.38120567375886527,
+              "penalty_type": 0.44680851063829785,
+              "penalty": 0.425531914893617,
+              "both": 0.2127659574468085
+            }
+          },
+          "by_basis": {
+            "discretionary": {
+              "questions": 106,
+              "answered": 106,
+              "article_hit": 0.5,
+              "citation_precision": 0.4410377358490566,
+              "penalty_type": 0.4528301886792453,
+              "penalty": 0.4056603773584906,
+              "both": 0.2169811320754717
+            },
+            "fixed": {
+              "questions": 38,
+              "answered": 38,
+              "article_hit": 0.9736842105263158,
+              "citation_precision": 0.6842105263157895,
+              "penalty_type": 0.868421052631579,
+              "penalty": 0.5,
+              "both": 0.5
+            }
+          }
+        },
+        "rules_and_decisions": {
+          "questions": 144,
+          "answered": 144,
+          "failed": {},
+          "scores": {
+            "article_hit": 0.875,
+            "citation_precision": 0.7333333333333333,
+            "penalty_type": 0.6597222222222222,
+            "penalty": 0.5694444444444444,
+            "both": 0.4930555555555556
+          },
+          "citation_check_passed": 1.0,
+          "cost_per_question": 0.0005905615277777777,
+          "cost_total": 0.08504086,
+          "seconds_per_question": 4.461527777777778,
+          "tokens_per_question": {
+            "input": 3286.9930555555557,
+            "output": 526.3194444444445,
+            "reasoning": 415.25
+          },
+          "by_kind": {
+            "component_allowance": {
+              "questions": 28,
+              "answered": 28,
+              "article_hit": 1.0,
+              "citation_precision": 0.6785714285714286,
+              "penalty_type": 1.0,
+              "penalty": 0.6785714285714286,
+              "both": 0.6785714285714286
+            },
+            "judgment_incident": {
+              "questions": 59,
+              "answered": 59,
+              "article_hit": 0.8983050847457628,
+              "citation_precision": 0.7542372881355932,
+              "penalty_type": 0.5254237288135594,
+              "penalty": 0.4745762711864407,
+              "both": 0.4067796610169492
+            },
+            "pit_lane_speeding": {
+              "questions": 10,
+              "answered": 10,
+              "article_hit": 1.0,
+              "citation_precision": 1.0,
+              "penalty_type": 0.9,
+              "penalty": 0.8,
+              "both": 0.8
+            },
+            "procedural_or_technical": {
+              "questions": 47,
+              "answered": 47,
+              "article_hit": 0.7446808510638298,
+              "citation_precision": 0.6829787234042554,
+              "penalty_type": 0.574468085106383,
+              "penalty": 0.574468085106383,
+              "both": 0.425531914893617
+            }
+          },
+          "by_basis": {
+            "discretionary": {
+              "questions": 106,
+              "answered": 106,
+              "article_hit": 0.8301886792452831,
+              "citation_precision": 0.7226415094339622,
+              "penalty_type": 0.5471698113207547,
+              "penalty": 0.5188679245283019,
+              "both": 0.41509433962264153
+            },
+            "fixed": {
+              "questions": 38,
+              "answered": 38,
+              "article_hit": 1.0,
+              "citation_precision": 0.7631578947368421,
+              "penalty_type": 0.9736842105263158,
+              "penalty": 0.7105263157894737,
+              "both": 0.7105263157894737
+            }
+          }
+        }
+      },
+      "differences": {
+        "rules - none": {
+          "article_hit": {
+            "difference": 0.3888888888888889,
+            "low": 0.2638888888888889,
+            "high": 0.5138888888888888,
+            "questions": 144
+          },
+          "penalty": {
+            "difference": -0.034722222222222224,
+            "low": -0.1111111111111111,
+            "high": 0.034722222222222224,
+            "questions": 144
+          },
+          "both": {
+            "difference": 0.18055555555555555,
+            "low": 0.08333333333333333,
+            "high": 0.2777777777777778,
+            "questions": 144
+          }
+        },
+        "rules_and_decisions - rules": {
+          "article_hit": {
+            "difference": 0.25,
+            "low": 0.1736111111111111,
+            "high": 0.3263888888888889,
+            "questions": 144
+          },
+          "penalty": {
+            "difference": 0.1388888888888889,
+            "low": 0.041666666666666664,
+            "high": 0.2361111111111111,
+            "questions": 144
+          },
+          "both": {
+            "difference": 0.2013888888888889,
+            "low": 0.11805555555555555,
+            "high": 0.2916666666666667,
+            "questions": 144
+          }
+        },
+        "rules_and_decisions - none": {
+          "article_hit": {
+            "difference": 0.6388888888888888,
+            "low": 0.5555555555555556,
+            "high": 0.7152777777777778,
+            "questions": 144
+          },
+          "penalty": {
+            "difference": 0.10416666666666667,
+            "low": 0.006944444444444444,
+            "high": 0.2013888888888889,
+            "questions": 144
+          },
+          "both": {
+            "difference": 0.3819444444444444,
+            "low": 0.2847222222222222,
+            "high": 0.4791666666666667,
+            "questions": 144
+          }
+        }
+      },
+      "checks": {
+        "gold_in_scores": {
+          "article_hit": 1.0,
+          "citation_precision": 1.0,
+          "penalty_type": 1.0,
+          "penalty": 1.0,
+          "both": 1.0
+        },
+        "empty_answer_scores": {
+          "article_hit": 0.0,
+          "citation_precision": 0.0,
+          "penalty_type": 0.0,
+          "penalty": 0.0,
+          "both": 0.0
+        },
+        "searches_that_returned_own_or_later_event": 0,
+        "articles_shown_from_an_issue_not_in_force": 0,
+        "search_off_sends_the_no_search_prompt": "tests/test_eval_answers.py::test_with_search_switched_off_every_configuration_sends_the_no_search_prompt"
+      },
+      "baselines": {
+        "most_common": {
+          "questions": 144,
+          "article_hit": 0.2152777777777778,
+          "citation_precision": 0.2152777777777778,
+          "penalty_type": 0.2013888888888889,
+          "penalty": 0.2013888888888889,
+          "both": 0.0625
+        },
+        "majority_of_5": {
+          "questions": 144,
+          "article_hit": 0.75,
+          "citation_precision": 0.75,
+          "penalty_type": 0.5138888888888888,
+          "penalty": 0.3611111111111111,
+          "both": 0.2847222222222222
+        }
+      }
+    }
+  },
+  "retrieval": {
+    "dev": {
+      "split": "dev",
+      "events": [
+        "monaco",
+        "barcelona-catalunya",
+        "austrian",
+        "british",
+        "belgian",
+        "hungarian"
+      ],
+      "k": 5,
+      "k_rules": 8,
+      "sets": {
+        "stewards": {
+          "questions": 87,
+          "left_out": {
+            "the Fact only points at a table of cars": 5,
+            "the question names an article": 1
+          },
+          "out_of_reach": 13,
+          "decisions": {
+            "bm25": {
+              "hit": 0.7816091954022989,
+              "precision": 0.489655172413793
+            },
+            "vector": {
+              "hit": 0.7816091954022989,
+              "precision": 0.4988505747126435
+            },
+            "hybrid": {
+              "hit": 0.7586206896551724,
+              "precision": 0.5080459770114941
+            }
+          },
+          "rules": {
+            "cited": 104,
+            "outside_the_books": {
+              "F1-C": 1
+            },
+            "not_in_the_issue": [],
+            "best_recall": 0.9885057471264368,
+            "methods": {
+              "bm25": {
+                "recall": 0.60727969348659,
+                "articles": 8.0,
+                "most": 8
+              },
+              "vector": {
+                "recall": 0.6992337164750958,
+                "articles": 8.0,
+                "most": 8
+              },
+              "hybrid": {
+                "recall": 0.7337164750957854,
+                "articles": 8.0,
+                "most": 8
+              },
+              "vector + cited": {
+                "recall": 0.9329501915708811,
+                "articles": 9.632183908045977,
+                "most": 15
+              }
+            }
+          }
+        },
+        "reworded": {
+          "questions": 94,
+          "left_out": {
+            "the Fact only points at a table of cars": 5
+          },
+          "out_of_reach": 15,
+          "decisions": {
+            "bm25": {
+              "hit": 0.7127659574468085,
+              "precision": 0.35957446808510635
+            },
+            "vector": {
+              "hit": 0.7553191489361702,
+              "precision": 0.48297872340425513
+            },
+            "hybrid": {
+              "hit": 0.7446808510638298,
+              "precision": 0.4510638297872338
+            }
+          },
+          "rules": {
+            "cited": 113,
+            "outside_the_books": {
+              "F1-C": 1
+            },
+            "not_in_the_issue": [],
+            "best_recall": 0.9893617021276596,
+            "methods": {
+              "bm25": {
+                "recall": 0.5177304964539007,
+                "articles": 8.0,
+                "most": 8
+              },
+              "vector": {
+                "recall": 0.6436170212765957,
+                "articles": 8.0,
+                "most": 8
+              },
+              "hybrid": {
+                "recall": 0.6347517730496454,
+                "articles": 8.0,
+                "most": 8
+              },
+              "vector + cited": {
+                "recall": 0.9237588652482269,
+                "articles": 9.712765957446809,
+                "most": 14
+              }
+            }
+          }
+        }
+      }
+    },
+    "test": {
+      "split": "test",
+      "events": [
+        "dutch",
+        "italian",
+        "spanish",
+        "azerbaijan",
+        "bahrain",
+        "singapore",
+        "united-states",
+        "mexico-city",
+        "sao-paulo"
+      ],
+      "k": 5,
+      "k_rules": 8,
+      "sets": {
+        "stewards": {
+          "questions": 144,
+          "left_out": {
+            "the Fact only points at a table of cars": 7,
+            "the question names an article": 1
+          },
+          "out_of_reach": 8,
+          "decisions": {
+            "bm25": {
+              "hit": 0.8125,
+              "precision": 0.6125000000000003
+            },
+            "vector": {
+              "hit": 0.8194444444444444,
+              "precision": 0.6208333333333331
+            },
+            "hybrid": {
+              "hit": 0.8472222222222222,
+              "precision": 0.6249999999999998
+            }
+          },
+          "rules": {
+            "cited": 206,
+            "outside_the_books": {
+              "F1-C": 1
+            },
+            "not_in_the_issue": [],
+            "best_recall": 0.9930555555555556,
+            "methods": {
+              "bm25": {
+                "recall": 0.5577546296296296,
+                "articles": 8.0,
+                "most": 8
+              },
+              "vector": {
+                "recall": 0.6138888888888888,
+                "articles": 8.0,
+                "most": 8
+              },
+              "hybrid": {
+                "recall": 0.6185185185185185,
+                "articles": 8.0,
+                "most": 8
+              },
+              "vector + cited": {
+                "recall": 0.9424768518518518,
+                "articles": 9.347222222222221,
+                "most": 14
+              }
+            }
+          }
+        },
+        "reworded": {
+          "questions": 153,
+          "left_out": {
+            "the Fact only points at a table of cars": 7
+          },
+          "out_of_reach": 9,
+          "decisions": {
+            "bm25": {
+              "hit": 0.7843137254901961,
+              "precision": 0.47450980392156894
+            },
+            "vector": {
+              "hit": 0.8431372549019608,
+              "precision": 0.5673202614379087
+            },
+            "hybrid": {
+              "hit": 0.8366013071895425,
+              "precision": 0.5581699346405228
+            }
+          },
+          "rules": {
+            "cited": 218,
+            "outside_the_books": {
+              "F1-C": 3
+            },
+            "not_in_the_issue": [],
+            "best_recall": 0.9869281045751634,
+            "methods": {
+              "bm25": {
+                "recall": 0.4224400871459694,
+                "articles": 8.0,
+                "most": 8
+              },
+              "vector": {
+                "recall": 0.500871459694989,
+                "articles": 8.0,
+                "most": 8
+              },
+              "hybrid": {
+                "recall": 0.5003267973856209,
+                "articles": 8.0,
+                "most": 8
+              },
+              "vector + cited": {
+                "recall": 0.9449891067538125,
+                "articles": 9.509803921568627,
+                "most": 13
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "between_models": {
+    "test-gpt-6.1-terra-medium - test-gpt-6-luna-medium": {
+      "article_hit": {
+        "difference": -0.006944444444444444,
+        "low": -0.041666666666666664,
+        "high": 0.020833333333333332,
+        "questions": 144
+      },
+      "penalty": {
+        "difference": 0.08333333333333333,
+        "low": 0.027777777777777776,
+        "high": 0.14583333333333334,
+        "questions": 144
+      },
+      "both": {
+        "difference": 0.0763888888888889,
+        "low": 0.020833333333333332,
+        "high": 0.1388888888888889,
+        "questions": 144
+      }
+    }
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "split": "test",
+  "events": [
+    "dutch",
+    "italian",
+    "spanish",
+    "azerbaijan",
+    "bahrain",
+    "singapore",
+    "united-states",
+    "mexico-city",
+    "sao-paulo"
+  ],
+  "k": 5,
+  "k_rules": 8,
+  "sets": {
+    "stewards": {
+      "questions": 144,
+      "left_out": {
+        "the Fact only points at a table of cars": 7,
+        "the question names an article": 1
+      },
+      "out_of_reach": 8,
+      "decisions": {
+        "bm25": {
+          "hit": 0.8125,
+          "precision": 0.6125000000000003
+        },
+        "vector": {
+          "hit": 0.8194444444444444,
+          "precision": 0.6208333333333331
+        },
+        "hybrid": {
+          "hit": 0.8472222222222222,
+          "precision": 0.6249999999999998
+        }
+      },
+      "rules": {
+        "cited": 206,
+        "outside_the_books": {
+          "F1-C": 1
+        },
+        "not_in_the_issue": [],
+        "best_recall": 0.9930555555555556,
+        "methods": {
+          "bm25": {
+            "recall": 0.5577546296296296,
+            "articles": 8.0,
+            "most": 8
+          },
+          "vector": {
+            "recall": 0.6138888888888888,
+            "articles": 8.0,
+            "most": 8
+          },
+          "hybrid": {
+            "recall": 0.6185185185185185,
+            "articles": 8.0,
+            "most": 8
+          },
+          "vector + cited": {
+            "recall": 0.9424768518518518,
+            "articles": 9.347222222222221,
+            "most": 14
+          }
+        }
+      }
+    },
+    "reworded": {
+      "questions": 153,
+      "left_out": {
+        "the Fact only points at a table of cars": 7
+      },
+      "out_of_reach": 9,
+      "decisions": {
+        "bm25": {
+          "hit": 0.7843137254901961,
+          "precision": 0.47450980392156894
+        },
+        "vector": {
+          "hit": 0.8431372549019608,
+          "precision": 0.5673202614379087
+        },
+        "hybrid": {
+          "hit": 0.8366013071895425,
+          "precision": 0.5581699346405228
+        }
+      },
+      "rules": {
+        "cited": 218,
+        "outside_the_books": {
+          "F1-C": 3
+        },
+        "not_in_the_issue": [],
+        "best_recall": 0.9869281045751634,
+        "methods": {
+          "bm25": {
+            "recall": 0.4224400871459694,
+            "articles": 8.0,
+            "most": 8
+          },
+          "vector": {
+            "recall": 0.500871459694989,
+            "articles": 8.0,
+            "most": 8
+          },
+          "hybrid": {
+            "recall": 0.5003267973856209,
+            "articles": 8.0,
+            "most": 8
+          },
+          "vector + cited": {
+            "recall": 0.9449891067538125,
+            "articles": 9.509803921568627,
+            "most": 13
+          }
+        }
+      }
+    }
+  }
+}

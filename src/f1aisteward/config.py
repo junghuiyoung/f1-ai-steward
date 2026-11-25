@@ -43,8 +43,10 @@ RULES_COLLECTION = "rules"
 RULES_SEARCH_METHOD = "vector"  # chosen on dev in step 3: hybrid was not clearly better (PLAN.md)
 TOP_K_RULES = 8  # articles a rule search returns
 
-# Answering (ADR-003): gpt-6-luna while building, gpt-6.1-terra for the final numbers.
-ANSWER_MODEL = "gpt-6-luna"
+# Answering (ADR-003): gpt-6-luna while building, gpt-6.1-terra for the final numbers and the app.
+# On the test weekends terra got both article and penalty right for 57% of incidents against
+# luna's 49%, at $0.004 a question (results/summary.json). `--model gpt-6-luna` is a cheaper choice.
+ANSWER_MODEL = "gpt-6.1-terra"
 REASONING_EFFORT = "medium"  # not tuned yet; fixed on the dev questions in step 5, then the same for both models
 MAX_OUTPUT_TOKENS = 4000  # reasoning included. An answer cut off here is reported as truncated, not as wrong
 MODEL_TIMEOUT_SECONDS = 120.0

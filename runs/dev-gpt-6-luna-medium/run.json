@@ -1,0 +1,28 @@
+{
+  "model": "gpt-6-luna",
+  "reasoning_effort": "medium",
+  "split": "dev",
+  "configs": [
+    "none",
+    "rules",
+    "rules_and_decisions"
+  ],
+  "questions": 87,
+  "sample": null,
+  "left_out": {
+    "the Fact only points at a table of cars": 5,
+    "the question names an article": 1
+  },
+  "search": {
+    "decisions": "vector",
+    "k": 5,
+    "rules": "vector",
+    "k_rules": 8,
+    "embedding": "text-embedding-3-large"
+  },
+  "max_output_tokens": 4000,
+  "prompt": "76d18a9a7a07",
+  "last_resumed": "2026-11-25T00:25:27+00:00",
+  "started": "2026-11-25T00:25:27+00:00",
+  "prompt_note": "Recomputed 2026-11-24 when the fingerprint was widened to cover the message template as well as the instructions and the Answer format; the prompt itself did not change (it was cb2483d3131a under the narrower fingerprint)."
+}
