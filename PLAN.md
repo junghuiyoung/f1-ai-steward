@@ -11,7 +11,7 @@
 | 3 | Parse the rules and search them | Done 2026-11-16; articles cited by the decisions found added 2026-11-17 |
 | 4 | Generate answers and check citations | Done 2026-11-17 |
 | 5 | Evaluate answers | Done 2026-11-24 |
-| 6 | Product screen and final README | Done 2026-11-24 (GitHub rendering checked locally only; nothing pushed) |
+| 6 | Product screen and final README | Done 2026-11-24; pushed to GitHub the same day |
 | 7 | Optional: compare with the whole rulebook in the prompt | |
 | 8 | Optional: photo input | |
 
@@ -293,7 +293,8 @@ runs/<run>/         results.jsonl and run.json in git; transcripts/ local only (
 - **Check**: `uv run f1aisteward serve`, then in the browser pick an incident and see the answer, the similar incidents and the stewards' decision.
 - **Done when**: a real incident and a typed one both work. `README-draft.md` becomes `README.md`. Whether Mermaid and the GIF render on GitHub can only be checked after pushing.
 - **Built (2026-11-24)**: `app/server.py`, `app/view.py`, `app/pages.py`, `app/static/index.html`, CLI `serve`, `docs/demo.gif`, `README.md` (renamed from `README-draft.md` and rewritten with the test numbers). `fastapi`, `uvicorn`, `pypdfium2` and `pillow` added. A real incident (São Paulo 79), one fixed by the rules (Singapore 20, no session) and typed incidents were checked in the browser.
-- **Left**: pushing, and so seeing GitHub's own rendering. The code licence (the user decides). LangSmith is still not set up.
+- **Pushed (2026-11-24)** to the public repository https://github.com/junghuiyoung/f1-ai-steward under the MIT licence (the user's choice). On GitHub's own page the demo GIF, the Mermaid diagram (drawn once scrolled into view), the tables and the `<details>` blocks render, and the licence is detected as MIT.
+- **Left**: LangSmith is still not set up.
 
 ### Step 7 (optional): the whole rulebook in the prompt
 
