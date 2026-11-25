@@ -1,10 +1,10 @@
 # AI Steward: UI/UX design
 
-Written 2026-11-14 · Revised 2026-11-15 · Mockup: `mockup-v4.html`
+Written 2026-11-14 · Revised 2026-11-15 · Built 2026-11-24 as `src/f1aisteward/app/static/index.html` (section 9) · Mockup: `mockup-v4.html`
 
 The audience is English-speaking recruiters and interviewers (engineers). They arrive from the README, skim for about 30 seconds and, if interested, clone the repository and run it locally.
 
-The screen is one thing: a product where you enter an incident and an answer comes out. How the product was evaluated is in the README (`README-draft.md`), not on the screen.
+The screen is one thing: a product where you enter an incident and an answer comes out. How the product was evaluated is in the README (`README.md`), not on the screen.
 
 ---
 
@@ -162,3 +162,24 @@ Not checked: Safari and Firefox, screen readers, keyboard-only operation.
 **Worth knowing.** In the two-column layout the document image is about 300px wide, so its text looks small. The content is read from the text fields beside it; the image is there to show that this is the original. To see it larger, press "Open the PDF". A layout that enlarges the image to the full width of the answer area is also possible.
 
 Shortcuts: `mockup-v4.html#case=79&ask=1` (an example where the answer and the decision differ), `#case=43&ask=1` (an example computed from the rules).
+
+
+## 9. As built (2026-11-24)
+
+The page is `src/f1aisteward/app/static/index.html`: one file, inline CSS and plain JavaScript, no libraries, served with a JSON API by `src/f1aisteward/app/server.py` (`uv run f1aisteward serve`). It keeps the mockup's layout, copy, tokens and accessibility features. What changed from the mockup:
+
+| Mockup | Built |
+|---|---|
+| Top banner "Mockup ..." and "Placeholder answer" badges | Removed: every value on the page comes from the API |
+| Nine São Paulo incidents written into the page | The race weekend drop-down lists all 20 weekends, newest first; the list under it holds that weekend's decisions (title from fia.com's listing, session, document number). The first option, "After the São Paulo GP", searches every decision and the latest rules, for typed incidents |
+| "Rules in force: Sporting Regulations, Issue 09" | All four books in force that weekend, e.g. "Sporting Regulations, Issue 09; International Sporting Code of June 2026; Appendix L of June 2026; Appendix H of October 2026" |
+| Typed incident: a note that the mockup cannot answer | Answered like any other; there is no stewards' area, because there is no decision to compare with |
+| Three progress stages, timed | Still timed: the API has no progress events. The first two advance after about 0.6 s each; "Writing the answer" stays until the reply arrives |
+| One generated line explaining why the stewards differed | Not built. Writing it would need a second model call that reads the stewards' decision, the one document the answer must never see. The stewards' own Reason field is shown in full instead, and usually says why (São Paulo 79: the wet track and the minor contact halved the penalty) |
+| "Working" row for penalties computed from a table | Not built: the `Answer` format has no field for the arithmetic |
+| "Rules it relied on" chips | Kept, plus "Decisions it relied on" (the precedents that passed the citation check, linked to fia.com) and, when a citation failed the check, a note "Left out after the citation check" |
+| Matches / Differs written by hand | Computed in `app/view.py` with the scoring rules of the evaluation (`eval/score.py`): rule "Matches" when the article numbers are the same, "Partly matches" when some are; outcome "Matches" on type, value and unit, "Partly matches" on type alone |
+
+Deep links for screenshots and the demo: `/#event=sao-paulo&case=2026-sao-paulo-079&ask=1`.
+
+**Verified 2026-11-24** (headless Chrome 158 driven by Playwright, against the real server and `gpt-6-luna`): the São Paulo 79 deep link at 1280 px (dark) and 390 px; the empty state; light theme; an empty incident gives "Describe what happened first." and focuses the text box; picking an incident fills the text and session, and typing detaches it; changing the weekend replaces the list; a typed incident under "After the São Paulo GP" is answered with no stewards' area; "Show all" and "Show fewer"; no horizontal scroll at 390 px; no console errors once an empty favicon was added. Not checked: Safari and Firefox, screen readers, keyboard-only use, the non-ok statuses (refused, truncated, timeout, rate limited) on the real page; they are covered by API tests only.

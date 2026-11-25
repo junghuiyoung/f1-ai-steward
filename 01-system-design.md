@@ -10,6 +10,8 @@ Written 2026-11-14 · Fully revised 2026-11-15 · Status: draft
 
 **Revised 2026-11-17, after step 4.** Sections 3.5 to 3.7: the answer as built (call settings, prompt, `Answer`, the citation check, the outcome counts) and three real answers. Section 5.2: token counts measured on three dev questions. Section 8.
 
+**Revised 2026-11-24, after steps 5 and 6.** Section 4.9: the answer evaluation as run, and its results. Sections 3.6 and 3.7: the prompt changes made on dev. Section 5.2: measured cost. Section 8: reasoning effort and the app's model decided. The screen as built is in `03-ui-ux-design.md`, section 9.
+
 Markers: **[verified]** is a fact checked directly, **[estimate]** is a value that has not been measured or an assumption, **[decision needed]** is something the user has to decide.
 
 ---
@@ -199,7 +201,8 @@ The best possible recall is 0.989 on both sets: one citation is of Section C, wh
 ### 3.6 Generating the answer
 
 - Model calls go through a single LangChain `ChatOpenAI` (ADR-002). The calling code lives in one place only, `llm/client.py`; the rest of the answer is in `answer.py`.
-- Call settings (`config.py`): the Responses API, `gpt-6-luna` while building, reasoning effort `medium`, at most 4,000 output tokens (reasoning included), a 120-second timeout. **[estimate: the effort and the token cap are first values, not tuned; the effort is fixed on dev in step 5]**
+- Call settings (`config.py`): the Responses API, `gpt-6.1-terra` (it was `gpt-6-luna` while building), reasoning effort `medium`, at most 4,000 output tokens (reasoning included), a 120-second timeout. **[verified: on dev, efforts low, medium and high were level (section 4.9), so medium stayed. No answer was cut off; the longest used 3,021 of the 4,000 output tokens (luna, rules + past decisions; 2,877 of them reasoning)]**
+- Two instruction changes were made on dev in step 5. "Cite only articles and decisions given here" became "Always name at least one article. When articles and decisions are given here, cite only those ...": with nothing given, the old wording made the no-search model cite nothing. And the ids are to be written "without the brackets": one wording made the model copy them. Every evaluation run records a fingerprint of the whole prompt (`answer.prompt_version`).
 - Prompt layout: a system message with the instructions, then one message with the retrieved articles, the retrieved past decisions (session, Fact, articles, penalty) and the question, in that order. Each article and decision starts with its id in square brackets, the form the answer must cite.
 - The answer comes back in a fixed format (Pydantic, strict structured output; ADR-006).
 
@@ -238,7 +241,7 @@ After the answer arrives, code checks it.
 
 An article counts as retrieved when its id equals one of those or one lies inside the other (`ISC-L:IV.2.d` and `ISC-L:IV.2`; `answer.related`). That is the rule rule recall was measured with (section 3.5): the rules are cut at paragraphs and the stewards cite points. A decision's Section C article counts too, though Section C is not searched. A citation not written as an id, such as "Appendix L, Chapter IV, Article 2 d)", matches nothing and fails; the prompt asks for the ids as shown, and on the three real answers the model used them.
 
-On a mismatch the answer is flagged and recorded, and on the screen that citation is removed from the list of grounds. There is no loop that asks again. The outcome counts (section 3.5) use only the articles that passed.
+A pair of square brackets around an otherwise exact id is forgiven (the brackets mark ids in the prompt); nothing else is. On a mismatch the answer is flagged and recorded, and on the screen that citation is removed from the list of grounds. There is no loop that asks again. The outcome counts (section 3.5) use only the articles that passed.
 
 This check only looks at whether the cited IDs were in the search results. It catches invented citations, but it does not check whether the written reason actually follows from those grounds. An answer can cite the right article with the wrong penalty and pass, as the race collision in section 3.6 did. No real answer has failed the check yet; the failing path is covered by unit tests.
 
@@ -357,6 +360,27 @@ FIA documents cannot go in the repository, so the automated tests run on made-up
 
 ---
 
+### 4.9 Results (2026-11-24)
+
+**[verified: `eval --report`, `results/summary.json`, recomputed from `runs/`]** 144 test questions (Dutch to São Paulo), three configurations, both models, no failed calls. The README carries the full tables; the main ones:
+
+| `gpt-6.1-terra` | Rule right | Cited articles right | Outcome right | Both right | Cost per question |
+|---|---|---|---|---|---|
+| No search | 22% | 22% | 46% | 11% | $0.0031 |
+| Rules only | 65% | 51% | 51% | 35% | $0.0037 |
+| Rules + past decisions | 87% | 78% | 65% | 57% | $0.0043 |
+| No model: most common so far | 22% | 22% | 20% | 6% | – |
+| No model: majority of the 5 decisions found | 75% | 75% | 36% | 28% | – |
+
+- Paired differences (95% bootstrap interval), both right: rules over none +24 (+15 to +34), past decisions over rules +22 (+13 to +30). The outcome moves only with the past decisions (+15, +6 to +24); rules alone do not move it (+5, −4 to +14).
+- `gpt-6-luna`: 11% / 29% / 49% both right. Against terra on the same questions: outcome −8 points (−15 to −3), the rule level. The gap is mostly power unit penalties (terra 28 of 28, luna 19 of 28).
+- By basis (terra, rules + past decisions): fixed by a table 36 of 38 both right, discretionary 43%.
+- The citation check passed for every answer that was shown documents.
+- Search on the test weekends: decision hit@5 0.82 (vector, stewards' wording; hybrid 0.85, BM25 0.81), 0.84 reworded; rule recall with the cited articles added 0.94 and 0.95, against 0.61 and 0.50 for vector search alone.
+- Dev, used for tuning only: reasoning effort low / medium / high gave 40% / 40% / 43% both right (luna, rules + past decisions), the gaps one to three questions; medium stayed.
+
+The checks of section 4.6 all pass: gold in 100%, empty answer 0%, no own-event or later-event decision shown, no rule shown from an issue not in force, search switched off sends the no-search prompt (a test), no question text names an article or penalty.
+
 ## 5. Scale and cost
 
 ### 5.1 Document counts
@@ -392,7 +416,7 @@ Assumptions: 4,000 tokens of retrieved articles, 4,000 tokens for 5 past decisio
 | Answer evaluation | gpt-6.1-terra | 150 test questions × 3 configurations | About $6 |
 | **Total** | | | **About $8** |
 
-With some margin, about $10. The rules are not put in whole, so this is less than the previous design (about $16) and does not depend on prompt caching. The number of test questions is fixed after the split in section 4.2 is settled.
+With some margin, about $10. **Measured, 2026-11-24 [verified: the cost fields of `runs/*/results.jsonl`]:** the test run cost $1.60 on `gpt-6.1-terra` and $0.23 on `gpt-6-luna` (144 questions × 3 configurations each), the dev runs $0.26; about $2.25 for steps 5 and 6 together, a quarter of the estimate. Input was 660 / 2,480 / 3,280 tokens per question (none / rules / rules + decisions), well under the 8,000 assumed. The rules are not put in whole, so this is less than the previous design (about $16) and does not depend on prompt caching. The number of test questions is fixed after the split in section 4.2 is settled.
 
 ---
 
@@ -452,5 +476,9 @@ Once step 2 is finished, "find similar incidents" works without calling a model.
 - The answer (sections 3.6 and 3.7, 2026-11-17; Claude's suggestions, which the user let stand): `gpt-6-luna` while building; the penalty type is an enum of the step 1 labels; a cited article counts as retrieved when one id equals or lies inside the other
 
 **Still open**
-- **Reasoning effort and the size of the pool for the outcome counts**: `medium` and 20 for now, both untuned. Settled on dev in step 5.
-- **Whether to also run the final evaluation on `gpt-6-luna`**: the previous design had it. The product does not need it, and it costs about $1.
+- Nothing that blocks the product. The pool for the outcome counts stays 20, untuned: it changes only what the screen counts, never an answer or a score.
+
+**Decided in step 5 (2026-11-24)**
+- Reasoning effort `medium`: low, medium and high were level on dev
+- The final evaluation was also run on `gpt-6-luna` ($0.23)
+- The app and `ask` use `gpt-6.1-terra` (Claude's choice after the test run): 8 points better both right, at $0.004 a question

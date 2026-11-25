@@ -217,7 +217,7 @@ The full rules are assumed to be 150,000 tokens. Counted on the parsed articles 
 
 ## ADR-005: Running the evaluation and storing results
 
-**Status:** Proposed
+**Status:** Decided and built (step 5, 2026-11-24). The runner is `eval/answers.py`, the scorer `eval/score.py`, the report `eval/report.py`. Each run is `runs/<run>/results.jsonl` (ids, labels, tokens, cost; in git) plus `runs/<run>/transcripts/` (prompts and reasons; local only) and `run.json` (model, effort, prompt fingerprint). `results/summary.json` is recomputed from those files and the labels alone. The paired bootstrap is 20 lines of plain Python, so numpy and scipy were not added. LangSmith is still not set up (no key in `.env`).
 
 **Context.** The earlier session kept LangSmith as a candidate evaluation tool. Evaluation is a concept 25 postings mention, and the tools split into LangSmith 4, Langfuse 3, Braintrust 3.
 
@@ -262,7 +262,7 @@ The full rules are assumed to be 150,000 tokens. Counted on the parsed articles 
 
 **Decision.**
 - The screen is one thing, the product **AI Steward**. Enter an incident and it answers with the article, the expected penalty and similar past incidents; for a real incident, the stewards' actual decision and the original document follow the answer. The mockup is `mockup-v4.html`.
-- The evaluation results (what search added) go in the README as tables. The draft is `README-draft.md`.
+- The evaluation results (what search added) go in the README as tables. The draft was `README-draft.md`; it became `README.md` in step 6.
 - The implementation is a single HTML page (no build step, plain JS) and FastAPI. FastAPI serves the question text, the answers and the page images of decisions locally, and sends real call results to the screen.
 
 | Option | Pros | Cons |
@@ -319,7 +319,7 @@ The screen technology is unchanged from the first decision.
 
 ## ADR-010: PDF parsing and display
 
-**Status:** Parsing decided and built (steps 1 and 3). Display proposed
+**Status:** Parsing decided and built (steps 1 and 3). Display built (step 6, 2026-11-24): pypdfium2 5.15.2 (BSD-3-Clause and Apache-2.0, from its package metadata) renders each page, Pillow trims and stacks them (`app/pages.py`)
 
 **Parsing**
 
@@ -338,7 +338,7 @@ pypdf for decisions; pdfplumber for every rule document (step 3). The rule docum
 | **Render page images and show them with `<img>`** | Fits the document size exactly. Looks the same in every browser. The blank part at the bottom of a page can be trimmed | Text cannot be selected (covered by the fields transcribed as text alongside and a link that opens the PDF). One library is needed to render the images |
 | Browser PDF viewer (`<object>`) | No extra library. Text selection and zoom | The box height does not match the document, leaving blank space underneath [verified: reproduced in the mockup]. It looks different in each browser and is not drawn in headless captures |
 
-The fetch stage renders the PDFs as page images into `.cache/pages`. The candidate library is pypdfium2 [licence and installation to be checked before implementation]. The images in the mockup were made with the PDF facilities of macOS, and that approach works on macOS only.
+The server renders a decision the first time the page asks for its image and keeps it in `.cache/pages` (not at fetch time, as first planned: most decisions are never opened). The library is pypdfium2 [verified: installs from PyPI as a wheel, no system library needed]. The images in the mockup were made with the PDF facilities of macOS, and that approach works on macOS only.
 
 ---
 
@@ -348,14 +348,14 @@ The fetch stage renders the PDFs as page images into `.cache/pages`. The candida
 pydantic             schemas
 pypdf                PDF text of decisions
 pdfplumber           PDF text of rule documents, one column at a time
-pypdfium2            page images of decisions (candidate; check before implementation)
+pypdfium2, pillow    page images of decisions
 httpx                downloading documents
 langchain-core, langchain-community, langchain-chroma, langchain-openai
                      model calls, structured output, embeddings, retrievers
                      (the exact package set is checked during implementation)
 rank-bm25, chromadb
-numpy, scipy         bootstrap, McNemar
-fastapi, uvicorn     local demo
+fastapi, uvicorn     the local app
+                     (numpy and scipy were planned for the bootstrap; it is plain Python instead)
 typer                CLI
 pytest, ruff         development
 langsmith            optional

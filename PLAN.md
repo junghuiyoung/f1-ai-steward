@@ -10,8 +10,8 @@
 | 2 | Search over past decisions | Done 2026-11-16 |
 | 3 | Parse the rules and search them | Done 2026-11-16; articles cited by the decisions found added 2026-11-17 |
 | 4 | Generate answers and check citations | Done 2026-11-17 |
-| 5 | Evaluate answers | |
-| 6 | Product screen and final README | |
+| 5 | Evaluate answers | Done 2026-11-24 |
+| 6 | Product screen and final README | Done 2026-11-24 (GitHub rendering checked locally only; nothing pushed) |
 | 7 | Optional: compare with the whole rulebook in the prompt | |
 | 8 | Optional: photo input | |
 
@@ -119,6 +119,34 @@ Things earlier steps learned from the real data. Read these before writing a par
 - **LangSmith is not set up.** `.env` holds `OPENAI_API_KEY` only (the names were checked, not the values). Tracing attaches without code once `LANGSMITH_TRACING=true` and `LANGSMITH_API_KEY` are added there.
 - **Taken as Claude suggested, 2026-11-17** (the user said to start without changing them): `ask` uses `gpt-6-luna`; the citation check counts an article as shown when it is one of the articles or decisions shown, or lies inside one or holds one (the rule of `search.holding`, as `answer.related`); `penalty_type` is an enum of the step 1 labels (`labels.PENALTY_TYPES`). Also Claude's first values, untuned: reasoning effort medium, 4,000 output tokens at most, 120-second timeout, 20 decisions for the counts.
 
+**Step 5** (2026-11-24; the user asked for steps 5 and 6 to be finished in one go, so this step was not stopped at)
+
+- **The cost measurement came first, as the plan says.** 10 dev questions drawn at random (`--sample 10`, seed 20261124) × 3 configurations × both models. Per question, by configuration (none / rules / rules and decisions): `gpt-6-luna` $0.0003 / $0.0006 / $0.0005, `gpt-6.1-terra` $0.0020 / $0.0036 / $0.0045. Input 620 / 2,390 / 3,550 tokens. Projected for the test split (144 questions × 3): luna about $0.20, terra about $1.45, against the $6 estimated. The full run went ahead on that number without stopping to ask (see the first line).
+- **With the same instructions for all three configurations, the no-search model cited nothing.** The instruction "Cite only articles and decisions given here" is right for the product and, with nothing given, the model obeyed: 10 of 10 answers had an empty article list, so "rule right" was 0% by construction, not a measure of memory. The instruction became "Always name at least one article. When articles and decisions are given here, cite only those ..." — one text for all three configurations, as the design requires.
+- **The model then cited from memory, with the old numbers.** Asked with no search, it wrote "34.7" for pit lane speeding, "33.3" for track limits, "Article 34.7 of the FIA Formula One Sporting Regulations". No such numbers exist in the 2026 rules, which put these articles in Section B (B1.6.3, B1.8.6); most likely they are the numbers of earlier seasons' Sporting Regulations (not checked against those documents). On dev, no-search got the rule right for 10 of 87 questions: 2 are ISC 12.2.1.i and 8 are Appendix L Chapter IV Article 2. None is a Section B article.
+- **The scorer reads citations not written as ids.** A citation that is not an id goes through the step 1 normaliser, and a bare number is read as "Article <number>". Without that, "ISC 12.2.1.i" (right, written with a space) scored as wrong. Tests cover the forms seen.
+- **A wording change put square brackets into the ids, and the citation check caught it.** After the change above, the field description said "their ids in square brackets", and the model wrote "[F1-B:4.1.1]": the check passed for 20 to 30% of answers on dev (the scores were not affected; the scorer already stripped brackets). The wording now says "without the brackets", and `answer.check` strips one pair of brackets around an otherwise exact id. After the fix the check passed for 100% of the 174 dev answers that were shown documents. `run.json` now records a fingerprint of the prompt (`answer.prompt_version`), and a run cannot be resumed with another prompt or model.
+- **Reasoning effort, tuned on dev (87 questions, `gpt-6-luna`, rules and decisions; the runs `dev-luna-low`, `-medium`, `-high`, made before the bracket fix, so their check numbers are low):** both right 40% / 40% / 43%, rule right 84% / 86% / 84%, outcome right 48% / 46% / 51%; $0.00043 / $0.00052 / $0.00061 and 2.3 / 3.6 / 4.4 s per question. The gaps are one to three questions. **Kept at medium**: no setting earned a change, the same reading as the hybrid sweep of step 2. `OUTCOME_POOL` stays 20, untuned: it changes only what the screen counts, not any answer or score.
+- **Dev, after both fixes (`dev-gpt-6-luna-medium`, 87 questions):** both right 5% with no search, 23% with rules, 39% with rules and decisions; rules and decisions minus rules +16 points (95% interval +3 to +28). Retrieval voting with no model (the most common article and penalty among the 5 decisions found) gets 20%.
+- **Penalties in question text.** A regular expression for penalty phrases finds none in the dev or test questions. A number of seconds alone is not a penalty here: Barcelona-Catalunya 64 says "after the 15 second signal" (a start procedure), so the pattern looks for penalty phrases, not numbers.
+- **Failures are statuses, not exceptions.** `client.ask` now also returns `rate_limited` (OpenAI's 429 after LangChain's two retries) and `error` (no connection, a 5xx). A resumed run asks those again; refusals, truncations and timeouts are the model's own outcome and are kept. A wrong key still raises, because every call would fail the same way.
+
+- **The test run, 2026-11-24** (`runs/test-gpt-6.1-terra-medium`, `runs/test-gpt-6-luna-medium`; 144 questions from 152 of the 160 test decisions, 7 `car_table` and 1 naming an article left out; 0 failed calls; prompt fingerprint `76d18a9a7a07`). Both right, none / rules / rules and decisions: terra 11% / 35% / 57%, luna 11% / 29% / 49%. Rules and decisions minus rules, both right: terra +22 points (+13 to +30), luna +20 (+12 to +29); every step's interval is above zero except the outcome of rules over none (terra +5, −4 to +14; luna −3, −11 to +3). Baselines with no model: most common so far 6%, majority of the 5 found 28% (article 75%, penalty 36%). The citation check passed for 100% of answers in both configurations that were shown documents. Cost of the two runs $1.60 (terra) and $0.23 (luna), about 10 minutes each with 4 calls at a time.
+- **Terra against luna on the same 144 questions** (rules and decisions): rule −1 point (−4 to +2), outcome +8 (+3 to +15), both +8 (+2 to +14). Most of it is power unit parts: terra 28 of 28, luna 19 of 28. Luna takes the right type (grid drop) and copies the number of places from a similar decision instead of counting the elements in the Fact (2026-azerbaijan-034: stewards 5 places, luna 25; the five decisions found had 10 to 40). Moving that count into code is a candidate next step, not done.
+- **By basis, terra:** fixed by a table 36 of 38 both right; discretionary 43% (judgment 47%, procedural 38%).
+- **No-search answers on test:** all 32 (terra) and 34 (luna) rule hits are International Sporting Code articles (the body, Appendix L, Appendix H); none is Section B. The commonest no-search citations are "33.4", "34.7", "33.3" and "37.5".
+- **`ANSWER_MODEL` is now `gpt-6.1-terra`** for `ask`, `serve` and `eval --answers` (Claude's choice after the test run, 2026-11-24): 8 points better both right, and no slower (3.9 s against 4.5 s a question in the product configuration), at $0.004 a question. `--model gpt-6-luna` still works everywhere.
+- **The report keys runs by their name**, not by model and effort, and compares the product configuration of every pair of runs on the questions both answered (`between_models`). A pair with no shared question prints "no shared questions", not "+0 points".
+- **An independent review (an Opus subagent, 2026-11-24) found 8 real problems, all fixed with tests:** runs keyed by model overwrote each other in the report; an error in one worker did not cancel the calls still queued (now `cancel_futures`); a run could be resumed on another split or question set (now refused, while more configurations on the same questions are added); zero shared questions printed as no difference; the prompt fingerprint covered the instructions and the schema but not the message template (now it hashes the filled template too; the three final runs' `run.json` were updated to the new fingerprint with a note, their prompt unchanged); baselines were averaged over every question rather than the answered ones (no effect with 0 failures); an incident with no session sent the session "null" from the page; a blank PDF and two first requests for one image could break the image endpoint. The ninth point is a known difference, now documented in `view.compare`: the screen compares the articles that passed the check, the evaluation scores all cited articles.
+
+**Step 6** (2026-11-24)
+
+- **The page was written by a Sonnet subagent from `mockup-v4.html` and the API**, then checked by Claude with Playwright against the real server (`03-ui-ux-design.md`, section 9). It found that the API has no field for the arithmetic of a fixed penalty, so the mockup's "Working" row is not built.
+- **Page images are made on first request**, not at fetch time: most decisions are never opened. São Paulo 79 (two pages) makes a 430 KB image; the render time was not measured.
+- **The demo GIF** (`docs/demo.gif`, 6.5 MB, 23 s, 960 px, 10 frames a second) was recorded from the real app with `gpt-6.1-terra`: São Paulo 79 picked and asked, the answer, the counts, then the stewards' decision and the document. Playwright's own video recorder needs a build of ffmpeg that was not on this machine, so Chrome's screencast (CDP `Page.startScreencast`) captured the frames and the installed ffmpeg made the GIF. The headless browser draws no pointer, so a small round cursor was injected into the recording only. The script is in the scratchpad, not the repository. In the recording AI Steward answered "No further action" (rule matches, outcome differs: the stewards gave 5 seconds); the answer can differ from run to run.
+- **The README's GitHub look was checked locally** with `scratch/readme-preview/build.py` (github-markdown-css, marked and mermaid.js from a CDN; nothing is sent to GitHub). Tables, the two `<details>` blocks and the Mermaid diagram render. How GitHub itself draws them is known only after pushing.
+- **`serve` binds to 127.0.0.1**: the indexes hold FIA text, and the page shows it.
+
 ## Context
 
 **What we are building.** A local web app. You describe a Formula 1 incident in text; it searches stewards' decisions from earlier race weekends, names the rule in question and says what penalty usually follows. For a real incident it shows the stewards' actual decision under the answer.
@@ -134,9 +162,10 @@ Things earlier steps learned from the real data. Read these before writing a par
 | `01-system-design.md` | Architecture and evaluation rules |
 | `02-tech-stack-adr.md` | Tool decisions and why |
 | `03-ui-ux-design.md` | Screen design |
-| `README-draft.md` | README for the public repository, numbers still TBD |
+| `README.md` | README for the public repository (was `README-draft.md` until 2026-11-24) |
 | `mockup-v4.html` | Product screen mockup (local, not in git) |
-| `mockup-readme.html` | How the README will look on GitHub (local, not in git) |
+| `mockup-readme.html` | How the README was planned to look on GitHub, with invented numbers (local, not in git) |
+| `scratch/readme-preview/` | `build.py` renders the real `README.md` as a GitHub page, locally (not in git) |
 | `archive/` | The design before 2026-11-15 (local, not in git) |
 | `interview-prep.md` | Interview questions with model answers, every step so far (local, not in git) |
 
@@ -161,7 +190,7 @@ data/manifest/regulations.yaml     rule document issues, date in force, link, sh
 data/labels/decisions.jsonl        decision id, article ids, penalty, kind, split (no FIA text)  (exists, 342 rows)
 scripts/make_events_manifest.py    builds events.yaml from a saved fia.com listing (exists)
 src/f1aisteward/
-  cli.py            fetch [--rules], build --decisions/--rules/--index, search [--rules], eval --retrieval, ask (exist) / serve
+  cli.py            fetch [--rules], build --decisions/--rules/--index, search [--rules], eval --retrieval/--answers/--report, ask, serve (exist)
   config.py         paths, settings, model settings and price table (exists)
   manifest.py       title filter, read and write the manifests, issues in force on a date (exists)
   fetch.py          download PDFs, check hashes (exists)
@@ -174,14 +203,18 @@ src/f1aisteward/
   llm/client.py     the one place ChatOpenAI is called; records tokens and cost (exists)
   answer.py         prompt, Answer schema, citation check, outcome counts (exists)
   eval/retrieval.py search evaluation (exists)
-  eval/answers.py   answer evaluation runner (three configurations)
-  eval/score.py     scoring rules
-  eval/report.py    results/summary.json and the README tables
-  app/server.py     FastAPI
-  app/static/index.html
-tests/              manifest, fetch, parse_decisions, labels, build, questions, index, search, eval_retrieval, rules, llm_client, answer (exist)
-docs/demo.gif       recorded in step 6
-.cache/  runs/      local only, not in git
+  eval/answers.py   answer evaluation runner: three configurations, resumable, several calls at once (exists)
+  eval/score.py     scoring rules, paired bootstrap (exists)
+  eval/report.py    results/summary.json and the README tables, baselines, self-checks (exists)
+  app/server.py     FastAPI: the page, /api/events, /api/ask, document images and PDFs (exists)
+  app/view.py       names, penalty texts, Matches/Differs with the scoring rules (exists)
+  app/pages.py      a decision PDF as one trimmed image, with pypdfium2 (exists)
+  app/static/index.html  the page (exists)
+tests/              manifest, fetch, parse_decisions, labels, build, questions, index, search, eval_retrieval, rules, llm_client, answer, eval_score, eval_answers, eval_report, app (exist)
+docs/demo.gif       recorded from the running app in step 6 (exists)
+results/            summary.json, retrieval-dev.json, retrieval-test.json: numbers only (exist)
+runs/<run>/         results.jsonl and run.json in git; transcripts/ local only (exist)
+.cache/            local only, not in git
 ```
 
 ## Steps
@@ -248,6 +281,9 @@ docs/demo.gif       recorded in step 6
 - **Check**: `uv run f1aisteward eval --answers --model gpt-6-luna` first, on the cheap model, then `gpt-6.1-terra`.
 - **Done when**: the checks pass (gold labels score 100%, search switched off equals the no-search score, no question retrieves itself, no article number in question text), `results/summary.json` exists and the README's TBD cells are filled.
 - **Cost**: about $6, estimated from token counts that have not been measured. Measure real token counts on ten dev questions first and tell the user the recalculated cost before the full run.
+- **Built (2026-11-24)**: `eval/score.py`, `eval/answers.py`, `eval/report.py`, CLI `eval --answers` and `eval --report`, `results/summary.json`, `results/retrieval-dev.json` and `retrieval-test.json` (written by `eval --retrieval`), the runs in `runs/`. `client.ask` gained the `rate_limited` and `error` statuses and a per-call reasoning effort. The prompt changed twice on dev (under "Found along the way"). Tests: 325 in all.
+- **Checks**: gold labels score 100%, an empty answer 0%, no question was shown a decision of its own or a later event, every rule shown is from the issue in force, search switched off sends the no-search prompt (a test), no question text names an article or a penalty. All pass.
+- **Measured cost**: about $0.0006 (luna) and $0.0043 (terra) a question in the product configuration; the runs kept in `runs/` cost $2.08 (summed from their `results.jsonl`); with the 10-question samples (deleted, $0.12) and the browser checks, steps 5 and 6 cost about $2.25 in all.
 
 ### Step 6: product screen and final README
 
@@ -256,6 +292,8 @@ docs/demo.gif       recorded in step 6
 - **Learn**: how an API server and a page talk to each other, running it locally.
 - **Check**: `uv run f1aisteward serve`, then in the browser pick an incident and see the answer, the similar incidents and the stewards' decision.
 - **Done when**: a real incident and a typed one both work. `README-draft.md` becomes `README.md`. Whether Mermaid and the GIF render on GitHub can only be checked after pushing.
+- **Built (2026-11-24)**: `app/server.py`, `app/view.py`, `app/pages.py`, `app/static/index.html`, CLI `serve`, `docs/demo.gif`, `README.md` (renamed from `README-draft.md` and rewritten with the test numbers). `fastapi`, `uvicorn`, `pypdfium2` and `pillow` added. A real incident (São Paulo 79), one fixed by the rules (Singapore 20, no session) and typed incidents were checked in the browser.
+- **Left**: pushing, and so seeing GitHub's own rendering. The code licence (the user decides). LangSmith is still not set up.
 
 ### Step 7 (optional): the whole rulebook in the prompt
 
@@ -304,8 +342,9 @@ Creating the GitHub repository and pushing. Do it when the user asks.
 | How many articles go into the prompt | Decided 2026-11-17 | The 8 found by search plus the articles the decisions found cite (9.6 on average) |
 | Model for `ask` while building | Taken 2026-11-17 | `gpt-6-luna` |
 | When does a cited article count as shown | Taken 2026-11-17 | Same id, or one inside the other (`answer.related`) |
-| Reasoning effort | Step 5, on dev | Medium for now, untuned |
-| Also run the final evaluation on `gpt-6-luna` | Step 5 | Yes, it costs about $1 |
+| Reasoning effort | Decided 2026-11-24, on dev | Medium: low, medium and high were level |
+| Also run the final evaluation on `gpt-6-luna` | Done 2026-11-24 | Yes; it cost $0.23 |
+| Model of the app | Taken 2026-11-24 (Claude, after the test run) | `gpt-6.1-terra` |
 | Code licence | Before pushing to GitHub | The user decides |
 
 ## Verification
