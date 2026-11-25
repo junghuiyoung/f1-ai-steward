@@ -249,6 +249,8 @@ The 325 tests take a few seconds, use made-up documents and never touch the netw
 
 Rule and decision documents belong to the FIA. Apart from the demo above, which shows one decision as it appears in the app, this repository contains no PDFs and no document text. It holds links, labels (article, penalty type, value) and a hash of each source. Everything else is rebuilt on your machine from your own downloads, and the app serves only your own machine (127.0.0.1) for the same reason.
 
+The code is under the MIT licence (`LICENSE`). The licence does not cover the FIA's documents, including the one shown in the demo.
+
 ## Stack
 
 | Part | Built with | What it does here |

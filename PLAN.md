@@ -345,7 +345,7 @@ Creating the GitHub repository and pushing. Do it when the user asks.
 | Reasoning effort | Decided 2026-11-24, on dev | Medium: low, medium and high were level |
 | Also run the final evaluation on `gpt-6-luna` | Done 2026-11-24 | Yes; it cost $0.23 |
 | Model of the app | Taken 2026-11-24 (Claude, after the test run) | `gpt-6.1-terra` |
-| Code licence | Before pushing to GitHub | The user decides |
+| Code licence | Decided by the user, 2026-11-24 | MIT; it does not cover the FIA's documents |
 
 ## Verification
 
